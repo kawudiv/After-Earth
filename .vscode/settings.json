@@ -56,5 +56,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "afterearthtest.sln"
+    "dotnet.defaultSolution": "After-Earth.sln"
 }

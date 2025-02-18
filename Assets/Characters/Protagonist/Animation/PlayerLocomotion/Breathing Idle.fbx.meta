@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 5dbb9109fc87b284e88e1afa697dfbbe
+guid: 82fcc99ee03461645ba1fff63d23e961
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
@@ -31,11 +31,11 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: PlayerCrouchIdle
+      name: PlayerDisArmedIdle
       takeName: mixamo.com
       internalID: -203655887218126122
       firstFrame: 0
-      lastFrame: 75
+      lastFrame: 298
       wrapMode: 0
       orientationOffsetY: 0
       level: 0

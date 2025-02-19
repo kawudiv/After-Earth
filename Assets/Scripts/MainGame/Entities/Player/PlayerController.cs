@@ -15,9 +15,8 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        float moveX = Input.GetAxis("Horizontal");  // A/D or Left/Right
-        float moveZ = Input.GetAxis("Vertical");    // W/S or Up/Down
-
+        float moveX = Input.GetAxis("Horizontal"); 
+        float moveZ = Input.GetAxis("Vertical"); 
         moveDirection = new Vector3(moveX, 0, moveZ).normalized;
 
         if (moveDirection.magnitude >= 0.1f)

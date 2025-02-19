@@ -9,14 +9,11 @@ EditorBuildSettings:
     path: Assets/Scenes/MainMenu.unity
     guid: b65721c0df88ac04e8f747e09289d2c0
   - enabled: 1
-    path: Assets/Scenes/New-Continue.unity
-    guid: 9d1750bb2dddd574fa8c1e6190ad9576
-  - enabled: 1
     path: Assets/Scenes/After Earth.unity
     guid: cd6b269f767a4b540a8149ee1ad11e92
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Test.unity
     guid: 99c9720ab356a0642a771bea13969a05
   m_configObjects:
-    com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+    com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 4a5c199ed5052984395b0f3d2fad0aee, type: 3}
   m_UseUCBPForAssetBundles: 0

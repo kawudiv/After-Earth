@@ -8,7 +8,7 @@ public class SlideshowController : MonoBehaviour
 {
     public Image[] slides;
     public TMP_Text slideText;
-    public string[] slideTexts = new string[5]; // 5 slides with unique text
+    public string[] slideTexts = new string[5]; 
     public float slideDuration = 5f;
     public float typingSpeed = 0.05f;
 

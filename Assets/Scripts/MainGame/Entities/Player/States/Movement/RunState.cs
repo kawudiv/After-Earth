@@ -23,20 +23,29 @@ namespace Player.States.Movement
 
             if (player.PlayerInputHandler.IsRolling && characterController.isGrounded)
             {
-                Debug.Log("🔄 Transitioning to RollState");
+                Debug.Log("[RunState] Rolling detected. Transitioning to RollState.");
                 stateMachine.ChangeState(player.RollState);
                 return;
             }
 
             if (moveInput == Vector2.zero)
             {
+                Debug.Log("[RunState] No movement input. Transitioning to IdleState.");
                 stateMachine.ChangeState(player.IdleState);
                 return;
             }
 
             if (player.PlayerInputHandler.IsSprinting)
             {
+                Debug.Log("[RunState] Sprinting input active. Transitioning to SprintState.");
                 stateMachine.ChangeState(player.SprintState);
+                return;
+            }
+
+            if (player.PlayerInputHandler.IsWalking)
+            {
+                Debug.Log("[RunState] Walk toggle active. Transitioning to WalkState.");
+                stateMachine.ChangeState(player.WalkState);
                 return;
             }
         }
@@ -46,19 +55,16 @@ namespace Player.States.Movement
             base.PhysicsUpdate();
             ApplyGravity();
 
-            Vector2 moveInput = player.PlayerInputHandler.MoveInput;
-
             // ✅ Smooth acceleration
-            MoveCharacter(moveInput, player.runSpeed);
-
-            // ✅ Sync animation with movement speed
-            player.PlayerAnimation.SetMovementSpeed(player.runSpeed);
+            MoveCharacter(player.PlayerInputHandler.MoveInput, player.runSpeed);
         }
 
         public override void Exit()
         {
             base.Exit();
+#if UNITY_EDITOR
             Debug.Log("[State] Exiting Run");
+#endif
         }
     }
 }

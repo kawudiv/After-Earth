@@ -11,6 +11,13 @@ public class PlayerInputHandler : MonoBehaviour
     public bool IsDraw { get; set; }
     public bool IsBlock { get; set; }
 
+    // New flags for differentiating draw input.
+    public bool IsMeleeDraw { get; private set; }
+    public bool IsRangedDraw { get; private set; }
+
+    // Attack
+    public bool IsAttack { get; private set; }
+
     private void OnMove(InputValue value)
     {
         MoveInput = value.Get<Vector2>();
@@ -65,10 +72,42 @@ public class PlayerInputHandler : MonoBehaviour
         Debug.Log("[PlayerInputHandler] Roll reset, ready to roll again");
     }
 
+    // New OnDraw method to distinguish between melee (1) and ranged (2) draw inputs.
     private void OnDraw(InputValue value)
     {
-        IsDraw = value.isPressed;
-        Debug.Log($"[PlayerInputHandler] IsDraw: {IsDraw}");
+        // Assume the input action is set up to send a float value:
+        // 1 for Melee and 2 for Ranged. (You may need to adjust your Input Action setup accordingly.)
+        float drawInput = value.Get<float>();
+
+        // Reset both flags initially.
+        IsMeleeDraw = false;
+        IsRangedDraw = false;
+        IsDraw = false;
+
+        if (drawInput == 1f)
+        {
+            IsMeleeDraw = true;
+            IsDraw = true;
+            Debug.Log($"[PlayerInputHandler] Melee weapon draw triggered.");
+        }
+        else if (drawInput == 2f)
+        {
+            IsRangedDraw = true;
+            IsDraw = true;
+            Debug.Log($"[PlayerInputHandler] Ranged weapon draw triggered.");
+        }
+        else
+        {
+            Debug.Log($"[PlayerInputHandler] Draw released or unrecognized value: {drawInput}");
+        }
+    }
+
+    public void ClearMeleeDraw()
+    {
+        IsMeleeDraw = false;
+        // Optionally, also clear IsDraw if needed:
+        IsDraw = false;
+        Debug.Log("[PlayerInputHandler] Melee draw flag cleared.");
     }
 
     // public void OnAttack(InputAction.CallbackContext context)

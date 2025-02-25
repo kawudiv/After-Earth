@@ -1,8 +1,10 @@
 using Core;
 using Player.Components;
 using Player.States.Combat;
+using Player.States.Combat.Melee;
 using Player.States.Movement;
 using UnityEngine;
+using Weapons.Base;
 
 namespace Player.Base
 {
@@ -25,6 +27,9 @@ namespace Player.Base
         public float criticalChance = 0.5f;
         public float criticalDamage = 2f;
 
+        [Header("Combat")]
+        public bool IsWeaponDrawn { get; set; }
+
         [Header("Components")]
         public Animator animator;
         public CharacterController characterController;
@@ -32,6 +37,7 @@ namespace Player.Base
         public PlayerAnimation PlayerAnimation { get; private set; }
         public PlayerSound PlayerSound { get; private set; }
         public PlayerInputHandler PlayerInputHandler { get; private set; }
+        public WeaponBase EquippedMeleeWeapon { get; private set; }
 
         public StateMachine StateMachine { get; private set; }
 
@@ -43,8 +49,7 @@ namespace Player.Base
         public RollState RollState { get; private set; }
 
         // Combat States
-        public MeleeAttackState MeleeAttackState { get; private set; }
-        public RangedAttackState RangedAttackState { get; private set; }
+        public ToggleMeleeWeaponState ToggleMeleeWeaponState { get; private set; }
 
         protected virtual void Awake()
         {
@@ -72,8 +77,7 @@ namespace Player.Base
             RollState = new RollState(this, StateMachine);
 
             // Initialize Combat States
-            MeleeAttackState = new MeleeAttackState(this, StateMachine);
-            RangedAttackState = new RangedAttackState(this, StateMachine);
+            ToggleMeleeWeaponState = new ToggleMeleeWeaponState(this, StateMachine);
         }
 
         protected virtual void Start()
@@ -86,6 +90,14 @@ namespace Player.Base
         {
             StateMachine.CurrentState?.HandleInput();
             StateMachine.CurrentState?.LogicUpdate();
+
+            if (
+                PlayerInputHandler.IsMeleeDraw
+                && !(StateMachine.CurrentState is ToggleMeleeWeaponState)
+            )
+            {
+                StateMachine.ChangeState(ToggleMeleeWeaponState);
+            }
         }
 
         protected virtual void FixedUpdate()

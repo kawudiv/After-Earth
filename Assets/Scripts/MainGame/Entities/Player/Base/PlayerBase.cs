@@ -9,8 +9,9 @@ namespace Player.Base
     public abstract class PlayerBase : MonoBehaviour
     {
         [Header("General Settings")]
-        public float runSpeed = 2f;
-        public float sprintSpeed = 4f;
+        public float walkSpeed = 2f;
+        public float runSpeed = 4f;
+        public float sprintSpeed = 6f;
         public float rollDuration = 1f; // Duration of the roll
         public float rollSpeed = 6f; // Speed of the roll
         public float rotationSpeed = 5f;
@@ -36,6 +37,7 @@ namespace Player.Base
 
         // Movement States
         public IdleState IdleState { get; private set; }
+        public WalkState WalkState { get; private set; }
         public RunState RunState { get; private set; }
         public SprintState SprintState { get; private set; }
         public RollState RollState { get; private set; }
@@ -64,6 +66,7 @@ namespace Player.Base
 
             // Initialize Movement States
             IdleState = new IdleState(this, StateMachine);
+            WalkState = new WalkState(this, StateMachine);
             RunState = new RunState(this, StateMachine);
             SprintState = new SprintState(this, StateMachine);
             RollState = new RollState(this, StateMachine);

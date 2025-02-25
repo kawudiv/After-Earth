@@ -27,7 +27,7 @@
                     "name": "Attack",
                     "type": "Button",
                     "id": "6c2ab1b8-8984-453a-af3d-a3c78ae1679a",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -90,6 +90,33 @@
                     "name": "Roll",
                     "type": "Button",
                     "id": "ed645d93-4d50-421e-aac2-04087517394a",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Block",
+                    "type": "Button",
+                    "id": "aa64d300-18ca-46e5-a673-e94abfc2d7c9",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Draw",
+                    "type": "Button",
+                    "id": "24b0ebff-705b-41f0-b2f3-ef934c8e196f",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Toggle",
+                    "type": "Button",
+                    "id": "4326c9b3-5815-4962-b584-0b78d6e245fb",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -490,6 +517,50 @@
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
                     "action": "Roll",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e0f2046f-393f-49fd-9e63-68eb22fe3c7d",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "Hold",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "Block",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "10676d76-b4bc-4042-a247-2c60e68633b5",
+                    "path": "<Keyboard>/1",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "Draw",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "13fd9dc2-8812-426a-afbf-adcdd3a553c7",
+                    "path": "<Keyboard>/2",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "Draw",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f09205c4-31d6-4d15-8296-689289375d06",
+                    "path": "<Keyboard>/leftCtrl",
+                    "interactions": "Press",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "Toggle",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

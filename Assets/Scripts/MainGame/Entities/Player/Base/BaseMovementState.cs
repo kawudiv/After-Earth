@@ -11,7 +11,7 @@ namespace Player.Base
         protected Vector3 velocity;
 
         private float currentSpeed = 0f;
-        private float speedTransitionDuration = 0.3f;
+        private float speedTransitionDuration = 0.1f;
         public float speedTransitionTime = 0f;
 
         protected BaseMovementState(PlayerBase player, StateMachine stateMachine)
@@ -46,13 +46,16 @@ namespace Player.Base
 
             // Apply movement
             characterController.Move(moveDirection * currentSpeed * Time.deltaTime);
+
+            // Update the animation's speed parameter.
+            playerAnimation.UpdateSpeed(currentSpeed);
         }
 
         // Gradually slow down when no input is given
         protected void Decelerate()
         {
             currentSpeed = Mathf.Lerp(currentSpeed, 0f, Time.deltaTime / speedTransitionDuration);
-            characterController.Move(Vector3.forward * currentSpeed * Time.deltaTime);
+            playerAnimation.UpdateSpeed(currentSpeed);
         }
 
         public void PerformRoll()

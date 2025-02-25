@@ -18,18 +18,31 @@ namespace Player.States.Movement
         public override void LogicUpdate()
         {
             base.LogicUpdate();
+            Vector2 moveInput = player.PlayerInputHandler.MoveInput;
 
             if (player.PlayerInputHandler.IsRolling && characterController.isGrounded)
             {
-                Debug.Log("🔄 Transitioning from Sprint → RollState");
+                Debug.Log("[IdleState] Rolling detected. Transitioning to RollState.");
                 stateMachine.ChangeState(player.RollState);
                 return;
             }
 
-            if (player.PlayerInputHandler.MoveInput != Vector2.zero)
+            if (moveInput == Vector2.zero)
             {
-                stateMachine.ChangeState(player.RunState);
+                Debug.Log("[IdleState] No movement input. Remaining Idle.");
                 return;
+            }
+
+            // Check the toggle to decide between Walk and Run:
+            if (player.PlayerInputHandler.IsWalking)
+            {
+                Debug.Log("[IdleState] Walk toggle active. Transitioning to WalkState.");
+                stateMachine.ChangeState(player.WalkState);
+            }
+            else
+            {
+                Debug.Log("[IdleState] Walk toggle inactive. Transitioning to RunState.");
+                stateMachine.ChangeState(player.RunState);
             }
         }
 
@@ -38,11 +51,8 @@ namespace Player.States.Movement
             base.PhysicsUpdate();
             ApplyGravity();
 
-            // ✅ Gradually stop instead of instant halt
+            // Gradually decelerate when no input is provided.
             MoveCharacter(Vector2.zero, 0f);
-
-            // ✅ Sync animation smoothly
-            player.PlayerAnimation.SetMovementSpeed(0f);
         }
 
         public override void Exit()

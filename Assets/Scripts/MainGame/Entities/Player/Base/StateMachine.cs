@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace Player.Base
 {
     public class StateMachine
@@ -14,7 +16,7 @@ namespace Player.Base
         {
             if (CurrentState != null)
                 CurrentState.Exit();
-
+            Debug.Log($"[StateMachine] Changing state to {newState.GetType().Name}");
             CurrentState = newState;
             CurrentState.Enter();
         }

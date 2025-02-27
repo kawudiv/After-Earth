@@ -5,7 +5,6 @@ namespace Components
 {
     public class PlayerCharacter : PlayerBase
     {
-
         protected override void Awake()
         {
             base.Awake();

@@ -31,6 +31,12 @@ namespace Player.Components
             Debug.Log($"[PlayerAnimation] SetTrigger: {parameter} on {gameObject.name}", this);
         }
 
+        public void SetMeleeWeaponType(int weaponID)
+        {
+            animator.SetFloat("Melee", weaponID);
+            Debug.Log($"[PlayerAnimation] Set Melee parameter to: {weaponID}");
+        }
+
         public void PlayHitReaction()
         {
             animator.SetTrigger("Hit");

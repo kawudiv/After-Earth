@@ -23,6 +23,9 @@ public class ItemPickup : MonoBehaviour
         // ✅ Equip the weapon through PlayerInventory
         inventory.EquipWeapon(newWeapon);
 
+        // ✅ Trigger the draw animation
+        inventory.GetComponent<PlayerAnimation>()?.SetTrigger("DrawMelee");
+
         Debug.Log($"✅ [ItemPickup] Picked up {newWeapon.weaponName}");
 
         // ✅ Hide the pickup object to prevent duplicates

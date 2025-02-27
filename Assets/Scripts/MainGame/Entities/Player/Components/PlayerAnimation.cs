@@ -19,10 +19,10 @@ namespace Player.Components
             // Smoothly interpolate toward the targetSpeed using Lerp.
             float newAnimSpeed = Mathf.Lerp(currentAnimSpeed, targetSpeed, 10f * Time.deltaTime);
             animator.SetFloat("Speed", newAnimSpeed);
-            Debug.Log(
-                $"[PlayerAnimation] Speed updated: {currentAnimSpeed:F2} -> {newAnimSpeed:F2} on {gameObject.name}",
-                this
-            );
+            // Debug.Log(
+            //     $"[PlayerAnimation] Speed updated: {currentAnimSpeed:F2} -> {newAnimSpeed:F2} on {gameObject.name}",
+            //     this
+            // );
         }
 
         public void SetTrigger(string parameter)

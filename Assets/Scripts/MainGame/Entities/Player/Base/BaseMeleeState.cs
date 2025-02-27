@@ -1,4 +1,3 @@
-using UnityEngine;
 using Weapons.Base;
 
 namespace Player.Base

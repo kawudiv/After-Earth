@@ -4,7 +4,8 @@ namespace Player.Components
 {
     public class PlayerHealth : MonoBehaviour
     {
-        [SerializeField] private float maxHealth = 100f;
+        [SerializeField]
+        private float maxHealth = 100f;
         private float currentHealth;
         public float armor = 5f;
         public bool IsInvulnerable { get; set; } = false; // ✅ Added invulnerability flag

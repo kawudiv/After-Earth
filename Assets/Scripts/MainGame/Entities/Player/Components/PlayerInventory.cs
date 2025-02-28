@@ -14,6 +14,17 @@ namespace Player.Components
 
         [SerializeField]
         private Transform dropPoint; // ✅ Assign this in the Inspector
+        private PlayerAnimation playerAnimation;
+
+        private void Awake()
+        {
+            playerAnimation = GetComponent<PlayerAnimation>();
+
+            if (playerAnimation == null)
+            {
+                Debug.LogError("[PlayerInventory] PlayerAnimation component is missing!");
+            }
+        }
 
         public void TryPickUpWeapon()
         {
@@ -58,9 +69,12 @@ namespace Player.Components
                 // ✅ Apply Position & Rotation Offsets
                 equippedMeleeWeapon.ApplyEquipTransform(equippedMeleeWeapon.transform);
 
-                // ✅ Trigger the draw animation
-                GetComponent<PlayerAnimation>()
-                    ?.SetTrigger("DrawMelee");
+                // ✅ Set the correct animation type for the melee weapon
+                if (playerAnimation != null)
+                {
+                    playerAnimation.SetMeleeWeaponType(melee.weaponTypeID);
+                    playerAnimation.SetTrigger("DrawMelee");
+                }
 
                 Debug.Log(
                     $"✅ [PlayerInventory] Melee Weapon Equipped: {equippedMeleeWeapon.weaponName}"
@@ -154,15 +168,20 @@ namespace Player.Components
             // ✅ Remove it from the player's hand
             weaponToDrop.transform.SetParent(null);
 
-            // ✅ Drop in front of the player, ignoring DropPoint if it exists
+            // ✅ Drop in front of the player
             weaponToDrop.transform.position = transform.position + transform.forward * 1f;
-
             weaponToDrop.transform.rotation = Quaternion.Euler(0f, transform.eulerAngles.y, 0f);
-
             weaponToDrop.gameObject.SetActive(true);
 
             Debug.Log($"✅ [PlayerInventory] Dropped {weaponToDrop.weaponName}");
 
+            // ✅ Trigger the "DropWeapon" animation instantly
+            if (playerAnimation != null)
+            {
+                playerAnimation.SetTrigger("DropWeapon");
+            }
+
+            // ✅ Clear the equipped weapon reference
             if (weaponToDrop is MeleeWeapon)
             {
                 equippedMeleeWeapon = null;

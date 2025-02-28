@@ -38,6 +38,7 @@ namespace Player.Base
         public PlayerSound PlayerSound { get; private set; }
         public PlayerInputHandler PlayerInputHandler { get; private set; }
         public WeaponBase EquippedMeleeWeapon { get; private set; }
+        public PlayerInventory PlayerInventory { get; private set; }
 
         public StateMachine StateMachine { get; private set; }
 
@@ -59,6 +60,7 @@ namespace Player.Base
             PlayerHealth = GetComponent<PlayerHealth>();
             PlayerAnimation = GetComponent<PlayerAnimation>();
             PlayerSound = GetComponent<PlayerSound>();
+            PlayerInventory = GetComponent<PlayerInventory>();
 
             // Set up health event listeners
             if (PlayerHealth != null)

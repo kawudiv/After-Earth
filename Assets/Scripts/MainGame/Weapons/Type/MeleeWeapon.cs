@@ -14,22 +14,24 @@ namespace Weapons.Types
 
         // The layer mask that specifies which layers are considered valid targets.
         public LayerMask targetLayers;
+        public int meleeID;
 
         public override void Attack()
         {
+            // Assign melee ID to weaponTypeID (so animation system can use it)
+            weaponTypeID = meleeID;
+
             // Use OverlapSphere to detect all colliders in the attack area.
             Collider[] hitColliders = Physics.OverlapSphere(
                 attackPoint.position,
                 hitboxRadius,
                 targetLayers
             );
+
             foreach (Collider hitCollider in hitColliders)
             {
-                // Check if the target implements the IDamageable interface.
                 if (hitCollider.TryGetComponent(out IDamageable damageable))
                 {
-                    // For a simple additive model, final damage is the weapon's damage
-                    // (You can later add the character's base damage if needed).
                     float finalDamage = damage;
                     damageable.TakeDamage(finalDamage);
                     Debug.Log(

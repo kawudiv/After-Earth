@@ -2,144 +2,181 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Interactions;
 
-public class PlayerInputHandler : MonoBehaviour
+namespace Player.Components
 {
-    public Vector2 MoveInput { get; private set; }
-    public bool IsSprinting { get; set; }
-    public bool IsRolling { get; set; }
-    public bool IsWalking { get; private set; } = false;
-    public bool IsDraw { get; set; }
-    public bool IsBlock { get; set; }
-
-    // New flags for differentiating draw input.
-    public bool IsMeleeDraw { get; private set; }
-    public bool IsRangedDraw { get; private set; }
-
-    // Attack
-    public bool IsAttack { get; private set; }
-
-    private void OnMove(InputValue value)
+    public class PlayerInputHandler : MonoBehaviour
     {
-        MoveInput = value.Get<Vector2>();
+        [SerializeField]
+        private PlayerInventory playerInventory;
+        public Vector2 MoveInput { get; private set; }
+        public bool IsSprinting { get; set; }
+        public bool IsRolling { get; set; }
+        public bool IsWalking { get; private set; } = false;
+        public bool IsDraw { get; set; }
+        public bool IsBlock { get; set; }
 
-        // ✅ Fix: If input magnitude is too small, set to zero to prevent drifting
-        if (MoveInput.magnitude < 0.1f)
+        // New flags for differentiating draw input.
+        public bool IsMeleeDraw { get; private set; }
+        public bool IsRangedDraw { get; private set; }
+
+        // Attack
+        public bool IsAttack { get; private set; }
+
+        private void OnMove(InputValue value)
         {
-            MoveInput = Vector2.zero;
-        }
+            MoveInput = value.Get<Vector2>();
 
-        // 🔍 Debugging: Log movement updates
-        Debug.Log(
-            $"📌 [PlayerInputHandler] MoveInput: {MoveInput} (Magnitude: {MoveInput.magnitude})",
-            this
-        );
-    }
+            // ✅ Fix: If input magnitude is too small, set to zero to prevent drifting
+            if (MoveInput.magnitude < 0.1f)
+            {
+                MoveInput = Vector2.zero;
+            }
 
-    private void OnSprint(InputValue value)
-    {
-        IsSprinting = value.isPressed;
-
-        // 🔍 Debugging: Log sprint state
-        Debug.Log($"🏃 [PlayerInputHandler] IsSprinting: {IsSprinting}", this);
-    }
-
-    private void OnRoll(InputValue value)
-    {
-        if (value.isPressed)
-        {
-            IsRolling = true;
-            Debug.Log($"[PlayerInputHandler] IsRolling: {IsRolling}");
-        }
-    }
-
-    private void OnToggle(InputValue value)
-    {
-        Debug.Log($"[PlayerInputHandler] OnToggleWalk called. Value: {value}");
-        if (value.isPressed)
-        {
-            IsWalking = !IsWalking;
-            Debug.Log($"[PlayerInputHandler] Toggle Walk: {IsWalking}", this);
-        }
-        else
-        {
-            Debug.Log($"[PlayerInputHandler] OnToggleWalk: Key released.", this);
-        }
-    }
-
-    public void ResetRoll() // ✅ Called after roll completes
-    {
-        IsRolling = false;
-        Debug.Log("[PlayerInputHandler] Roll reset, ready to roll again");
-    }
-
-    // New OnDraw method to distinguish between melee (1) and ranged (2) draw inputs.
-    private void OnDraw(InputValue value)
-    {
-        // Assume the input action is set up to send a float value:
-        // 1 for Melee and 2 for Ranged. (You may need to adjust your Input Action setup accordingly.)
-        float drawInput = value.Get<float>();
-
-        // Reset both flags initially.
-        IsMeleeDraw = false;
-        IsRangedDraw = false;
-        IsDraw = false;
-
-        if (drawInput == 1f)
-        {
-            IsMeleeDraw = true;
-            IsDraw = true;
-            Debug.Log($"[PlayerInputHandler] Melee weapon draw triggered.");
-        }
-        else if (drawInput == 2f)
-        {
-            IsRangedDraw = true;
-            IsDraw = true;
-            Debug.Log($"[PlayerInputHandler] Ranged weapon draw triggered.");
-        }
-        else
-        {
-            Debug.Log($"[PlayerInputHandler] Draw released or unrecognized value: {drawInput}");
-        }
-    }
-
-    public void ClearMeleeDraw()
-    {
-        IsMeleeDraw = false;
-        // Optionally, also clear IsDraw if needed:
-        IsDraw = false;
-        Debug.Log("[PlayerInputHandler] Melee draw flag cleared.");
-    }
-
-    // public void OnAttack(InputAction.CallbackContext context)
-    // {
-    //     if (context.performed)
-    //     {
-    //         if (context.interaction is TapInteraction)
-    //         {
-    //             Debug.Log("Light Attack (Tap)");
-    //         }
-    //         else if (context.interaction is HoldInteraction)
-    //         {
-    //             Debug.Log("Heavy Attack (Hold)");
-    //         }
-    //     }
-    // }
-
-    private void OnBlock(InputValue value)
-    {
-        IsBlock = value.isPressed;
-        Debug.Log($"[PlayerInputHandler] IsBlock: {IsBlock}");
-    }
-
-    private void Update()
-    {
-        // ✅ Extra debug check in case inputs don't update correctly
-        if (MoveInput == Vector2.zero && IsSprinting)
-        {
-            Debug.LogWarning(
-                "⚠️ Sprinting while MoveInput is zero. This might be unintended!",
+            // 🔍 Debugging: Log movement updates
+            Debug.Log(
+                $"📌 [PlayerInputHandler] MoveInput: {MoveInput} (Magnitude: {MoveInput.magnitude})",
                 this
             );
+        }
+
+        private void OnSprint(InputValue value)
+        {
+            IsSprinting = value.isPressed;
+
+            // 🔍 Debugging: Log sprint state
+            Debug.Log($"🏃 [PlayerInputHandler] IsSprinting: {IsSprinting}", this);
+        }
+
+        private void OnRoll(InputValue value)
+        {
+            if (value.isPressed)
+            {
+                IsRolling = true;
+                Debug.Log($"[PlayerInputHandler] IsRolling: {IsRolling}");
+            }
+        }
+
+        private void OnToggle(InputValue value)
+        {
+            Debug.Log($"[PlayerInputHandler] OnToggleWalk called. Value: {value}");
+            if (value.isPressed)
+            {
+                IsWalking = !IsWalking;
+                Debug.Log($"[PlayerInputHandler] Toggle Walk: {IsWalking}", this);
+            }
+            else
+            {
+                Debug.Log($"[PlayerInputHandler] OnToggleWalk: Key released.", this);
+            }
+        }
+
+        public void ResetRoll() // ✅ Called after roll completes
+        {
+            IsRolling = false;
+            Debug.Log("[PlayerInputHandler] Roll reset, ready to roll again");
+        }
+
+        // New OnDraw method to distinguish between melee (1) and ranged (2) draw inputs.
+        private void OnDraw(InputValue value)
+        {
+            // Assume the input action is set up to send a float value:
+            // 1 for Melee and 2 for Ranged. (You may need to adjust your Input Action setup accordingly.)
+            float drawInput = value.Get<float>();
+
+            // Reset both flags initially.
+            IsMeleeDraw = false;
+            IsRangedDraw = false;
+            IsDraw = false;
+
+            if (drawInput == 1f)
+            {
+                IsMeleeDraw = true;
+                IsDraw = true;
+                Debug.Log($"[PlayerInputHandler] Melee weapon draw triggered.");
+            }
+            else if (drawInput == 2f)
+            {
+                IsRangedDraw = true;
+                IsDraw = true;
+                Debug.Log($"[PlayerInputHandler] Ranged weapon draw triggered.");
+            }
+            else
+            {
+                Debug.Log($"[PlayerInputHandler] Draw released or unrecognized value: {drawInput}");
+            }
+        }
+
+        public void ClearMeleeDraw()
+        {
+            IsMeleeDraw = false;
+            // Optionally, also clear IsDraw if needed:
+            IsDraw = false;
+            Debug.Log("[PlayerInputHandler] Melee draw flag cleared.");
+        }
+
+        // public void OnAttack(InputAction.CallbackContext context)
+        // {
+        //     if (context.performed)
+        //     {
+        //         if (context.interaction is TapInteraction)
+        //         {
+        //             Debug.Log("Light Attack (Tap)");
+        //         }
+        //         else if (context.interaction is HoldInteraction)
+        //         {
+        //             Debug.Log("Heavy Attack (Hold)");
+        //         }
+        //     }
+        // }
+
+        private void OnPickUpWeapon(InputValue value)
+        {
+            if (value.isPressed)
+            {
+                if (playerInventory != null)
+                {
+                    Debug.Log("Trying to pick up weapon...");
+                    playerInventory.TryPickUpWeapon();
+                }
+                else
+                {
+                    Debug.LogError("PlayerInventory is not assigned in PlayerInputHandler!");
+                }
+            }
+        }
+
+        private void OnDropWeapon(InputValue value)
+        {
+            if (value.isPressed)
+            {
+                if (playerInventory != null)
+                {
+                    Debug.Log("Dropping current weapon...");
+                    playerInventory.DropCurrentWeapon();
+                }
+                else
+                {
+                    Debug.LogError("PlayerInventory is not assigned in PlayerInputHandler!");
+                }
+            }
+        }
+
+        private void OnBlock(InputValue value)
+        {
+            IsBlock = value.isPressed;
+            Debug.Log($"[PlayerInputHandler] IsBlock: {IsBlock}");
+        }
+
+        private void Update()
+        {
+            // ✅ Extra debug check in case inputs don't update correctly
+            if (MoveInput == Vector2.zero && IsSprinting)
+            {
+                Debug.LogWarning(
+                    "⚠️ Sprinting while MoveInput is zero. This might be unintended!",
+                    this
+                );
+            }
         }
     }
 }

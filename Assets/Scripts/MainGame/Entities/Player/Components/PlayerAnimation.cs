@@ -19,16 +19,22 @@ namespace Player.Components
             // Smoothly interpolate toward the targetSpeed using Lerp.
             float newAnimSpeed = Mathf.Lerp(currentAnimSpeed, targetSpeed, 10f * Time.deltaTime);
             animator.SetFloat("Speed", newAnimSpeed);
-            Debug.Log(
-                $"[PlayerAnimation] Speed updated: {currentAnimSpeed:F2} -> {newAnimSpeed:F2} on {gameObject.name}",
-                this
-            );
+            // Debug.Log(
+            //     $"[PlayerAnimation] Speed updated: {currentAnimSpeed:F2} -> {newAnimSpeed:F2} on {gameObject.name}",
+            //     this
+            // );
         }
 
         public void SetTrigger(string parameter)
         {
             animator.SetTrigger(parameter);
             Debug.Log($"[PlayerAnimation] SetTrigger: {parameter} on {gameObject.name}", this);
+        }
+
+        public void SetMeleeWeaponType(int weaponID)
+        {
+            animator.SetFloat("Melee", weaponID);
+            Debug.Log($"[PlayerAnimation] Set Melee parameter to: {weaponID}");
         }
 
         public void PlayHitReaction()

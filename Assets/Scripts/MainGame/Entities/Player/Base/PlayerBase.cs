@@ -122,5 +122,11 @@ namespace Player.Base
             PlayerSound?.PlayDeathSound();
             this.enabled = false;
         }
+
+        public void EquipMeleeWeapon(WeaponBase newWeapon)
+        {
+            EquippedMeleeWeapon = newWeapon;
+            Debug.Log($"Equipped new melee weapon: {newWeapon.name}");
+        }
     }
 }

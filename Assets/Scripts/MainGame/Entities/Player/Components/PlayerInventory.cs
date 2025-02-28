@@ -15,6 +15,18 @@ namespace Player.Components
         [SerializeField]
         private Transform dropPoint; // ✅ Assign this in the Inspector
 
+        private PlayerAnimation playerAnimation; // ✅ Reference to animation controller
+
+        private void Awake()
+        {
+            playerAnimation = GetComponent<PlayerAnimation>();
+
+            if (playerAnimation == null)
+            {
+                Debug.LogError("[PlayerInventory] PlayerAnimation component is missing!");
+            }
+        }
+
         public void TryPickUpWeapon()
         {
             Collider[] colliders = Physics.OverlapSphere(transform.position, 2f);
@@ -53,10 +65,17 @@ namespace Player.Components
                 }
 
                 equippedMeleeWeapon = melee;
-                equippedMeleeWeapon.transform.SetParent(weaponHolder); // Attach to player
+                equippedMeleeWeapon.transform.SetParent(weaponHolder);
 
                 // ✅ Apply Position & Rotation Offsets
                 equippedMeleeWeapon.ApplyEquipTransform(equippedMeleeWeapon.transform);
+
+                // ✅ Set the correct animation type for the melee weapon
+                if (playerAnimation != null)
+                {
+                    playerAnimation.SetMeleeWeaponType(melee.weaponTypeID);
+                    playerAnimation.SetTrigger("Draw"); // ✅ Play Draw Animation
+                }
 
                 Debug.Log(
                     $"✅ [PlayerInventory] Melee Weapon Equipped: {equippedMeleeWeapon.weaponName}"
@@ -73,7 +92,7 @@ namespace Player.Components
                 }
 
                 equippedRangedWeapon = ranged;
-                equippedRangedWeapon.transform.SetParent(weaponHolder); // Attach to player
+                equippedRangedWeapon.transform.SetParent(weaponHolder);
 
                 // ✅ Apply Position & Rotation Offsets
                 equippedRangedWeapon.ApplyEquipTransform(equippedRangedWeapon.transform);
@@ -82,40 +101,6 @@ namespace Player.Components
                     $"✅ [PlayerInventory] Ranged Weapon Equipped: {equippedRangedWeapon.weaponName}"
                 );
             }
-        }
-
-        private void AttachWeaponToHand(WeaponBase weapon)
-        {
-            if (weaponHolder == null)
-            {
-                Debug.LogError(
-                    "[PlayerInventory] Weapon Holder is not assigned! Assign RightHandWeaponSlot."
-                );
-                return;
-            }
-
-            // Attach the weapon to the player's hand
-            weapon.transform.SetParent(weaponHolder);
-            weapon.transform.localPosition = Vector3.zero;
-            weapon.transform.localRotation = Quaternion.identity;
-
-            // ✅ Ensure the weapon is visible and activated
-            weapon.gameObject.SetActive(true);
-
-            // ✅ Ensure the MeshRenderer is enabled
-            MeshRenderer meshRenderer = weapon.GetComponent<MeshRenderer>();
-            if (meshRenderer != null)
-            {
-                meshRenderer.enabled = true;
-            }
-            else
-            {
-                Debug.LogWarning(
-                    $"[PlayerInventory] {weapon.weaponName} does not have a MeshRenderer component!"
-                );
-            }
-
-            Debug.Log($"✅ [PlayerInventory] {weapon.weaponName} attached to {weaponHolder.name}");
         }
 
         public void DropCurrentWeapon()
@@ -130,6 +115,12 @@ namespace Player.Components
             {
                 DropWeapon(equippedMeleeWeapon);
                 equippedMeleeWeapon = null;
+
+                // ✅ Reset animation state if weapon is dropped
+                if (playerAnimation != null)
+                {
+                    playerAnimation.SetMeleeWeaponType(-1); // -1 means no weapon equipped
+                }
             }
             else if (equippedRangedWeapon != null)
             {

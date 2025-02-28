@@ -2,42 +2,32 @@ using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
 {
-    public GameObject meleeEnemyPrefab;
-    public GameObject rangedEnemyPrefab;
-    public GameObject bossEnemyPrefab;  
+    [SerializeField]
+    private GameObject _enemyPrefab;
+    [SerializeField]
+    private float _minimumSpawnTime;
+    [SerializeField]
+    private float _maximumSpawnTime;
+    private float _timeUntilSpawn;
 
-    public Transform[] spawnPoints; 
-
-    public float spawnInterval = 5f;
-
-    private void Start()
+    void Awake()
     {
-        InvokeRepeating(nameof(SpawnEnemy), 2f, spawnInterval);
+        SetTimeUntilSpawn();
     }
 
-    private void SpawnEnemy()
+    void Update()
     {
-        if (spawnPoints.Length == 0) return;
+        _timeUntilSpawn -= Time.deltaTime;
 
-        int randomSpawnIndex = Random.Range(0, spawnPoints.Length);
-        Transform spawnPoint = spawnPoints[randomSpawnIndex];
-
-        int randomEnemyType = Random.Range(0, 3); 
-        GameObject enemyPrefab = meleeEnemyPrefab;
-
-        switch (randomEnemyType)
+        if (_timeUntilSpawn <= 0)
         {
-            case 0:
-                enemyPrefab = meleeEnemyPrefab;
-                break;
-            case 1:
-                enemyPrefab = rangedEnemyPrefab;
-                break;
-            case 2:
-                enemyPrefab = bossEnemyPrefab;
-                break;
+            Instantiate(_enemyPrefab, transform.position, Quaternion.identity);
+            SetTimeUntilSpawn();
         }
+    }
 
-        Instantiate(enemyPrefab, spawnPoint.position, Quaternion.identity);
+    private void SetTimeUntilSpawn()
+    {
+        _timeUntilSpawn = Random.Range(_minimumSpawnTime, _maximumSpawnTime);
     }
 }

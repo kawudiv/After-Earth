@@ -151,6 +151,53 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 2623405691843507878, guid: e953f8edee2cb3e4a95fb8635bc27177, type: 3}
+--- !u!1 &5863427
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5863429}
+  - component: {fileID: 5863428}
+  m_Layer: 0
+  m_Name: EnemySpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &5863428
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5863427}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0849894abd6ace64795aefc5f04b2466, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _enemyPrefab: {fileID: 382178317}
+  _minimumSpawnTime: 4
+  _maximumSpawnTime: 10
+--- !u!4 &5863429
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5863427}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -19.13, y: 33.31, z: 169.55096}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &6147975
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3316,7 +3363,7 @@ MonoBehaviour:
   patrolSpeed: 2
   chaseSpeed: 4
   attackRange: 2
-  detectionRange: 10
+  detectionRange: 200
   maxHealth: 100
   health: 0
   armor: 5
@@ -9859,7 +9906,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4894487737645601164, guid: 82621586c1030594483e732e77576ad4, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 169.55096
+      value: 194.92
       objectReference: {fileID: 0}
     - target: {fileID: 4894487737645601164, guid: 82621586c1030594483e732e77576ad4, type: 3}
       propertyPath: m_LocalRotation.w
@@ -18397,3 +18444,4 @@ SceneRoots:
   - {fileID: 455171603}
   - {fileID: 1367972904}
   - {fileID: 1194692692}
+  - {fileID: 5863429}

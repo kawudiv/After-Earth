@@ -8,7 +8,7 @@ namespace EnemyAI.States.Common
         private Vector3 patrolCenter;
         private float patrolRadius = 10f;
         private int maxRetries = 5;
-        private Vector3 currentPatrolPoint; // Store patrol point for debugging
+        private Vector3 currentPatrolPoint;
 
         public PatrolState(EnemyBase _enemy, StateMachine _stateMachine) : base(_enemy, _stateMachine) 
         { 

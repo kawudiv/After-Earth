@@ -293,7 +293,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 5bca8f6be56a5244fbea582a4b4b994c, type: 3}
+  m_Sprite: {fileID: 21300000, guid: b92d1ab742baff84583c950a627f064e, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -487,7 +487,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 446d1af3e6e90e546810f2ed7c858485, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 5de0ebaa49a60e44caf2d1f91a877a51, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -683,7 +683,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 5de0ebaa49a60e44caf2d1f91a877a51, type: 3}
+  m_Sprite: {fileID: 21300000, guid: ac765cd1c27e0964ea8591adeda0ab6d, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -915,8 +915,8 @@ MonoBehaviour:
   slideTexts:
   - There was a time when the world thrived. The forests danced with the wind, rivers
     whispered through valleys, and animals roamed free under endless skies. Humans
-    built cities that touched the clouds, and life flourished in every corner...
-    until their ambition grew too large.
+    built cities that touched the clouds, and life flourished in every corner.until
+    their ambition grew too large.
   - 'Desperate for power, humans created a colossal machine, promising endless energy.
     But their invention became their curse. A single mistake unleashed waves of radiation
     that spread like wildfire, corrupting everything in its path. '
@@ -1011,7 +1011,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: ac765cd1c27e0964ea8591adeda0ab6d, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 5bca8f6be56a5244fbea582a4b4b994c, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

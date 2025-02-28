@@ -184,6 +184,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7efa5b6d4e2d4f74793ffb10cbe12b20, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tapanywheretoplay: {fileID: 0}
+  nextSceneIndex: 1
+  fadeDuration: 1.5
 --- !u!4 &42766103
 Transform:
   m_ObjectHideFlags: 0
@@ -361,8 +364,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: -116, y: -227}
-  m_SizeDelta: {x: 1736.1829, y: 87.49429}
+  m_AnchoredPosition: {x: -142, y: -223}
+  m_SizeDelta: {x: 1499.9915, y: 87.4943}
   m_Pivot: {x: 0.42004472, y: -3.2908974}
 --- !u!1 &266248055
 GameObject:
@@ -1452,7 +1455,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: -417.90414, y: 174}
+  m_AnchoredPosition: {x: -349, y: 174}
   m_SizeDelta: {x: 848.1917, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1251849651

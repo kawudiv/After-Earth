@@ -2,13 +2,13 @@ using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
 {
-    public GameObject meleeEnemyPrefab;  // Assign Melee Enemy prefab in Inspector
-    public GameObject rangedEnemyPrefab; // Assign Ranged Enemy prefab in Inspector
-    public GameObject bossEnemyPrefab;   // Assign Boss Enemy prefab in Inspector
+    public GameObject meleeEnemyPrefab;
+    public GameObject rangedEnemyPrefab;
+    public GameObject bossEnemyPrefab;  
 
-    public Transform[] spawnPoints; // Assign spawn points in Inspector
+    public Transform[] spawnPoints; 
 
-    public float spawnInterval = 5f; // Time between spawns
+    public float spawnInterval = 5f;
 
     private void Start()
     {
@@ -22,7 +22,7 @@ public class EnemySpawner : MonoBehaviour
         int randomSpawnIndex = Random.Range(0, spawnPoints.Length);
         Transform spawnPoint = spawnPoints[randomSpawnIndex];
 
-        int randomEnemyType = Random.Range(0, 3); // 0 = Melee, 1 = Ranged, 2 = Boss
+        int randomEnemyType = Random.Range(0, 3); 
         GameObject enemyPrefab = meleeEnemyPrefab;
 
         switch (randomEnemyType)

@@ -10,10 +10,10 @@ namespace Player.Components
         private WeaponBase equippedRangedWeapon;
 
         [SerializeField]
-        private Transform weaponHolder; // ✅ Assign this in the Inspector (RightHandWeaponSlot)
+        private Transform weaponHolder; // ✅ Assign in Inspector (RightHandWeaponSlot)
 
         [SerializeField]
-        private Transform dropPoint; // ✅ Assign this in the Inspector
+        private Transform dropPoint; // ✅ Assign in Inspector
 
         private PlayerAnimation playerAnimation; // ✅ Reference to animation controller
 
@@ -50,31 +50,33 @@ namespace Player.Components
                 return;
             }
 
-            Debug.Log(
-                $"[PlayerInventory] Attempting to equip {newWeapon.weaponName} ({newWeapon.GetType().Name})"
-            );
+            Debug.Log($"[PlayerInventory] Attempting to equip {newWeapon.weaponName}");
 
             if (newWeapon is MeleeWeapon melee)
             {
+                // ✅ Destroy the old weapon instead of dropping it
                 if (equippedMeleeWeapon != null)
                 {
                     Debug.Log(
-                        "[PlayerInventory] Dropping old melee weapon before equipping new one."
+<<<<<<< Updated upstream
+                        "[PlayerInventory] Disabling old melee weapon before equipping new one."
                     );
-                    DropWeapon(equippedMeleeWeapon);
+                    equippedMeleeWeapon.gameObject.SetActive(false); // ✅ Disable instead of destroy
+=======
+                        "[PlayerInventory] Destroying old melee weapon before equipping new one."
+                    );
+                    Destroy(equippedMeleeWeapon.gameObject);
+>>>>>>> Stashed changes
                 }
 
                 equippedMeleeWeapon = melee;
                 equippedMeleeWeapon.transform.SetParent(weaponHolder);
-
-                // ✅ Apply Position & Rotation Offsets
                 equippedMeleeWeapon.ApplyEquipTransform(equippedMeleeWeapon.transform);
 
-                // ✅ Set the correct animation type for the melee weapon
                 if (playerAnimation != null)
                 {
                     playerAnimation.SetMeleeWeaponType(melee.weaponTypeID);
-                    playerAnimation.SetTrigger("Draw"); // ✅ Play Draw Animation
+                    playerAnimation.SetTrigger("DrawMelee");
                 }
 
                 Debug.Log(
@@ -93,8 +95,6 @@ namespace Player.Components
 
                 equippedRangedWeapon = ranged;
                 equippedRangedWeapon.transform.SetParent(weaponHolder);
-
-                // ✅ Apply Position & Rotation Offsets
                 equippedRangedWeapon.ApplyEquipTransform(equippedRangedWeapon.transform);
 
                 Debug.Log(
@@ -113,14 +113,22 @@ namespace Player.Components
 
             if (equippedMeleeWeapon != null)
             {
-                DropWeapon(equippedMeleeWeapon);
-                equippedMeleeWeapon = null;
-
-                // ✅ Reset animation state if weapon is dropped
+<<<<<<< Updated upstream
                 if (playerAnimation != null)
                 {
-                    playerAnimation.SetMeleeWeaponType(-1); // -1 means no weapon equipped
+                    playerAnimation.SetTrigger("Sheath"); // ✅ Fix: Return to default blend tree
+                    playerAnimation.SetMeleeWeaponType(-1); // ✅ Reset weapon type
+=======
+                // ✅ Automatically Sheath before dropping
+                if (playerAnimation != null)
+                {
+                    playerAnimation.SetTrigger("Sheath"); // ✅ Fix: Go back to default blend tree
+                    playerAnimation.SetMeleeWeaponType(-1); // ✅ Reset melee weapon type
+>>>>>>> Stashed changes
                 }
+
+                DropWeapon(equippedMeleeWeapon);
+                equippedMeleeWeapon = null;
             }
             else if (equippedRangedWeapon != null)
             {
@@ -134,26 +142,50 @@ namespace Player.Components
             if (weaponToDrop == null)
                 return;
 
-            // ✅ Remove it from the player's hand
+<<<<<<< Updated upstream
+            // ✅ Unparent and move weapon to drop location
             weaponToDrop.transform.SetParent(null);
-
-            // ✅ Drop in front of the player, ignoring DropPoint if it exists
-            weaponToDrop.transform.position = transform.position + transform.forward * 1f;
-
+            weaponToDrop.transform.position = dropPoint.position; // ✅ Drop at predefined position
             weaponToDrop.transform.rotation = Quaternion.Euler(0f, transform.eulerAngles.y, 0f);
 
-            weaponToDrop.gameObject.SetActive(true);
+            // ✅ Reactivate dropped weapon
+=======
+            // ✅ Unparent the weapon
+            weaponToDrop.transform.SetParent(null);
 
+            // ✅ Move the weapon in front of the player before unassigning it
+            weaponToDrop.transform.position = transform.position + transform.forward * 1f;
+            weaponToDrop.transform.rotation = Quaternion.Euler(0f, transform.eulerAngles.y, 0f);
+
+            // ✅ Ensure the dropped weapon is active
+>>>>>>> Stashed changes
+            weaponToDrop.gameObject.SetActive(true);
             Debug.Log($"✅ [PlayerInventory] Dropped {weaponToDrop.weaponName}");
 
+<<<<<<< Updated upstream
+            // ✅ Unassign reference to prevent memory leaks
+=======
+            // ✅ Unassign the weapon *before* modifying the reference
+>>>>>>> Stashed changes
             if (weaponToDrop is MeleeWeapon)
             {
                 equippedMeleeWeapon = null;
             }
-            else
+            else if (weaponToDrop is RangedWeapon)
             {
                 equippedRangedWeapon = null;
             }
+
+<<<<<<< Updated upstream
+            weaponToDrop = null; // ✅ Clear reference
+=======
+            weaponToDrop = null; // ✅ Ensure no lingering reference remains
+>>>>>>> Stashed changes
+        }
+
+        public bool HasMeleeWeapon()
+        {
+            return equippedMeleeWeapon != null;
         }
     }
 }

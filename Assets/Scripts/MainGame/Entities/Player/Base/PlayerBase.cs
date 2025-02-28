@@ -38,7 +38,7 @@ namespace Player.Base
         public PlayerSound PlayerSound { get; private set; }
         public PlayerInputHandler PlayerInputHandler { get; private set; }
         public WeaponBase EquippedMeleeWeapon { get; private set; }
-        public PlayerInventory PlayerInventory { get; private set; } // ✅ Expose Inventory
+        public PlayerInventory PlayerInventory { get; private set; }
 
         public StateMachine StateMachine { get; private set; }
 

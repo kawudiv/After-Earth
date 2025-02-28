@@ -5,7 +5,7 @@ using Weapons.Base;
 public class ItemPickup : MonoBehaviour
 {
     [SerializeField]
-    private WeaponBase weaponPrefab; // ✅ The actual weapon object, assigned in Inspector
+    private WeaponBase weaponPrefab; // ✅ The weapon prefab to instantiate
 
     public void PickupWeapon(PlayerInventory inventory)
     {
@@ -15,15 +15,17 @@ public class ItemPickup : MonoBehaviour
             return;
         }
 
-        // ✅ Use the existing weapon instead of instantiating a new one
-        WeaponBase newWeapon = weaponPrefab;
+        // ✅ Instantiate a new weapon to avoid modifying the pickup object
+        WeaponBase newWeapon = Instantiate(weaponPrefab);
+        newWeapon.transform.position = transform.position;
+        newWeapon.transform.rotation = transform.rotation;
 
         // ✅ Equip the weapon through PlayerInventory
         inventory.EquipWeapon(newWeapon);
 
         Debug.Log($"✅ [ItemPickup] Picked up {newWeapon.weaponName}");
 
-        // ✅ Disable the pickup object so it can't be picked up again
+        // ✅ Hide the pickup object to prevent duplicates
         gameObject.SetActive(false);
     }
 }

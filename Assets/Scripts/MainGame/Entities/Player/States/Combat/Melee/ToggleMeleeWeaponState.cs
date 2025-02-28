@@ -1,5 +1,5 @@
-using Player.Base;
 using UnityEngine;
+using Player.Base;
 
 namespace Player.States.Combat.Melee
 {
@@ -17,27 +17,31 @@ namespace Player.States.Combat.Melee
             base.Enter();
             Debug.Log("[ToggleMeleeWeaponState] Entered ToggleMeleeWeaponState");
 
+            // Check the input flag from the PlayerInputHandler.
+            // (This flag is set when the player presses key "1" for a melee draw toggle.)
             if (player.PlayerInputHandler.IsMeleeDraw)
             {
-                player.PlayerInputHandler.ClearMeleeDraw(); // Prevents retriggering
+                // Once we register the input, immediately clear it to prevent re-triggering.
+                player.PlayerInputHandler.ClearMeleeDraw();  // <-- We'll add this helper method to PlayerInputHandler.
 
-                // ✅ Fix: Check if already drawn before triggering animations
+                // Depending on whether the weapon is already drawn, trigger the appropriate animation.
                 if (player.IsWeaponDrawn)
                 {
-                    player.PlayerAnimation.SetTrigger("Sheath");
-                    Debug.Log("[ToggleMeleeWeaponState] Sheathing weapon...");
+                    player.PlayerAnimation.SetTrigger("SheathMelee");
+                    Debug.Log("[ToggleMeleeWeaponState] SheathMelee triggered.");
                 }
                 else
                 {
                     player.PlayerAnimation.SetTrigger("DrawMelee");
-                    Debug.Log("[ToggleMeleeWeaponState] Drawing weapon...");
+                    Debug.Log("[ToggleMeleeWeaponState] DrawMelee triggered.");
+                    Debug.Log(player.IsWeaponDrawn);
                 }
-
-                // Set timer based on animation duration
+                // Set the timer for the duration of the animation.
                 toggleTime = defaultToggleDuration;
             }
             else
             {
+                // If no melee draw input is detected, return to Idle.
                 Debug.Log("[ToggleMeleeWeaponState] No melee draw input detected, exiting state.");
                 stateMachine.ChangeState(player.IdleState);
             }
@@ -47,15 +51,14 @@ namespace Player.States.Combat.Melee
         {
             base.LogicUpdate();
 
+            // Decrease the timer.
             toggleTime -= Time.deltaTime;
             if (toggleTime <= 0f)
             {
-                // ✅ Fix: Update state after animation finishes
+                // Toggle the drawn state.
                 player.IsWeaponDrawn = !player.IsWeaponDrawn;
-                Debug.Log(
-                    $"[ToggleMeleeWeaponState] Toggle complete. IsWeaponDrawn: {player.IsWeaponDrawn}"
-                );
-
+                Debug.Log($"[ToggleMeleeWeaponState] Toggle complete. IsWeaponDrawn: {player.IsWeaponDrawn}");
+                // Transition back to Idle (which should now display the correct (armed or unarmed) idle pose).
                 stateMachine.ChangeState(player.IdleState);
             }
         }

@@ -79,33 +79,22 @@ namespace Player.Components
         // New OnDraw method to distinguish between melee (1) and ranged (2) draw inputs.
         private void OnDraw(InputValue value)
         {
+            // Assume the input action is set up to send a float value:
+            // 1 for Melee and 2 for Ranged. (You may need to adjust your Input Action setup accordingly.)
             float drawInput = value.Get<float>();
 
+            // Reset both flags initially.
             IsMeleeDraw = false;
             IsRangedDraw = false;
             IsDraw = false;
 
-            if (drawInput == 1f) // Melee
+            if (drawInput == 1f)
             {
-                if (playerInventory != null)
-                {
-                    // If no melee weapon is equipped, try picking one up first
-                    if (!playerInventory.HasMeleeWeapon())
-                    {
-                        Debug.Log(
-                            "[PlayerInputHandler] No melee weapon equipped. Trying to equip..."
-                        );
-                        playerInventory.TryPickUpWeapon();
-                    }
-                    else
-                    {
-                        IsMeleeDraw = true;
-                        IsDraw = true;
-                        Debug.Log($"[PlayerInputHandler] Melee weapon draw triggered.");
-                    }
-                }
+                IsMeleeDraw = true;
+                IsDraw = true;
+                Debug.Log($"[PlayerInputHandler] Melee weapon draw triggered.");
             }
-            else if (drawInput == 2f) // Ranged
+            else if (drawInput == 2f)
             {
                 IsRangedDraw = true;
                 IsDraw = true;

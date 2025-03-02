@@ -96,6 +96,7 @@ namespace Player.Base
             if (
                 PlayerInputHandler.IsMeleeDraw
                 && !(StateMachine.CurrentState is ToggleMeleeWeaponState)
+                && PlayerInventory.EquippedMeleeWeapon != null
             )
             {
                 StateMachine.ChangeState(ToggleMeleeWeaponState);

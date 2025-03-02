@@ -178,5 +178,12 @@ namespace Player.Components
                 );
             }
         }
+
+        public void SetAllDraw(bool value)
+        {
+            IsMeleeDraw = value;
+            IsMeleeDraw = value;
+            IsDraw = value;
+        }
     }
 }

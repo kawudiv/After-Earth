@@ -1,3 +1,4 @@
+using Player.Base;
 using UnityEngine;
 using Weapons.Base;
 using Weapons.Types;
@@ -9,15 +10,19 @@ namespace Player.Components
         private WeaponBase equippedMeleeWeapon;
         private WeaponBase equippedRangedWeapon;
 
+        public WeaponBase EquippedMeleeWeapon => equippedMeleeWeapon;
+
         [SerializeField]
         private Transform weaponHolder; // ✅ Assign this in the Inspector (RightHandWeaponSlot)
 
         [SerializeField]
         private Transform dropPoint; // ✅ Assign this in the Inspector
         private PlayerAnimation playerAnimation;
+        private PlayerBase player;
 
         private void Awake()
         {
+            player = GetComponent<PlayerBase>();
             playerAnimation = GetComponent<PlayerAnimation>();
 
             if (playerAnimation == null)
@@ -74,6 +79,7 @@ namespace Player.Components
                 {
                     playerAnimation.SetMeleeWeaponType(melee.weaponTypeID);
                     playerAnimation.SetTrigger("DrawMelee");
+                    WeaponDrawnToggle(true);
                 }
 
                 Debug.Log(
@@ -104,40 +110,6 @@ namespace Player.Components
                     $"✅ [PlayerInventory] Ranged Weapon Equipped: {equippedRangedWeapon.weaponName}"
                 );
             }
-        }
-
-        private void AttachWeaponToHand(WeaponBase weapon)
-        {
-            if (weaponHolder == null)
-            {
-                Debug.LogError(
-                    "[PlayerInventory] Weapon Holder is not assigned! Assign RightHandWeaponSlot."
-                );
-                return;
-            }
-
-            // Attach the weapon to the player's hand
-            weapon.transform.SetParent(weaponHolder);
-            weapon.transform.localPosition = Vector3.zero;
-            weapon.transform.localRotation = Quaternion.identity;
-
-            // ✅ Ensure the weapon is visible and activated
-            weapon.gameObject.SetActive(true);
-
-            // ✅ Ensure the MeshRenderer is enabled
-            MeshRenderer meshRenderer = weapon.GetComponent<MeshRenderer>();
-            if (meshRenderer != null)
-            {
-                meshRenderer.enabled = true;
-            }
-            else
-            {
-                Debug.LogWarning(
-                    $"[PlayerInventory] {weapon.weaponName} does not have a MeshRenderer component!"
-                );
-            }
-
-            Debug.Log($"✅ [PlayerInventory] {weapon.weaponName} attached to {weaponHolder.name}");
         }
 
         public void DropCurrentWeapon()
@@ -179,6 +151,7 @@ namespace Player.Components
             if (playerAnimation != null)
             {
                 playerAnimation.SetTrigger("DropWeapon");
+                WeaponDrawnToggle(false);
             }
 
             // ✅ Clear the equipped weapon reference
@@ -190,6 +163,13 @@ namespace Player.Components
             {
                 equippedRangedWeapon = null;
             }
+        }
+
+        //////////////////////////////
+        
+        public void WeaponDrawnToggle(bool value)
+        {
+            player.IsWeaponDrawn = value;
         }
     }
 }

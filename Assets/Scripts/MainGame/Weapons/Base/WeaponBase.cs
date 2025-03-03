@@ -15,8 +15,11 @@ namespace Weapons.Base
 
         // ✅ Position and Rotation Offsets for Equipping
         [Header("Equipped Transform Offsets")]
-        [SerializeField] private Vector3 equipPositionOffset;
-        [SerializeField] private Vector3 equipRotationOffset;
+        [SerializeField]
+        private Vector3 equipPositionOffset;
+
+        [SerializeField]
+        private Vector3 equipRotationOffset;
 
         // Optionally, you can add an initialization method to set up the weapon.
         public virtual void Initialize()

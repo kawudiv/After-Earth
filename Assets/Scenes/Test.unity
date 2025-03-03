@@ -4725,11 +4725,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 702fb0981b6d10e489d52334a8c9411b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerTransform: {fileID: 1338500865}
-  offset: {x: 0, y: 10, z: 0}
-  smoothSpeed: 5
-  orthographicSize: 5
-  cam: {fileID: 0}
 --- !u!1 &1901615412
 GameObject:
   m_ObjectHideFlags: 0
@@ -4916,6 +4911,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 39b337fd3465e8844aac1ba6dd4d01b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2026176391 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 794511407637643233, guid: 82621586c1030594483e732e77576ad4, type: 3}
+  m_PrefabInstance: {fileID: 4862439476571651483}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2026176380}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4424e1fc7ab740c48b278f2b1a90cf82, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2026176399
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2026176380}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8cfe42c4b8b092a46b957b5fdb5115a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerInventory: {fileID: 2026176391}
 --- !u!1 &2039209252
 GameObject:
   m_ObjectHideFlags: 0
@@ -7017,6 +7036,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 5147561486355385691, guid: 82621586c1030594483e732e77576ad4, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2026176390}
+    - targetCorrespondingSourceObject: {fileID: 5147561486355385691, guid: 82621586c1030594483e732e77576ad4, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2026176399}
   m_SourcePrefab: {fileID: 100100000, guid: 82621586c1030594483e732e77576ad4, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

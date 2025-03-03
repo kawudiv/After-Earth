@@ -6,19 +6,26 @@ namespace Weapons.Types
 {
     public class RangedWeapon : WeaponBase
     {
+        // The point from which the bullet originates.
         public Transform attackPoint;
 
-        // The prefab for the bullet. Set this in the Inspector.
+        // The bullet prefab to be instantiated when firing.
         public GameObject bulletPrefab;
 
         // The speed at which the bullet travels.
         public float bulletSpeed = 20f;
 
-        // Optional: how long before the bullet is destroyed.
+        // The lifetime of the bullet before it is destroyed.
         public float bulletLifeTime = 5f;
+
+        // Unique ranged weapon ID (for animation blending if needed).
+        public int rangeID;
 
         public override void Attack()
         {
+            // Assign ranged ID to weaponTypeID (for animation system use).
+            weaponTypeID = rangeID;
+
             if (bulletPrefab == null || attackPoint == null)
             {
                 Debug.LogWarning(
@@ -34,11 +41,9 @@ namespace Weapons.Types
                 attackPoint.rotation
             );
 
-            // Attempt to get a Rigidbody component to apply physics.
-            Rigidbody rb = bulletInstance.GetComponent<Rigidbody>();
-            if (rb != null)
+            // Apply velocity if the bullet has a Rigidbody component.
+            if (bulletInstance.TryGetComponent(out Rigidbody rb))
             {
-                // Set the bullet's velocity so that it moves forward.
                 rb.linearVelocity = attackPoint.forward * bulletSpeed;
             }
             else
@@ -46,8 +51,20 @@ namespace Weapons.Types
                 Debug.LogWarning("Bullet prefab does not have a Rigidbody component.");
             }
 
-            // Optionally, destroy the bullet after a certain time.
+            // Destroy the bullet after a certain time to prevent memory leaks.
             Destroy(bulletInstance, bulletLifeTime);
+
+            Debug.Log($"{weaponName} fired a bullet!");
+        }
+
+        // Draw a visual representation of the attack point in the Unity Editor.
+        private void OnDrawGizmos()
+        {
+            if (attackPoint != null)
+            {
+                Gizmos.color = Color.blue;
+                Gizmos.DrawWireSphere(attackPoint.position, 0.1f);
+            }
         }
     }
 }

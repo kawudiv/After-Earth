@@ -104,9 +104,7 @@ namespace Player.Components
             {
                 if (equippedMeleeWeapon != null)
                 {
-                    Debug.Log(
-                        "[PlayerInventory] Dropping old melee weapon before equipping new one."
-                    );
+                    Debug.Log("[PlayerInventory] Dropping old melee weapon before equipping new one.");
                     DropWeapon(equippedMeleeWeapon);
                 }
 
@@ -116,6 +114,8 @@ namespace Player.Components
                 // ✅ Apply Position & Rotation Offsets
                 equippedMeleeWeapon.ApplyEquipTransform(equippedMeleeWeapon.transform);
 
+                // ✅ Ensure weapon is enabled and visible
+                equippedMeleeWeapon.gameObject.SetActive(true);
 
                 if (playerAnimation != null)
                 {
@@ -124,17 +124,13 @@ namespace Player.Components
                     WeaponDrawnToggle(true);
                 }
 
-                Debug.Log(
-                    $"✅ [PlayerInventory] Melee Weapon Equipped: {equippedMeleeWeapon.weaponName}"
-                );
+                Debug.Log($"✅ [PlayerInventory] Melee Weapon Equipped: {equippedMeleeWeapon.weaponName}");
             }
             else if (newWeapon is RangedWeapon ranged)
             {
                 if (equippedRangedWeapon != null)
                 {
-                    Debug.Log(
-                        "[PlayerInventory] Dropping old ranged weapon before equipping new one."
-                    );
+                    Debug.Log("[PlayerInventory] Dropping old ranged weapon before equipping new one.");
                     DropWeapon(equippedRangedWeapon);
                 }
 
@@ -144,15 +140,16 @@ namespace Player.Components
                 // ✅ Apply Position & Rotation Offsets
                 equippedRangedWeapon.ApplyEquipTransform(equippedRangedWeapon.transform);
 
-                // ✅ Trigger the draw animation (if applicable)
-                GetComponent<PlayerAnimation>()
-                    ?.SetTrigger("DrawRanged");
+                // ✅ Ensure weapon is enabled and visible
+                equippedRangedWeapon.gameObject.SetActive(true);
 
-                Debug.Log(
-                    $"✅ [PlayerInventory] Ranged Weapon Equipped: {equippedRangedWeapon.weaponName}"
-                );
+                // ✅ Trigger the draw animation (if applicable)
+                GetComponent<PlayerAnimation>()?.SetTrigger("DrawRanged");
+
+                Debug.Log($"✅ [PlayerInventory] Ranged Weapon Equipped: {equippedRangedWeapon.weaponName}");
             }
         }
+
 
         public void DropCurrentWeapon()
         {
@@ -210,33 +207,6 @@ namespace Player.Components
         {
             player.IsWeaponDrawn = value;
         }
-
-
-        //ForDebuggingPurposesOnly
-
-        public void DebugEquippedWeapon()
-        {
-            if (weaponHolder.childCount > 0)
-            {
-                Debug.Log("🗑️[PlayerInventory] Weapon in Slot: " + weaponHolder.GetChild(0).name);
-            }
-            else
-            {
-                Debug.Log("🗑️[PlayerInventory] No Weapon equipped");
-            }
-        }
-
-    void Update()
-    {
-        Debug.Log("[PlayerInventory] Update() is running"); // ✅ Check if Update() is working
-
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            DebugEquippedWeapon();
-        }
-    }
-
-
 
     }
 }

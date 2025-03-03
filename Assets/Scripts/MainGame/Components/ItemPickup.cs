@@ -1,3 +1,4 @@
+using System;
 using Player.Components;
 using UnityEngine;
 using Weapons.Base;
@@ -5,7 +6,7 @@ using Weapons.Base;
 public class ItemPickup : MonoBehaviour
 {
     [SerializeField]
-    private WeaponBase weaponPrefab; // ✅ The weapon prefab to instantiate
+    public WeaponBase weaponPrefab; 
 
     public void PickupWeapon(PlayerInventory inventory)
     {
@@ -15,17 +16,19 @@ public class ItemPickup : MonoBehaviour
             return;
         }
 
-        // ✅ Instantiate a new weapon to avoid modifying the pickup object
         WeaponBase newWeapon = Instantiate(weaponPrefab);
         newWeapon.transform.position = transform.position;
         newWeapon.transform.rotation = transform.rotation;
 
-        // ✅ Equip the weapon through PlayerInventory
         inventory.EquipWeapon(newWeapon);
 
         Debug.Log($"✅ [ItemPickup] Picked up {newWeapon.weaponName}");
 
-        // ✅ Hide the pickup object to prevent duplicates
         gameObject.SetActive(false);
+    }
+
+    internal WeaponBase GetWeaponPrefab()
+    {
+        throw new NotImplementedException();
     }
 }

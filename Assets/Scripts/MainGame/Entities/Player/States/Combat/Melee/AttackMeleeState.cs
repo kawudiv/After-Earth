@@ -3,10 +3,9 @@ using UnityEngine;
 
 namespace Player.States.Combat.Melee
 {
-    public class AttackMeleeState : ToggleMeleeWeaponState
+    public class AttackMeleeState : BaseMeleeState
     {
-        private float attackDuration;
-        private const float defaultAttackDuration = 0.7f; // Adjust as needed
+        private bool attackCompleted;
 
         public AttackMeleeState(PlayerBase player, StateMachine stateMachine)
             : base(player, stateMachine) { }
@@ -15,20 +14,29 @@ namespace Player.States.Combat.Melee
         {
             base.Enter();
             Debug.Log("[AttackMeleeState] Entered AttackMeleeState");
-            // Trigger the attack animation.
+
+            // Trigger melee attack animation
+            player.PlayerInputHandler.SetCanMove(false);
             player.PlayerAnimation.SetTrigger("MeleeAttack");
-            attackDuration = defaultAttackDuration;
+
+            Debug.Log("[AttackMeleeState] Triggered MeleeAttack animation.");
+
+            // Reset attack completion flag
+            attackCompleted = true;
         }
 
         public override void LogicUpdate()
         {
             base.LogicUpdate();
-            attackDuration -= Time.deltaTime;
-            // You might call the weapon's Attack() method at the appropriate moment via an Animation Event.
-            if (attackDuration <= 0f)
+            Debug.Log("[AttackMeleeState] LogicUpdate running...");
+
+            // If attack animation has finished, transition back to Idle
+            if (attackCompleted)
             {
-                Debug.Log("[AttackMeleeState] Attack complete, transitioning to CombatIdleState");
-                // stateMachine.ChangeState(player.CombatIdleState);
+                Debug.Log(
+                    "[AttackMeleeState] Attack animation completed. Transitioning to IdleState."
+                );
+                stateMachine.ChangeState(player.IdleState);
             }
         }
 
@@ -36,15 +44,21 @@ namespace Player.States.Combat.Melee
         {
             base.Exit();
             Debug.Log("[AttackMeleeState] Exiting AttackMeleeState");
+
+            // Reset attack flag in PlayerInputHandler
+            player.PlayerInputHandler.SetIsAttack(false);
+            player.PlayerInputHandler.SetCanMove(true);
+            Debug.Log("[AttackMeleeState] SetIsAttack(false) called on PlayerInputHandler.");
+
         }
 
-        // Optionally, you can have a method to perform the attack (triggered by an Animation Event).
-        public void PerformAttack()
+        /// <summary>
+        /// Call this method from an animation event when the attack animation is complete.
+        /// </summary>
+        public void OnAttackComplete()
         {
-            if (equippedWeapon != null)
-            {
-                equippedWeapon.Attack();
-            }
+            Debug.Log("[AttackMeleeState] OnAttackComplete() called via animation event.");
+            attackCompleted = true;
         }
     }
 }

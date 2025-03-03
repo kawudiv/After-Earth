@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Interactions;
@@ -8,6 +9,10 @@ namespace Player.Components
     {
         [SerializeField]
         private PlayerInventory playerInventory;
+
+        [SerializeField]
+        private PlayerCombat playerCombat;
+
         public Vector2 MoveInput { get; private set; }
         public bool IsSprinting { get; set; }
         public bool IsRolling { get; set; }
@@ -22,8 +27,19 @@ namespace Player.Components
         // Attack
         public bool IsAttack { get; private set; }
 
+        // Movement Toggle
+        public bool CanMove { get; private set; } = true;
+
+        private Dictionary<string, bool> values = new Dictionary<string, bool>();
+
         private void OnMove(InputValue value)
         {
+            if (!CanMove)
+            {
+                MoveInput = Vector2.zero; // Prevent movement input
+                Debug.Log("🚫 [PlayerInputHandler] Movement is disabled!");
+                return;
+            }
             MoveInput = value.Get<Vector2>();
 
             // ✅ Fix: If input magnitude is too small, set to zero to prevent drifting
@@ -114,20 +130,23 @@ namespace Player.Components
             Debug.Log("[PlayerInputHandler] Melee draw flag cleared.");
         }
 
-        // public void OnAttack(InputAction.CallbackContext context)
-        // {
-        //     if (context.performed)
-        //     {
-        //         if (context.interaction is TapInteraction)
-        //         {
-        //             Debug.Log("Light Attack (Tap)");
-        //         }
-        //         else if (context.interaction is HoldInteraction)
-        //         {
-        //             Debug.Log("Heavy Attack (Hold)");
-        //         }
-        //     }
-        // }
+        public void OnAttack()
+        {
+            if (!playerCombat.IsEquip())
+            {
+                Debug.Log("[PlayerInputHandler] Cannot attack: No melee weapon equipped.");
+                return;
+            }
+
+            if (playerCombat.IsAttacking())
+            {
+                Debug.Log("[PlayerInputHandler] Cannot attack: Already attacking.");
+                return;
+            }
+
+            Debug.Log("[PlayerInputHandler] Light Attack (Tap).");
+            IsAttack = true;
+        }
 
         private void OnPickUpWeapon(InputValue value)
         {
@@ -184,6 +203,21 @@ namespace Player.Components
             IsMeleeDraw = value;
             IsMeleeDraw = value;
             IsDraw = value;
+        }
+
+        public void SetIsAttack(bool value)
+        {
+            IsAttack= value;
+        }
+
+        public void SetCanMove(bool value)
+        {
+            CanMove = value;
+        }
+
+        public void SetValue(string key, bool value)
+        {
+            values[key] = value;
         }
     }
 }

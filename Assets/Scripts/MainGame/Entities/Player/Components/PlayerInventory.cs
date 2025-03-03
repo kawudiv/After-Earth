@@ -11,6 +11,7 @@ namespace Player.Components
         private WeaponBase equippedRangedWeapon;
 
         public WeaponBase EquippedMeleeWeapon => equippedMeleeWeapon;
+        public WeaponBase EquippedRangedWeapon => equippedRangedWeapon;
 
         [SerializeField]
         private Transform weaponHolder; // ✅ Assign this in the Inspector (RightHandWeaponSlot)
@@ -29,6 +30,40 @@ namespace Player.Components
             {
                 Debug.LogError("[PlayerInventory] PlayerAnimation component is missing!");
             }
+        }
+
+        /// <summary>
+        /// Returns the currently equipped weapon (melee or ranged).
+        /// </summary>
+        /// <returns>The currently equipped weapon, or null if no weapon is equipped.</returns>
+        public WeaponBase GetEquippedWeapon()
+        {
+            if (equippedMeleeWeapon != null)
+            {
+                return equippedMeleeWeapon;
+            }
+            else if (equippedRangedWeapon != null)
+            {
+                return equippedRangedWeapon;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Returns the type of the currently equipped weapon.
+        /// </summary>
+        /// <returns>"Melee", "Ranged", or "None" if no weapon is equipped.</returns>
+        public string GetEquippedWeaponType()
+        {
+            if (equippedMeleeWeapon != null)
+            {
+                return "Melee";
+            }
+            else if (equippedRangedWeapon != null)
+            {
+                return "Ranged";
+            }
+            return "None";
         }
 
         public void TryPickUpWeapon()
@@ -166,7 +201,7 @@ namespace Player.Components
         }
 
         //////////////////////////////
-        
+
         public void WeaponDrawnToggle(bool value)
         {
             player.IsWeaponDrawn = value;

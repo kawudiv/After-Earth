@@ -39,6 +39,7 @@ namespace Player.Base
         public PlayerInputHandler PlayerInputHandler { get; private set; }
         public WeaponBase EquippedMeleeWeapon { get; private set; }
         public PlayerInventory PlayerInventory { get; private set; }
+        public PlayerCombat PlayerCombat { get; private set; }
 
         public StateMachine StateMachine { get; private set; }
 
@@ -51,6 +52,7 @@ namespace Player.Base
 
         // Combat States
         public ToggleMeleeWeaponState ToggleMeleeWeaponState { get; private set; }
+        public AttackMeleeState AttackMeleeState { get; private set; }
 
         protected virtual void Awake()
         {
@@ -61,6 +63,7 @@ namespace Player.Base
             PlayerAnimation = GetComponent<PlayerAnimation>();
             PlayerSound = GetComponent<PlayerSound>();
             PlayerInventory = GetComponent<PlayerInventory>();
+            PlayerCombat = GetComponent<PlayerCombat>();
 
             // Set up health event listeners
             if (PlayerHealth != null)
@@ -80,6 +83,7 @@ namespace Player.Base
 
             // Initialize Combat States
             ToggleMeleeWeaponState = new ToggleMeleeWeaponState(this, StateMachine);
+            AttackMeleeState = new AttackMeleeState(this, StateMachine);
         }
 
         protected virtual void Start()
@@ -100,6 +104,15 @@ namespace Player.Base
             )
             {
                 StateMachine.ChangeState(ToggleMeleeWeaponState);
+            }
+
+            if (
+                PlayerInputHandler.IsAttack
+                && !(StateMachine.CurrentState is AttackMeleeState)
+                && PlayerInventory.EquippedMeleeWeapon != null
+            )
+            {
+                StateMachine.ChangeState(AttackMeleeState);
             }
         }
 

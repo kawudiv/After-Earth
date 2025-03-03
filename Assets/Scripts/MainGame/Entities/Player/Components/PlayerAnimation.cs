@@ -8,6 +8,7 @@ namespace Player.Components
 
         private static readonly int SpeedParam = Animator.StringToHash("Speed");
         private static readonly int MeleeWeaponTypeParam = Animator.StringToHash("Melee");
+        private static readonly int RangedWeaponTypeParam = Animator.StringToHash("Ranged");
         private static readonly int DrawMeleeParam = Animator.StringToHash("DrawMelee");
         private static readonly int SheathParam = Animator.StringToHash("Sheath");
         private static readonly int HitParam = Animator.StringToHash("Hit");
@@ -46,6 +47,12 @@ namespace Player.Components
         {
             animator.SetFloat(MeleeWeaponTypeParam, weaponID);
             Debug.Log($"[PlayerAnimation] Set Melee parameter to: {weaponID}");
+        }
+
+        public void SetRangedWeaponType(int weaponID)
+        {
+            animator.SetFloat(RangedWeaponTypeParam, weaponID);
+            Debug.Log($"[PlayerAnimation] Set Ranged parameter to: {weaponID}");
         }
 
         /// <summary>

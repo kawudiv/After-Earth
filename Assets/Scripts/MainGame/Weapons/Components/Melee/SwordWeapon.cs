@@ -16,22 +16,18 @@ namespace Weapons.Components.Melee
 
         private void Awake()
         {
-            // Set default values for the sword.
             weaponName = "Sword";
             damage = swordDamage;
             attackSpeed = swordAttackSpeed;
             attackRange = swordRange;
 
-            // Assign unique melee ID for animation blend tree.
             meleeID = 0;
 
-            // Optionally, assign or validate the attackPoint.
             if (attackPoint == null)
             {
                 attackPoint = transform.Find("AttackPoint");
             }
 
-            // Optionally set the hitbox radius.
             hitboxRadius = 1.5f;
         }
 

@@ -14,10 +14,10 @@ namespace Player.Components
         public WeaponBase EquippedRangedWeapon => equippedRangedWeapon;
 
         [SerializeField]
-        private Transform weaponHolder; // ✅ Assign this in the Inspector (RightHandWeaponSlot)
+        private Transform weaponHolder;
 
         [SerializeField]
-        private Transform dropPoint; // ✅ Assign this in the Inspector
+        private Transform dropPoint;
         private PlayerAnimation playerAnimation;
         private PlayerBase player;
 
@@ -74,12 +74,19 @@ namespace Player.Components
                 ItemPickup pickup = collider.GetComponent<ItemPickup>();
                 if (pickup != null)
                 {
-                    pickup.PickupWeapon(this);
+                    WeaponBase weapon = pickup.weaponPrefab;
+
+                    FindAnyObjectByType<PlayerSlotInventory>()?.AddWeapon(weapon);
+
+
+                    // Hide the pickup item
+                    pickup.gameObject.SetActive(false);
                     return;
                 }
             }
             Debug.Log("[PlayerInventory] No weapon found to pick up.");
         }
+
 
         public void EquipWeapon(WeaponBase newWeapon)
         {
@@ -109,7 +116,7 @@ namespace Player.Components
                 // ✅ Apply Position & Rotation Offsets
                 equippedMeleeWeapon.ApplyEquipTransform(equippedMeleeWeapon.transform);
 
-                // ✅ Set the correct animation type for the melee weapon
+
                 if (playerAnimation != null)
                 {
                     playerAnimation.SetMeleeWeaponType(melee.weaponTypeID);
@@ -199,12 +206,37 @@ namespace Player.Components
                 equippedRangedWeapon = null;
             }
         }
-
-        //////////////////////////////
-
         public void WeaponDrawnToggle(bool value)
         {
             player.IsWeaponDrawn = value;
         }
+
+
+        //ForDebuggingPurposesOnly
+
+        public void DebugEquippedWeapon()
+        {
+            if (weaponHolder.childCount > 0)
+            {
+                Debug.Log("🗑️[PlayerInventory] Weapon in Slot: " + weaponHolder.GetChild(0).name);
+            }
+            else
+            {
+                Debug.Log("🗑️[PlayerInventory] No Weapon equipped");
+            }
+        }
+
+    void Update()
+    {
+        Debug.Log("[PlayerInventory] Update() is running"); // ✅ Check if Update() is working
+
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            DebugEquippedWeapon();
+        }
+    }
+
+
+
     }
 }

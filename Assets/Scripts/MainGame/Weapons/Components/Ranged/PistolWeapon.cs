@@ -1,34 +1,49 @@
 using UnityEngine;
-using Weapons.Types; // Make sure this matches your namespace structure
+using Weapons.Types;
 
 namespace Weapons.Components.Ranged
 {
     public class PistolWeapon : RangedWeapon
     {
+        [SerializeField]
+        private float pistolDamage = 20f;
+
+        [SerializeField]
+        private float pistolAttackSpeed = 0.5f;
+
+        [SerializeField]
+        private float pistolRange = 50f;
+
+        [SerializeField]
+        private float pistolBulletSpeed = 30f;
+
+        [SerializeField]
+        private float pistolBulletLifeTime = 3f;
+
         private void Awake()
         {
             // Set default values for the pistol.
             weaponName = "Pistol";
-            damage = 20f; // Base damage provided by the pistol.
-            attackSpeed = 0.5f; // Time between shots (faster firing rate for a pistol).
-            attackRange = 50f; // Effective range of the pistol.
+            damage = pistolDamage;
+            attackSpeed = pistolAttackSpeed;
+            attackRange = pistolRange;
 
-            bulletSpeed = 30f; // Speed at which the bullet travels.
-            bulletLifeTime = 3f; // Lifetime of the bullet before it's destroyed.
+            bulletSpeed = pistolBulletSpeed;
+            bulletLifeTime = pistolBulletLifeTime;
 
-            // Ensure that the attackPoint is set in the Inspector;
-            // otherwise, default to this transform.
+            rangeID = 0;
+
+            // Optionally, assign or validate the attackPoint.
             if (attackPoint == null)
             {
-                attackPoint = transform;
+                attackPoint = transform.Find("AttackPoint");
             }
         }
 
         public override void Attack()
         {
-            // Optionally, add any pistol-specific effects here (e.g., muzzle flash, sound effects, recoil).
-            base.Attack(); // Call the base RangedWeapon.Attack() to spawn the bullet.
-            Debug.Log("Pistol fired!");
+            base.Attack();
+            Debug.Log($"{weaponName} fires a bullet with a special effect!");
         }
     }
 }

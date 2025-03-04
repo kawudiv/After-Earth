@@ -7,6 +7,8 @@ namespace Player.Components
     public class PlayerSlotInventory : MonoBehaviour
     {
         [SerializeField] private PlayerInventory playerInventory;
+        [SerializeField] private WeaponUI weaponUI; 
+
         private WeaponBase meleeWeaponSlot;
         private WeaponBase rangedWeaponSlot;
 
@@ -16,6 +18,14 @@ namespace Player.Components
             {
                 Debug.LogError("[PlayerSlotInventory] PlayerInventory is not assigned!");
             }
+
+            if (weaponUI == null)
+            {
+                Debug.LogError("[PlayerSlotInventory] WeaponUI is not assigned!");
+            }
+
+            // Initial UI update (no weapon equipped)
+            weaponUI.UpdateWeaponUI(false, false);
         }
 
         private void Update()
@@ -39,10 +49,12 @@ namespace Player.Components
             if (playerInventory.EquippedMeleeWeapon != null)
             {
                 playerInventory.DropWeapon(playerInventory.EquippedMeleeWeapon);
+                weaponUI.UpdateWeaponUI(false, rangedWeaponSlot != null);
             }
             else if (playerInventory.EquippedRangedWeapon != null)
             {
                 playerInventory.DropWeapon(playerInventory.EquippedRangedWeapon);
+                weaponUI.UpdateWeaponUI(meleeWeaponSlot != null, false);
             }
         }
 
@@ -87,11 +99,13 @@ namespace Player.Components
             if (playerInventory.EquippedMeleeWeapon == meleeWeaponSlot)
             {
                 playerInventory.UnequipWeapon();
+                weaponUI.UpdateWeaponUI(false, playerInventory.EquippedRangedWeapon != null);
             }
             else if (meleeWeaponSlot != null)
             {
                 playerInventory.UnequipWeapon();
                 playerInventory.EquipWeapon(meleeWeaponSlot);
+                weaponUI.UpdateWeaponUI(true, false);
             }
         }
 
@@ -100,11 +114,13 @@ namespace Player.Components
             if (playerInventory.EquippedRangedWeapon == rangedWeaponSlot)
             {
                 playerInventory.UnequipWeapon();
+                weaponUI.UpdateWeaponUI(playerInventory.EquippedMeleeWeapon != null, false);
             }
             else if (rangedWeaponSlot != null)
             {
                 playerInventory.UnequipWeapon();
                 playerInventory.EquipWeapon(rangedWeaponSlot);
+                weaponUI.UpdateWeaponUI(false, true);
             }
         }
     }

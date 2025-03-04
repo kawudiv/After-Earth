@@ -9,14 +9,9 @@ public class WeaponUI : MonoBehaviour
     private Color activeColor = Color.white;
     private Color inactiveColor = Color.black;
 
-    void Start()
-    {
-        UpdateWeaponUI(true);
-    }
-
-    public void UpdateWeaponUI(bool isMeleeEquipped)
+    public void UpdateWeaponUI(bool isMeleeEquipped, bool isRangedEquipped)
     {
         slot1Border.color = isMeleeEquipped ? activeColor : inactiveColor;
-        slot2Border.color = isMeleeEquipped ? inactiveColor : activeColor;
+        slot2Border.color = isRangedEquipped ? activeColor : inactiveColor;
     }
 }

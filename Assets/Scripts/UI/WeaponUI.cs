@@ -3,10 +3,11 @@ using UnityEngine.UI;
 
 public class WeaponUI : MonoBehaviour
 {
-    public Image meleeWeaponIcon;
-    public Image rangedWeaponIcon;
-    public Color activeColor = Color.white;
-    public Color inactiveColor = new Color(1,1,1,0.5f);
+    public Image slot1Border;
+    public Image slot2Border;
+
+    private Color activeColor = Color.white;
+    private Color inactiveColor = Color.black;
 
     void Start()
     {
@@ -15,15 +16,7 @@ public class WeaponUI : MonoBehaviour
 
     public void UpdateWeaponUI(bool isMeleeEquipped)
     {
-        if(isMeleeEquipped)
-        {
-            meleeWeaponIcon.color = activeColor;
-            rangedWeaponIcon.color = inactiveColor;
-        }
-        else
-        {
-            meleeWeaponIcon.color = inactiveColor;
-            rangedWeaponIcon.color = activeColor;
-        }
+        slot1Border.color = isMeleeEquipped ? activeColor : inactiveColor;
+        slot2Border.color = isMeleeEquipped ? inactiveColor : activeColor;
     }
 }

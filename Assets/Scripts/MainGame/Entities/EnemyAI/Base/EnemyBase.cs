@@ -26,6 +26,7 @@ namespace EnemyAI.Base
         public Transform target;
         public NavMeshAgent agent;
         public Animator animator;
+        public EnemySensor enemySensor;
         protected EnemyHealth enemyHealth;
         protected EnemyAnimation enemyAnimation;
         protected EnemySound enemySound;
@@ -47,6 +48,7 @@ namespace EnemyAI.Base
             enemyHealth = GetComponent<EnemyHealth>();
             enemyAnimation = GetComponent<EnemyAnimation>();
             enemySound = GetComponent<EnemySound>();
+            enemySensor = GetComponent<EnemySensor>();
 
             GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
             if (playerObj != null)

@@ -15644,6 +15644,63 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 2337934913734111872, guid: 2b91cd473723d8649b817c20126204d9, type: 3}
+--- !u!1001 &1693892263
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 7224763667756911599, guid: a5018171e76096e49a8d3bb17927a8e2, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -17.617086
+      objectReference: {fileID: 0}
+    - target: {fileID: 7224763667756911599, guid: a5018171e76096e49a8d3bb17927a8e2, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 27.362
+      objectReference: {fileID: 0}
+    - target: {fileID: 7224763667756911599, guid: a5018171e76096e49a8d3bb17927a8e2, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 156.09955
+      objectReference: {fileID: 0}
+    - target: {fileID: 7224763667756911599, guid: a5018171e76096e49a8d3bb17927a8e2, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071067
+      objectReference: {fileID: 0}
+    - target: {fileID: 7224763667756911599, guid: a5018171e76096e49a8d3bb17927a8e2, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 7224763667756911599, guid: a5018171e76096e49a8d3bb17927a8e2, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7224763667756911599, guid: a5018171e76096e49a8d3bb17927a8e2, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7224763667756911599, guid: a5018171e76096e49a8d3bb17927a8e2, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7224763667756911599, guid: a5018171e76096e49a8d3bb17927a8e2, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7224763667756911599, guid: a5018171e76096e49a8d3bb17927a8e2, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8000738108876050773, guid: a5018171e76096e49a8d3bb17927a8e2, type: 3}
+      propertyPath: m_Name
+      value: Pistol
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: a5018171e76096e49a8d3bb17927a8e2, type: 3}
 --- !u!1 &1710114000 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 000a766dd19cc8842b6fa921e7bd7774, type: 3}
@@ -27337,3 +27394,4 @@ SceneRoots:
   - {fileID: 1607317656}
   - {fileID: 768024863}
   - {fileID: 712120075}
+  - {fileID: 1693892263}

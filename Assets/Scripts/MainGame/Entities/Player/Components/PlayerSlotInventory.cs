@@ -7,7 +7,6 @@ namespace Player.Components
     public class PlayerSlotInventory : MonoBehaviour
     {
         [SerializeField] private PlayerInventory playerInventory;
-
         private WeaponBase meleeWeaponSlot;
         private WeaponBase rangedWeaponSlot;
 
@@ -21,7 +20,6 @@ namespace Player.Components
 
         private void Update()
         {
-            // Switch or unequip weapons using 1 & 2 keys
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
                 ToggleMeleeWeapon();
@@ -30,6 +28,44 @@ namespace Player.Components
             {
                 ToggleRangedWeapon();
             }
+            else if (Input.GetKeyDown(KeyCode.Q))
+            {
+                DropEquippedWeapon();
+            }
+        }
+
+        private void DropEquippedWeapon()
+        {
+            if (playerInventory.EquippedMeleeWeapon != null)
+            {
+                playerInventory.DropWeapon(playerInventory.EquippedMeleeWeapon);
+            }
+            else if (playerInventory.EquippedRangedWeapon != null)
+            {
+                playerInventory.DropWeapon(playerInventory.EquippedRangedWeapon);
+            }
+        }
+
+        public void RemoveWeaponFromInventory(WeaponBase weapon)
+        {
+            if (weapon == meleeWeaponSlot)
+            {
+                meleeWeaponSlot = null;
+            }
+            else if (weapon == rangedWeaponSlot)
+            {
+                rangedWeaponSlot = null;
+            }
+        }
+
+        public void ClearMeleeWeapon()
+        {
+            meleeWeaponSlot = null;
+        }
+
+        public void ClearRangedWeapon()
+        {
+            rangedWeaponSlot = null;
         }
 
         public void AddWeapon(WeaponBase newWeapon)
@@ -43,10 +79,8 @@ namespace Player.Components
                 rangedWeaponSlot = newWeapon;
             }
 
-            newWeapon.gameObject.SetActive(false); // Hide weapon when added to inventory
-            Debug.Log($"✅ [PlayerSlotInventory] Stored {newWeapon.weaponName} in {(newWeapon is MeleeWeapon ? "Melee" : "Ranged")} Slot.");
+            newWeapon.gameObject.SetActive(false);
         }
-
 
         private void ToggleMeleeWeapon()
         {
@@ -56,7 +90,7 @@ namespace Player.Components
             }
             else if (meleeWeaponSlot != null)
             {
-                playerInventory.UnequipWeapon(); // Unequip current weapon before equipping
+                playerInventory.UnequipWeapon();
                 playerInventory.EquipWeapon(meleeWeaponSlot);
             }
         }
@@ -73,6 +107,5 @@ namespace Player.Components
                 playerInventory.EquipWeapon(rangedWeaponSlot);
             }
         }
-
     }
 }

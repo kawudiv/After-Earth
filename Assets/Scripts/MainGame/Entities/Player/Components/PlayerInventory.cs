@@ -32,37 +32,17 @@ namespace Player.Components
             }
         }
 
-        /// <summary>
-        /// Returns the currently equipped weapon (melee or ranged).
-        /// </summary>
-        /// <returns>The currently equipped weapon, or null if no weapon is equipped.</returns>
         public WeaponBase GetEquippedWeapon()
         {
-            if (equippedMeleeWeapon != null)
-            {
-                return equippedMeleeWeapon;
-            }
-            else if (equippedRangedWeapon != null)
-            {
-                return equippedRangedWeapon;
-            }
-            return null;
+            return equippedMeleeWeapon ?? equippedRangedWeapon;
         }
 
-        /// <summary>
-        /// Returns the type of the currently equipped weapon.
-        /// </summary>
-        /// <returns>"Melee", "Ranged", or "None" if no weapon is equipped.</returns>
         public string GetEquippedWeaponType()
         {
             if (equippedMeleeWeapon != null)
-            {
                 return "Melee";
-            }
-            else if (equippedRangedWeapon != null)
-            {
+            if (equippedRangedWeapon != null)
                 return "Ranged";
-            }
             return "None";
         }
 
@@ -75,10 +55,7 @@ namespace Player.Components
                 if (pickup != null)
                 {
                     WeaponBase weapon = pickup.weaponPrefab;
-
                     FindAnyObjectByType<PlayerSlotInventory>()?.AddWeapon(weapon);
-
-                    // Hide the pickup item
                     pickup.gameObject.SetActive(false);
                     return;
                 }
@@ -90,46 +67,26 @@ namespace Player.Components
         {
             if (newWeapon == null) return;
 
-            if (newWeapon is MeleeWeapon melee)
-            {
-                if (equippedMeleeWeapon != null)
-                {
-                    UnequipWeapon();
-                }
-                equippedMeleeWeapon = melee;
-            }
-            else if (newWeapon is RangedWeapon ranged)
-            {
-                if (equippedRangedWeapon != null)
-                {
-                    UnequipWeapon();
-                }
-                equippedRangedWeapon = ranged;
-            }
+            UnequipWeapon();
+
+            if (newWeapon is MeleeWeapon)
+                equippedMeleeWeapon = newWeapon;
+            else if (newWeapon is RangedWeapon)
+                equippedRangedWeapon = newWeapon;
 
             newWeapon.transform.SetParent(weaponHolder);
             newWeapon.ApplyEquipTransform(newWeapon.transform);
-            newWeapon.gameObject.SetActive(true); 
+            newWeapon.gameObject.SetActive(true);
         }
 
         public void DropCurrentWeapon()
         {
-            if (equippedMeleeWeapon == null && equippedRangedWeapon == null)
-            {
-                Debug.Log("[PlayerInventory] No weapon equipped to drop.");
-                return;
-            }
-
             if (equippedMeleeWeapon != null)
-            {
                 DropWeapon(equippedMeleeWeapon);
-                equippedMeleeWeapon = null;
-            }
             else if (equippedRangedWeapon != null)
-            {
                 DropWeapon(equippedRangedWeapon);
-                equippedRangedWeapon = null;
-            }
+            else
+                Debug.Log("[PlayerInventory] No weapon equipped to drop.");
         }
 
         public void DropWeapon(WeaponBase weaponToDrop)
@@ -137,30 +94,28 @@ namespace Player.Components
             if (weaponToDrop == null)
                 return;
 
-            // ✅ Remove it from the player's hand
             weaponToDrop.transform.SetParent(null);
-
-            // ✅ Drop in front of the player
             weaponToDrop.transform.position = transform.position + transform.forward * 1f;
             weaponToDrop.transform.rotation = Quaternion.Euler(0f, transform.eulerAngles.y, 0f);
             weaponToDrop.gameObject.SetActive(true);
 
             Debug.Log($"✅ [PlayerInventory] Dropped {weaponToDrop.weaponName}");
 
-            if (playerAnimation != null)
-            {
-                playerAnimation.SetTrigger("DropWeapon");
-                WeaponDrawnToggle(false);
-            }
+            playerAnimation?.SetTrigger("DropWeapon");
+            WeaponDrawnToggle(false);
 
             if (weaponToDrop is MeleeWeapon)
             {
                 equippedMeleeWeapon = null;
+                FindAnyObjectByType<PlayerSlotInventory>()?.ClearMeleeWeapon();
             }
-            else
+            else if (weaponToDrop is RangedWeapon)
             {
                 equippedRangedWeapon = null;
+                FindAnyObjectByType<PlayerSlotInventory>()?.ClearRangedWeapon();
             }
+
+            FindAnyObjectByType<PlayerSlotInventory>()?.RemoveWeaponFromInventory(weaponToDrop);
         }
 
         public void WeaponDrawnToggle(bool value)
@@ -183,6 +138,5 @@ namespace Player.Components
                 Debug.Log("❌ [PlayerInventory] Ranged Weapon Unequipped");
             }
         }
-
     }
 }

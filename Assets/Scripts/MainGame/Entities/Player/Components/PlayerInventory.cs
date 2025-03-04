@@ -88,75 +88,28 @@ namespace Player.Components
 
         public void EquipWeapon(WeaponBase newWeapon)
         {
-            if (newWeapon == null)
-            {
-                Debug.LogError("[PlayerInventory] Trying to equip a NULL weapon!");
-                return;
-            }
-
-            Debug.Log(
-                $"[PlayerInventory] Attempting to equip {newWeapon.weaponName} ({newWeapon.GetType().Name})"
-            );
+            if (newWeapon == null) return;
 
             if (newWeapon is MeleeWeapon melee)
             {
                 if (equippedMeleeWeapon != null)
                 {
-                    Debug.Log(
-                        "[PlayerInventory] Dropping old melee weapon before equipping new one."
-                    );
-                    DropWeapon(equippedMeleeWeapon);
+                    UnequipWeapon();
                 }
-
                 equippedMeleeWeapon = melee;
-                equippedMeleeWeapon.transform.SetParent(weaponHolder); // Attach to player
-
-                // ✅ Apply Position & Rotation Offsets
-                equippedMeleeWeapon.ApplyEquipTransform(equippedMeleeWeapon.transform);
-
-                // ✅ Ensure weapon is enabled and visible
-                equippedMeleeWeapon.gameObject.SetActive(true);
-
-                if (playerAnimation != null)
-                {
-                    playerAnimation.SetMeleeWeaponType(melee.weaponTypeID);
-                    playerAnimation.SetTrigger("DrawMelee");
-                    WeaponDrawnToggle(true);
-                }
-
-                Debug.Log(
-                    $"✅ [PlayerInventory] Melee Weapon Equipped: {equippedMeleeWeapon.weaponName}"
-                );
             }
             else if (newWeapon is RangedWeapon ranged)
             {
                 if (equippedRangedWeapon != null)
                 {
-                    Debug.Log(
-                        "[PlayerInventory] Dropping old ranged weapon before equipping new one."
-                    );
-                    DropWeapon(equippedRangedWeapon);
+                    UnequipWeapon();
                 }
-
                 equippedRangedWeapon = ranged;
-                equippedRangedWeapon.transform.SetParent(weaponHolder); // Attach to player
-
-                // ✅ Apply Position & Rotation Offsets
-                equippedRangedWeapon.ApplyEquipTransform(equippedRangedWeapon.transform);
-
-                // ✅ Ensure weapon is enabled and visible
-                equippedRangedWeapon.gameObject.SetActive(true);
-
-                if (playerAnimation != null)
-                { 
-                    playerAnimation.SetRangedWeaponType(ranged.weaponTypeID);
-                    playerAnimation.SetTrigger("DrawRanged");
-                }
-
-                Debug.Log(
-                    $"✅ [PlayerInventory] Ranged Weapon Equipped: {equippedRangedWeapon.weaponName}"
-                );
             }
+
+            newWeapon.transform.SetParent(weaponHolder);
+            newWeapon.ApplyEquipTransform(newWeapon.transform);
+            newWeapon.gameObject.SetActive(true); 
         }
 
         public void DropCurrentWeapon()
@@ -194,14 +147,12 @@ namespace Player.Components
 
             Debug.Log($"✅ [PlayerInventory] Dropped {weaponToDrop.weaponName}");
 
-            // ✅ Trigger the "DropWeapon" animation instantly
             if (playerAnimation != null)
             {
                 playerAnimation.SetTrigger("DropWeapon");
                 WeaponDrawnToggle(false);
             }
 
-            // ✅ Clear the equipped weapon reference
             if (weaponToDrop is MeleeWeapon)
             {
                 equippedMeleeWeapon = null;
@@ -216,5 +167,22 @@ namespace Player.Components
         {
             player.IsWeaponDrawn = value;
         }
+
+        public void UnequipWeapon()
+        {
+            if (equippedMeleeWeapon != null)
+            {
+                equippedMeleeWeapon.gameObject.SetActive(false);
+                equippedMeleeWeapon = null;
+                Debug.Log("❌ [PlayerInventory] Melee Weapon Unequipped");
+            }
+            else if (equippedRangedWeapon != null)
+            {
+                equippedRangedWeapon.gameObject.SetActive(false);
+                equippedRangedWeapon = null;
+                Debug.Log("❌ [PlayerInventory] Ranged Weapon Unequipped");
+            }
+        }
+
     }
 }

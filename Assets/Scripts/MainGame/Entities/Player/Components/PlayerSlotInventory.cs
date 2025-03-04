@@ -21,70 +21,58 @@ namespace Player.Components
 
         private void Update()
         {
-            // Switch weapons using 1 & 2 keys
+            // Switch or unequip weapons using 1 & 2 keys
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
-                SwitchToMeleeWeapon();
+                ToggleMeleeWeapon();
             }
             else if (Input.GetKeyDown(KeyCode.Alpha2))
             {
-                SwitchToRangedWeapon();
+                ToggleRangedWeapon();
             }
         }
 
-        //Adds a weapon to the appropriate slot
         public void AddWeapon(WeaponBase newWeapon)
         {
             if (newWeapon is MeleeWeapon)
             {
-                if (meleeWeaponSlot != null)
-                {
-                    Debug.Log("[PlayerSlotInventory] Replacing existing melee weapon.");
-                    playerInventory.DropWeapon(meleeWeaponSlot);
-                }
                 meleeWeaponSlot = newWeapon;
-                Debug.Log($"✅ [PlayerSlotInventory] Stored {newWeapon.weaponName} in Melee Slot.");
             }
             else if (newWeapon is RangedWeapon)
             {
-                if (rangedWeaponSlot != null)
-                {
-                    Debug.Log("[PlayerSlotInventory] Replacing existing ranged weapon.");
-                    playerInventory.DropWeapon(rangedWeaponSlot);
-                }
                 rangedWeaponSlot = newWeapon;
-                Debug.Log($"✅ [PlayerSlotInventory] Stored {newWeapon.weaponName} in Ranged Slot.");
             }
+
+            newWeapon.gameObject.SetActive(false); // Hide weapon when added to inventory
+            Debug.Log($"✅ [PlayerSlotInventory] Stored {newWeapon.weaponName} in {(newWeapon is MeleeWeapon ? "Melee" : "Ranged")} Slot.");
         }
 
-        //ForMeleeWeapon
 
-        public void SwitchToMeleeWeapon()
+        private void ToggleMeleeWeapon()
         {
-            if (meleeWeaponSlot != null)
+            if (playerInventory.EquippedMeleeWeapon == meleeWeaponSlot)
             {
+                playerInventory.UnequipWeapon();
+            }
+            else if (meleeWeaponSlot != null)
+            {
+                playerInventory.UnequipWeapon(); // Unequip current weapon before equipping
                 playerInventory.EquipWeapon(meleeWeaponSlot);
-                Debug.Log($"🔄 [PlayerSlotInventory] Switched to Melee: {meleeWeaponSlot.weaponName}");
-            }
-            else
-            {
-                Debug.Log("[PlayerSlotInventory] No melee weapon equipped.");
             }
         }
-        
-        //ForRangeWeapon
 
-        public void SwitchToRangedWeapon()
+        private void ToggleRangedWeapon()
         {
-            if (rangedWeaponSlot != null)
+            if (playerInventory.EquippedRangedWeapon == rangedWeaponSlot)
             {
-                playerInventory.EquipWeapon(rangedWeaponSlot);
-                Debug.Log($"🔄 [PlayerSlotInventory] Switched to Ranged: {rangedWeaponSlot.weaponName}");
+                playerInventory.UnequipWeapon();
             }
-            else
+            else if (rangedWeaponSlot != null)
             {
-                Debug.Log("[PlayerSlotInventory] No ranged weapon equipped.");
+                playerInventory.UnequipWeapon();
+                playerInventory.EquipWeapon(rangedWeaponSlot);
             }
         }
+
     }
 }

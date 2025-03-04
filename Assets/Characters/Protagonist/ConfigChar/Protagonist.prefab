@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4655640511124626061}
   m_Layer: 0
   m_Name: Protagonist
-  m_TagString: Player
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -233,6 +233,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerInventory: {fileID: 794511407637643233}
+  playerCombat: {fileID: 0}
 --- !u!114 &3743226958504149537
 MonoBehaviour:
   m_ObjectHideFlags: 0

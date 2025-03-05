@@ -1,64 +1,43 @@
 using Player.Base;
+using Player.Components;
 using UnityEngine;
 
 namespace Player.States.Combat.Melee
 {
-    public class AttackMeleeState : BaseMeleeState
+    public class AttackMeleeState : BaseWeaponState
     {
-        private bool attackCompleted;
+        private PlayerCombat playerCombat;
 
         public AttackMeleeState(PlayerBase player, StateMachine stateMachine)
-            : base(player, stateMachine) { }
+            : base(player, stateMachine)
+        {
+            playerCombat = player.GetComponent<PlayerCombat>();
+        }
 
         public override void Enter()
         {
             base.Enter();
-            Debug.Log("[AttackMeleeState] Entered AttackMeleeState");
+            Debug.Log("[AttackMeleeState] Entered Melee Attack State");
 
-            // Trigger melee attack animation
-            player.PlayerInputHandler.SetCanMove(false);
-            player.PlayerAnimation.SetTrigger("MeleeAttack");
-
-            Debug.Log("[AttackMeleeState] Triggered MeleeAttack animation.");
-
-            // Reset attack completion flag
-            attackCompleted = true;
-        }
-
-        public override void LogicUpdate()
-        {
-            base.LogicUpdate();
-            Debug.Log("[AttackMeleeState] LogicUpdate running...");
-
-            // If attack animation has finished, transition back to Idle
-            if (attackCompleted)
-            {
-                Debug.Log(
-                    "[AttackMeleeState] Attack animation completed. Transitioning to IdleState."
-                );
-                stateMachine.ChangeState(player.IdleState);
-            }
+            // Call attack execution from PlayerCombat
+            playerCombat.PerformLightAttack();
         }
 
         public override void Exit()
         {
             base.Exit();
-            Debug.Log("[AttackMeleeState] Exiting AttackMeleeState");
-
-            // Reset attack flag in PlayerInputHandler
-            player.PlayerInputHandler.SetIsAttack(false);
-            player.PlayerInputHandler.SetCanMove(true);
-            Debug.Log("[AttackMeleeState] SetIsAttack(false) called on PlayerInputHandler.");
-
+            Debug.Log("[AttackMeleeState] Exiting Melee Attack State");
         }
 
-        /// <summary>
-        /// Call this method from an animation event when the attack animation is complete.
-        /// </summary>
-        public void OnAttackComplete()
+        public override void LogicUpdate()
         {
-            Debug.Log("[AttackMeleeState] OnAttackComplete() called via animation event.");
-            attackCompleted = true;
+            base.LogicUpdate();
+
+            // Transition back to idle or movement state after attack finishes
+            if (!playerCombat.IsAttacking())
+            {
+                stateMachine.ChangeState(player.IdleState);
+            }
         }
     }
 }

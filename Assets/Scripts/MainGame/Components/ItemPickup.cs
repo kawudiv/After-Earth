@@ -22,7 +22,7 @@ public class ItemPickup : MonoBehaviour
 
         inventory.EquipWeapon(newWeapon);
 
-        Debug.Log($"✅ [ItemPickup] Picked up {newWeapon.weaponName}");
+        Debug.Log($"✅ [ItemPickup] Picked up {newWeapon.WeaponName}");
 
         gameObject.SetActive(false);
     }

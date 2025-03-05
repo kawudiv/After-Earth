@@ -99,7 +99,7 @@ namespace Player.Components
             weaponToDrop.transform.rotation = Quaternion.Euler(0f, transform.eulerAngles.y, 0f);
             weaponToDrop.gameObject.SetActive(true);
 
-            Debug.Log($"✅ [PlayerInventory] Dropped {weaponToDrop.weaponName}");
+            Debug.Log($"✅ [PlayerInventory] Dropped {weaponToDrop.WeaponName}");
 
             playerAnimation?.SetTrigger("DropWeapon");
             WeaponDrawnToggle(false);

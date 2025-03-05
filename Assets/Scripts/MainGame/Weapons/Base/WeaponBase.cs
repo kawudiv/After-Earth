@@ -6,10 +6,10 @@ namespace Weapons.Base
     {
         [Header("Base Weapon Stats")]
         [SerializeField]
-        public string weaponName;
+        protected string weaponName;
 
         [SerializeField]
-        public int weaponTypeID;
+        protected int weaponTypeID;
 
         [SerializeField]
         protected float damage;

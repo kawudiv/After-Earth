@@ -14,8 +14,8 @@ namespace Player.Components
         [SerializeField]
         private WeaponUI weaponUI;
 
-        [SerializeField] // Make the list visible in the Inspector
-        private List<ItemBase> items = new List<ItemBase>(); // List to store all items
+        [SerializeField] 
+        private List<ItemBase> items = new List<ItemBase>();
 
         private WeaponBase meleeWeaponSlot;
         private WeaponBase rangedWeaponSlot;

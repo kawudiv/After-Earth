@@ -21,6 +21,7 @@ namespace Player.Components
         private Transform dropPoint;
         private PlayerAnimation playerAnimation;
         private PlayerBase player;
+        [SerializeField] private ItemUI itemUI;
 
         private void Awake()
         {
@@ -84,7 +85,12 @@ namespace Player.Components
                         FindAnyObjectByType<PlayerSlotInventory>()?.AddItem(itemPrefab);
                         Debug.Log($"✅ [PlayerInventory] Picked up item: {itemPrefab.ItemName}");
 
-                        // Disable the pickup object in the scene
+                        // Update the ItemCollectedSlot image with the item's sprite
+                        if (itemUI != null)
+                        {
+                            itemUI.UpdateItemUI(itemPrefab.ItemSprite);
+                        }
+
                         itemPickup.gameObject.SetActive(false);
                         return;
                     }
@@ -97,7 +103,6 @@ namespace Player.Components
 
             Debug.Log("[PlayerInventory] No pickup found to pick up.");
         }
-
 
         public void EquipWeapon(WeaponBase newWeapon)
         {

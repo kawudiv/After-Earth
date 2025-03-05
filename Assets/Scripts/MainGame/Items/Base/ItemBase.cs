@@ -13,6 +13,8 @@ namespace Items.Base
         public int ItemID => itemID;
         public string ItemName => itemName; 
 
+        public Sprite ItemSprite;
+
         protected virtual void Awake()
         {
             Initialize();

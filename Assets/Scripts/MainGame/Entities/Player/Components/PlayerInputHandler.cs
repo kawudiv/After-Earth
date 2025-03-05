@@ -100,9 +100,7 @@ namespace Player.Components
             float drawInput = value.Get<float>();
 
             // Reset both flags initially.
-            IsMeleeDraw = false;
-            IsRangedDraw = false;
-            IsDraw = false;
+            ClearDraw();
 
             if (drawInput == 1f)
             {
@@ -122,10 +120,10 @@ namespace Player.Components
             }
         }
 
-        public void ClearMeleeDraw()
+        public void ClearDraw()
         {
             IsMeleeDraw = false;
-            // Optionally, also clear IsDraw if needed:
+            IsRangedDraw = false;
             IsDraw = false;
             Debug.Log("[PlayerInputHandler] Melee draw flag cleared.");
         }

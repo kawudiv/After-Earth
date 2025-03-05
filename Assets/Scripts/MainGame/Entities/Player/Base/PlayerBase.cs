@@ -1,7 +1,7 @@
 using Core;
 using Player.Components;
 using Player.States.Combat;
-using Player.States.Combat.Melee;
+using Player.States.Combat.Common;
 using Player.States.Movement;
 using UnityEngine;
 using Weapons.Base;
@@ -37,7 +37,7 @@ namespace Player.Base
         public PlayerAnimation PlayerAnimation { get; private set; }
         public PlayerSound PlayerSound { get; private set; }
         public PlayerInputHandler PlayerInputHandler { get; private set; }
-        public WeaponBase EquippedMeleeWeapon { get; private set; }
+        public WeaponBase EquippedWeapon { get; private set; }
         public PlayerInventory PlayerInventory { get; private set; }
         public PlayerCombat PlayerCombat { get; private set; }
 
@@ -51,8 +51,8 @@ namespace Player.Base
         public RollState RollState { get; private set; }
 
         // Combat States
-        public ToggleMeleeWeaponState ToggleMeleeWeaponState { get; private set; }
-        public AttackMeleeState AttackMeleeState { get; private set; }
+        public ToggleWeaponState ToggleWeaponState { get; private set; }
+        public AttackWeaponState AttackWeaponState { get; private set; }
 
         protected virtual void Awake()
         {
@@ -82,8 +82,8 @@ namespace Player.Base
             RollState = new RollState(this, StateMachine);
 
             // Initialize Combat States
-            ToggleMeleeWeaponState = new ToggleMeleeWeaponState(this, StateMachine);
-            AttackMeleeState = new AttackMeleeState(this, StateMachine);
+            ToggleWeaponState = new ToggleWeaponState(this, StateMachine);
+            AttackWeaponState = new AttackWeaponState(this, StateMachine);
         }
 
         protected virtual void Start()
@@ -99,20 +99,21 @@ namespace Player.Base
 
             if (
                 PlayerInputHandler.IsMeleeDraw
-                && !(StateMachine.CurrentState is ToggleMeleeWeaponState)
+                && !(StateMachine.CurrentState is ToggleWeaponState)
                 && PlayerInventory.EquippedMeleeWeapon != null
             )
             {
-                StateMachine.ChangeState(ToggleMeleeWeaponState);
+                StateMachine.ChangeState(ToggleWeaponState);
             }
 
             if (
                 PlayerInputHandler.IsAttack
-                && !(StateMachine.CurrentState is AttackMeleeState)
+                && !(StateMachine.CurrentState is AttackWeaponState)
                 && PlayerInventory.EquippedMeleeWeapon != null
             )
             {
-                StateMachine.ChangeState(AttackMeleeState);
+                PlayerInputHandler.SetIsAttack(false);
+                StateMachine.ChangeState(AttackWeaponState);
             }
         }
 
@@ -139,9 +140,9 @@ namespace Player.Base
             this.enabled = false;
         }
 
-        public void EquipMeleeWeapon(WeaponBase newWeapon)
+        public void EquipWeapon(WeaponBase newWeapon)
         {
-            EquippedMeleeWeapon = newWeapon;
+            EquippedWeapon = newWeapon;
             Debug.Log($"Equipped new melee weapon: {newWeapon.name}");
         }
     }

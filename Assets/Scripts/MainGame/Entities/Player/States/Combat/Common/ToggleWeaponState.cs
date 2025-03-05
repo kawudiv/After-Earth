@@ -1,14 +1,14 @@
 using Player.Base;
 using UnityEngine;
 
-namespace Player.States.Combat.Melee
+namespace Player.States.Combat.Common
 {
-    public class ToggleMeleeWeaponState : BaseWeaponState
+    public class ToggleWeaponState : BaseWeaponState
     {
         private float toggleTime;
         private const float defaultToggleDuration = 0.5f;
 
-        public ToggleMeleeWeaponState(PlayerBase player, StateMachine stateMachine)
+        public ToggleWeaponState(PlayerBase player, StateMachine stateMachine)
             : base(player, stateMachine) { }
 
         public override void Enter()
@@ -27,7 +27,7 @@ namespace Player.States.Combat.Melee
 
             if (player.PlayerInputHandler.IsMeleeDraw)
             {
-                player.PlayerInputHandler.ClearMeleeDraw();
+                player.PlayerInputHandler.ClearDraw();
 
                 if (player.IsWeaponDrawn)
                 {
@@ -68,6 +68,11 @@ namespace Player.States.Combat.Melee
         {
             base.Exit();
             Debug.Log("[ToggleMeleeWeaponState] Exiting ToggleMeleeWeaponState");
+        }
+
+        protected override void HandleWeaponAction()
+        {
+
         }
     }
 }

@@ -14,6 +14,8 @@ namespace Player.Components
         public WeaponBase EquippedMeleeWeapon => equippedMeleeWeapon;
         public WeaponBase EquippedRangedWeapon => equippedRangedWeapon;
 
+        public WeaponBase EquippedWeapon => equippedMeleeWeapon ?? equippedRangedWeapon;
+
         [SerializeField]
         private Transform weaponHolder;
 
@@ -23,7 +25,8 @@ namespace Player.Components
         private PlayerBase player;
         public GameObject itemPrefab;
 
-        [SerializeField] private ItemUI itemUI;
+        [SerializeField]
+        private ItemUI itemUI;
 
         private void Awake()
         {
@@ -63,8 +66,11 @@ namespace Player.Components
                     if (weaponPrefab != null)
                     {
                         // Directly add the existing weapon to the inventory without instantiating
-                        FindAnyObjectByType<PlayerSlotInventory>()?.AddWeapon(weaponPrefab);
-                        Debug.Log($"✅ [PlayerInventory] Picked up weapon: {weaponPrefab.WeaponName}");
+                        FindAnyObjectByType<PlayerSlotInventory>()
+                            ?.AddWeapon(weaponPrefab);
+                        Debug.Log(
+                            $"✅ [PlayerInventory] Picked up weapon: {weaponPrefab.WeaponName}"
+                        );
 
                         // Disable the pickup object in the scene
                         weaponPickup.gameObject.SetActive(false);
@@ -84,7 +90,8 @@ namespace Player.Components
                     if (itemPrefab != null)
                     {
                         // Directly add the existing item to the inventory without instantiating
-                        FindAnyObjectByType<PlayerSlotInventory>()?.AddItem(itemPrefab);
+                        FindAnyObjectByType<PlayerSlotInventory>()
+                            ?.AddItem(itemPrefab);
                         Debug.Log($"✅ [PlayerInventory] Picked up item: {itemPrefab.ItemName}");
 
                         // Update the ItemCollectedSlot image with the item's sprite
@@ -146,7 +153,7 @@ namespace Player.Components
             Debug.Log($"✅ [PlayerInventory] Dropped {weaponToDrop.WeaponName}");
 
             playerAnimation?.SetTrigger("DropWeapon");
-            WeaponDrawnToggle(false);
+            player.PlayerInputHandler.ClearDraw();
 
             if (weaponToDrop is MeleeWeapon)
             {

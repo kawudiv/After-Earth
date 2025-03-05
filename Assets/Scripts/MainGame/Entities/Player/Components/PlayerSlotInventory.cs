@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using Items.Base;
 using UnityEngine;
 using Weapons.Base;
 using Weapons.Types;
@@ -6,8 +8,14 @@ namespace Player.Components
 {
     public class PlayerSlotInventory : MonoBehaviour
     {
-        [SerializeField] private PlayerInventory playerInventory;
-        [SerializeField] private WeaponUI weaponUI; 
+        [SerializeField]
+        private PlayerInventory playerInventory;
+
+        [SerializeField]
+        private WeaponUI weaponUI;
+
+        [SerializeField] // Make the list visible in the Inspector
+        private List<ItemBase> items = new List<ItemBase>(); // List to store all items
 
         private WeaponBase meleeWeaponSlot;
         private WeaponBase rangedWeaponSlot;
@@ -122,6 +130,21 @@ namespace Player.Components
                 playerInventory.EquipWeapon(rangedWeaponSlot);
                 weaponUI.UpdateWeaponUI(false, true);
             }
+        }
+
+        public void AddItem(ItemBase newItem)
+        {
+            if (newItem == null)
+            {
+                Debug.LogError("[PlayerSlotInventory] Cannot add a null item to the inventory!");
+                return;
+            }
+
+            // Add the item to the inventory
+            items.Add(newItem);
+            Debug.Log(
+                $"✅ [PlayerSlotInventory] Added item: {newItem.ItemName} (ID: {newItem.ItemID})"
+            );
         }
     }
 }

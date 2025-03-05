@@ -3,13 +3,13 @@ using Weapons.Base;
 
 namespace Player.Base
 {
-    public abstract class BaseMeleeState : State
+    public abstract class BaseWeaponState : State
     {
         // Reference to the equipped melee weapon.
         protected WeaponBase equippedWeapon;
 
         // Common initialization for melee states.
-        protected BaseMeleeState(PlayerBase player, StateMachine stateMachine)
+        protected BaseWeaponState(PlayerBase player, StateMachine stateMachine)
             : base(player, stateMachine)
         {
             // Assuming your PlayerBase has a property for its melee weapon.

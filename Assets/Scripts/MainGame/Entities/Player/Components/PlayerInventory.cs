@@ -21,6 +21,8 @@ namespace Player.Components
         private Transform dropPoint;
         private PlayerAnimation playerAnimation;
         private PlayerBase player;
+        public GameObject itemPrefab;
+
         [SerializeField] private ItemUI itemUI;
 
         private void Awake()

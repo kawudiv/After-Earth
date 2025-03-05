@@ -119,6 +119,11 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!4 &65752097 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4505070363385811414, guid: 81604341b8a8d1843baab17476e7316e, type: 3}
+  m_PrefabInstance: {fileID: 4524909698719094295}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &88547415
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -949,7 +954,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7ad1537d97308440a993da0c0bc7c82, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
 --- !u!114 &361659351
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -978,8 +982,7 @@ MonoBehaviour:
   chaseSpeed: 4
   attackRange: 2
   detectionRange: 10
-  maxHealth: 100
-  health: 0
+  maxHealth: 88.7
   armor: 5
   attackDamage: 15
   attackCooldown: 1.5
@@ -3277,11 +3280,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 0520f039b2d860a4a893b6de2f0a0a54, type: 3}
       propertyPath: m_Name
-      value: Brute
+      value: Brute Ready
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 0520f039b2d860a4a893b6de2f0a0a54, type: 3}
       propertyPath: m_Layer
       value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 0520f039b2d860a4a893b6de2f0a0a54, type: 3}
+      propertyPath: m_TagString
+      value: Enemy
       objectReference: {fileID: 0}
     - target: {fileID: 1082271958561512970, guid: 0520f039b2d860a4a893b6de2f0a0a54, type: 3}
       propertyPath: m_Layer
@@ -5142,6 +5149,37 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1557381220
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1557381221}
+  m_Layer: 0
+  m_Name: Attack Point
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1557381221
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1557381220}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -0, z: 0.0435}
+  m_LocalScale: {x: 0.05, y: 0.050000012, z: 0.050000012}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 65752097}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1595281753
 PrefabInstance:
@@ -8110,8 +8148,20 @@ PrefabInstance:
       value: Ready Sword
       objectReference: {fileID: 0}
     - target: {fileID: 4210788908081852297, guid: 81604341b8a8d1843baab17476e7316e, type: 3}
+      propertyPath: attackPoint
+      value: 
+      objectReference: {fileID: 1557381221}
+    - target: {fileID: 4210788908081852297, guid: 81604341b8a8d1843baab17476e7316e, type: 3}
+      propertyPath: hitboxRadius
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4210788908081852297, guid: 81604341b8a8d1843baab17476e7316e, type: 3}
       propertyPath: weaponTypeID
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4210788908081852297, guid: 81604341b8a8d1843baab17476e7316e, type: 3}
+      propertyPath: enemyLayers.m_Bits
+      value: 64
       objectReference: {fileID: 0}
     - target: {fileID: 4505070363385811414, guid: 81604341b8a8d1843baab17476e7316e, type: 3}
       propertyPath: m_LocalPosition.x
@@ -8155,7 +8205,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 4505070363385811414, guid: 81604341b8a8d1843baab17476e7316e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1557381221}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 81604341b8a8d1843baab17476e7316e, type: 3}
 --- !u!1001 &4862439476571651483

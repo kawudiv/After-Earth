@@ -5,13 +5,13 @@ namespace Items.Base
     public abstract class ItemBase : MonoBehaviour
     {
         [SerializeField]
-        protected int itemID; // Unique identifier for the item
+        protected int itemID; 
 
         [SerializeField]
-        protected string itemName; // Human-readable name for the item
+        protected string itemName; 
 
-        public int ItemID => itemID; // Public getter for itemID
-        public string ItemName => itemName; // Public getter for itemName
+        public int ItemID => itemID;
+        public string ItemName => itemName; 
 
         protected virtual void Awake()
         {

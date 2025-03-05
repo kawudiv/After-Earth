@@ -59,10 +59,9 @@ namespace Player.Components
                     WeaponBase weaponPrefab = weaponPickup.GetWeaponPrefab();
                     if (weaponPrefab != null)
                     {
-                        // Instantiate the weapon and add it to the inventory
-                        WeaponBase newWeapon = Instantiate(weaponPrefab);
-                        FindAnyObjectByType<PlayerSlotInventory>()?.AddWeapon(newWeapon);
-                        Debug.Log($"✅ [PlayerInventory] Picked up weapon: {newWeapon.WeaponName}");
+                        // Directly add the existing weapon to the inventory without instantiating
+                        FindAnyObjectByType<PlayerSlotInventory>()?.AddWeapon(weaponPrefab);
+                        Debug.Log($"✅ [PlayerInventory] Picked up weapon: {weaponPrefab.WeaponName}");
 
                         // Disable the pickup object in the scene
                         weaponPickup.gameObject.SetActive(false);
@@ -81,10 +80,9 @@ namespace Player.Components
                     ItemBase itemPrefab = itemPickup.GetItemPrefab();
                     if (itemPrefab != null)
                     {
-                        // Instantiate the item and add it to the inventory
-                        ItemBase newItem = Instantiate(itemPrefab);
-                        FindAnyObjectByType<PlayerSlotInventory>()?.AddItem(newItem);
-                        Debug.Log($"✅ [PlayerInventory] Picked up item: {newItem.ItemName}");
+                        // Directly add the existing item to the inventory without instantiating
+                        FindAnyObjectByType<PlayerSlotInventory>()?.AddItem(itemPrefab);
+                        Debug.Log($"✅ [PlayerInventory] Picked up item: {itemPrefab.ItemName}");
 
                         // Disable the pickup object in the scene
                         itemPickup.gameObject.SetActive(false);
@@ -99,6 +97,7 @@ namespace Player.Components
 
             Debug.Log("[PlayerInventory] No pickup found to pick up.");
         }
+
 
         public void EquipWeapon(WeaponBase newWeapon)
         {

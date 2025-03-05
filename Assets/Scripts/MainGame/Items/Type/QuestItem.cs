@@ -10,7 +10,7 @@ namespace Items.Type
         protected override void Awake()
         {
             base.Awake();
-            itemID = Id; // Assign the ID from the Inspector
+            itemID = Id;
         }
 
         public override void Use()

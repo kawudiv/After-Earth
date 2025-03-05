@@ -52,7 +52,7 @@ namespace Player.Components
 
         public void TryPickUpPrefab()
         {
-            Collider[] colliders = Physics.OverlapSphere(transform.position, 2f); // Check for nearby colliders
+            Collider[] colliders = Physics.OverlapSphere(transform.position, 2f); 
             foreach (Collider collider in colliders)
             {
                 // Check for WeaponPickup

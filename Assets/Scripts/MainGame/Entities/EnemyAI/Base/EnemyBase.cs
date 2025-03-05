@@ -95,7 +95,7 @@ namespace EnemyAI.Base
         }
 
         protected virtual void FixedUpdate()
-        {
+        {// asdasdas
             stateMachine.currentState?.PhysicsUpdate();
         }
 

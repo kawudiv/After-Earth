@@ -1,234 +1,136 @@
-using System;
-using System.Collections.Generic;
+using EnemyAI.Base;
+using Player.Base;
 using UnityEngine;
 
 namespace EnemyAI.Components
 {
     public class EnemySensor : MonoBehaviour
     {
-        [Header("Senser Componenets")]
-        [SerializeField, Range(1, 50)]
-        private float distance = 10;
-
-        [SerializeField, Range(1, 180)]
-        private float angle = 30;
-
-        [SerializeField, Range(1, 5)]
-        private float height = 1.0f;
-
-        [SerializeField, Range(10, 100)]
-        private int segments = 10;
-
-        [SerializeField, ColorUsage(true, true)]
-        private Color meshColor = new Color(0f / 255f, 27f / 255f, 255f / 255f, 100f / 255f); // RGBA (0, 27, 255, 53)
-
-        [Header("Scan Settings")]
-        [SerializeField, Range(1, 60)]
-        private int scanFrequency = 30;
-
-        [SerializeField, Range(0.1f, 5.0f)]
-        private float scanInterval = 1.0f;
-
+        [Header("Detection Settings")]
         [SerializeField]
         public LayerMask layers = ~0; // Default to "Everything"
 
         [SerializeField]
         public LayerMask occlusionLayers = 1; // Default to "Default"
 
-        [SerializeField]
-        public List<GameObject> Objects = new List<GameObject>();
+        [Header("Debug Settings")]
+        public bool showDebug = true; // Toggle debug visuals
+        public Color detectionRangeColor = Color.yellow; // Color for detection range sphere
+        public Color lineOfSightColor = Color.blue; // Color for unobstructed line of sight
+        public Color obstructedColor = Color.red; // Color for obstructed line of sight
 
-        [HideInInspector]
-        private float scanTimer;
+        private Transform target; // Reference to the player
+        private EnemyBase enemyBase;
 
-        [HideInInspector]
-        private int count;
-
-        [HideInInspector]
-        private Collider[] colliders = new Collider[50];
-
-        [HideInInspector]
-        private Mesh mesh;
-
-        void Start()
+        private void Awake()
         {
-            scanInterval = 1.0f / scanFrequency;
-        }
-
-        void Update()
-        {
-            scanTimer -= Time.deltaTime;
-            if (scanTimer < 0)
+            // Assign EnemyBase component
+            enemyBase = GetComponent<EnemyBase>();
+            if (enemyBase == null)
             {
-                scanTimer += scanInterval;
-                Scan();
+                Debug.LogWarning("[EnemySensor] EnemyBase component is missing!", this);
+            }
+
+            // Find the player by tag
+            GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+            if (playerObj != null)
+            {
+                target = playerObj.transform;
+            }
+            else
+            {
+                Debug.LogWarning(
+                    "[EnemySensor] No GameObject with tag 'Player' found in the scene!",
+                    this
+                );
             }
         }
 
-        private void Scan()
+        /// <summary>
+        /// Checks if the player is visible based on distance and occlusion.
+        /// </summary>
+        public bool CanSeePlayer()
         {
-            count = Physics.OverlapSphereNonAlloc(
-                transform.position,
-                distance,
-                colliders,
-                layers,
-                QueryTriggerInteraction.Collide
-            );
-            Objects.Clear();
-            for (int i = 0; i < count; ++i)
+            if (target == null || enemyBase == null)
+                return false;
+
+            // Check if the player is within detection range
+            float distanceToPlayer = Vector3.Distance(transform.position, target.position);
+            if (distanceToPlayer > enemyBase.detectionRange)
+                return false; // Player is out of range
+
+            // Check if player is in direct line of sight
+            return IsInSight();
+        }
+
+        /// <summary>
+        /// Checks if the player is visible or obstructed by a wall (layer Default).
+        /// </summary>
+        private bool IsInSight()
+        {
+            if (target == null)
+                return false;
+
+            // Perform a linecast to check if there's an obstacle between enemy and player
+            if (
+                Physics.Linecast(
+                    transform.position,
+                    target.position,
+                    out RaycastHit hit,
+                    occlusionLayers
+                )
+            )
             {
-                GameObject obj = colliders[i].gameObject;
-                if (IsInSight(obj))
+                GameObject hitObject = hit.collider.gameObject;
+
+                // Allow objects with the "Enemy" tag and "Enemy" layer to pass through
+                if (
+                    hitObject.CompareTag("Enemy")
+                    && hitObject.layer == LayerMask.NameToLayer("Enemy")
+                )
                 {
-                    Objects.Add(obj);
+                    return true;
                 }
+                if (showDebug)
+                {
+                    Debug.Log(
+                        "[EnemySensor] Player is obstructed by " + hit.collider.gameObject.name
+                    );
+                    Debug.DrawLine(transform.position, hit.point, obstructedColor, 1f);
+                    Debug.DrawLine(hit.point, target.position, Color.green, 1f); // Show obstruction point
+                }
+                return false; // Player is behind an obstacle
             }
-            if (count > 0)
+
+            if (showDebug)
             {
-                Debug.Log($"[EnemySensor] Detected {count} objects within range.", this);
+                Debug.Log("[EnemySensor] Player is in sight.");
+                Debug.DrawLine(transform.position, target.position, lineOfSightColor, 1f);
             }
-        }
-
-        public bool IsInSight(GameObject obj)
-        {
-            Vector3 origin = transform.position;
-            Vector3 dest = obj.transform.position;
-            Vector3 direction = dest - origin;
-            if (direction.y < 0 || direction.y > height)
-            {
-                return false;
-            }
-
-            direction.y = 0;
-            float deltaAngle = Vector3.Angle(direction, transform.forward);
-            if (deltaAngle > angle)
-            {
-                return false;
-            }
-
-            origin.y += height / 2;
-            dest.y = origin.y;
-            if (Physics.Linecast(origin, dest, occlusionLayers))
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        Mesh CreateWedgeMesh()
-        {
-            Mesh mesh = new Mesh();
-
-            int numTriangles = (segments * 4) + 2 + 2;
-            int numVertices = numTriangles * 3;
-
-            Vector3[] vertices = new Vector3[numVertices];
-            int[] triangles = new int[numVertices];
-
-            Vector3 bottomCenter = Vector3.zero;
-            Vector3 bottomLeft = Quaternion.Euler(0, -angle, 0) * Vector3.forward * distance;
-            Vector3 bottomRight = Quaternion.Euler(0, angle, 0) * Vector3.forward * distance;
-
-            Vector3 topCenter = bottomCenter + Vector3.up * height;
-            Vector3 topRight = bottomRight + Vector3.up * height;
-            Vector3 topLeft = bottomLeft + Vector3.up * height;
-
-            int vert = 0;
-
-            // Left Side
-            vertices[vert++] = bottomCenter;
-            vertices[vert++] = bottomLeft;
-            vertices[vert++] = topLeft;
-
-            vertices[vert++] = topLeft;
-            vertices[vert++] = topCenter;
-            vertices[vert++] = bottomCenter;
-
-            // Right Side
-            vertices[vert++] = bottomCenter;
-            vertices[vert++] = topCenter;
-            vertices[vert++] = topRight;
-
-            vertices[vert++] = topRight;
-            vertices[vert++] = bottomRight;
-            vertices[vert++] = bottomCenter;
-
-            float currentAngle = -angle;
-            float deltaAngle = (angle * 2) / segments;
-
-            for (int i = 0; i < segments; ++i)
-            {
-                bottomLeft = Quaternion.Euler(0, currentAngle, 0) * Vector3.forward * distance;
-                bottomRight =
-                    Quaternion.Euler(0, currentAngle + deltaAngle, 0) * Vector3.forward * distance;
-
-                topRight = bottomRight + Vector3.up * height;
-                topLeft = bottomLeft + Vector3.up * height;
-
-                //Far Side
-                vertices[vert++] = bottomLeft;
-                vertices[vert++] = bottomRight;
-                vertices[vert++] = topRight;
-
-                vertices[vert++] = topRight;
-                vertices[vert++] = topLeft;
-                vertices[vert++] = bottomLeft;
-
-                // Top
-                vertices[vert++] = topCenter;
-                vertices[vert++] = topLeft;
-                vertices[vert++] = topRight;
-
-                // Bottom
-                vertices[vert++] = bottomCenter;
-                vertices[vert++] = bottomLeft;
-                vertices[vert++] = bottomRight;
-
-                currentAngle += deltaAngle;
-            }
-
-            for (int i = 0; i < numVertices; ++i)
-            {
-                triangles[i] = i;
-            }
-
-            mesh.vertices = vertices;
-            mesh.triangles = triangles;
-            mesh.RecalculateNormals();
-
-            return mesh;
-        }
-
-        private void OnValidate()
-        {
-            mesh = CreateWedgeMesh();
+            return true; // Player is visible
         }
 
         private void OnDrawGizmos()
         {
-            if (mesh)
+            if (!showDebug)
+                return;
+
+            if (enemyBase == null)
             {
-                Gizmos.color = meshColor;
-                Gizmos.DrawMesh(mesh, transform.position, transform.rotation);
+                enemyBase = GetComponent<EnemyBase>(); // Try to assign dynamically
+                if (enemyBase == null)
+                    return; // Avoid NullReferenceException
             }
 
-            // Change wire sphere color based on detection
-            //Gizmos.color = (count > 0) ? Color.green : Color.red;
-            Gizmos.DrawWireSphere(transform.position, distance);
+            // Draw detection range
+            Gizmos.color = detectionRangeColor;
+            Gizmos.DrawWireSphere(transform.position, enemyBase.detectionRange);
 
-            // // Draw spheres for detected colliders
-            // Gizmos.color = Color.green;
-            for (int i = 0; i < count; ++i)
+            // Draw line of sight if target is assigned
+            if (target != null)
             {
-                Gizmos.DrawSphere(colliders[i].transform.position, 0.2f);
-            }
-
-            // Draw spheres for objects in 'Objects' list
-            Gizmos.color = Color.red;
-            foreach (var obj in Objects)
-            {
-                Gizmos.DrawSphere(obj.transform.position, 0.2f);
+                Gizmos.color = CanSeePlayer() ? lineOfSightColor : obstructedColor;
+                Gizmos.DrawLine(transform.position, target.position);
             }
         }
     }

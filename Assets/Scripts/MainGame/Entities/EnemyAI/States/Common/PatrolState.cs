@@ -1,5 +1,7 @@
-using UnityEngine;
 using EnemyAI.Base;
+using EnemyAI.Components;
+using UnityEngine;
+using UnityEngine.AI;
 
 namespace EnemyAI.States.Common
 {
@@ -10,15 +12,16 @@ namespace EnemyAI.States.Common
         private int maxRetries = 5;
         private Vector3 currentPatrolPoint;
 
-        public PatrolState(EnemyBase _enemy, StateMachine _stateMachine) : base(_enemy, _stateMachine) 
-        { 
-            patrolCenter = _enemy.transform.position;
-        }
+        public PatrolState(EnemyBase _enemy, StateMachine _stateMachine)
+            : base(_enemy, _stateMachine) { }
 
         public override void Enter()
         {
             base.Enter();
             Debug.Log($"{enemy.name} entered PatrolState");
+
+            // Ensure patrolCenter is always updated
+            patrolCenter = enemy.transform.position;
 
             enemy.agent.speed = enemy.patrolSpeed;
             enemy.agent.isStopped = false;
@@ -31,12 +34,22 @@ namespace EnemyAI.States.Common
         {
             base.LogicUpdate();
 
-            if (Vector3.Distance(enemy.transform.position, enemy.target.position) <= enemy.detectionRange)
+            // Ensure enemy, enemySensor, and target exist before checking conditions
+            if (enemy != null && enemy.target != null && enemy.enemySensor != null)
             {
-                stateMachine.ChangeState(enemy.ChaseState);
-                return;
+                bool playerInRange =
+                    Vector3.Distance(enemy.transform.position, enemy.target.position)
+                    <= enemy.detectionRange;
+                bool playerVisible = enemy.enemySensor.CanSeePlayer();
+
+                if (playerInRange && playerVisible)
+                {
+                    stateMachine.ChangeState(enemy.ChaseState);
+                    return;
+                }
             }
 
+            // Check if enemy reached patrol destination
             if (!enemy.agent.pathPending && enemy.agent.remainingDistance < 0.5f)
             {
                 SetRandomPatrolPoint();
@@ -62,11 +75,12 @@ namespace EnemyAI.States.Common
             for (int i = 0; i < maxRetries; i++)
             {
                 Vector3 randomOffset = Random.insideUnitSphere * patrolRadius;
-                randomOffset.y = 0;
-                randomPoint = patrolCenter + randomOffset;
+                randomOffset.y = 0; // Keep it on the same Y level
+                Vector3 potentialPoint = patrolCenter + randomOffset;
 
-                UnityEngine.AI.NavMeshHit hit;
-                if (UnityEngine.AI.NavMesh.SamplePosition(randomPoint, out hit, 2f, UnityEngine.AI.NavMesh.AllAreas))
+                if (
+                    NavMesh.SamplePosition(potentialPoint, out NavMeshHit hit, 2f, NavMesh.AllAreas)
+                )
                 {
                     randomPoint = hit.position;
                     validPointFound = true;
@@ -95,8 +109,14 @@ namespace EnemyAI.States.Common
 
             for (int i = 0; i < segments; i++)
             {
-                Vector3 startPoint = patrolCenter + Quaternion.Euler(0, anglePerSegment * i, 0) * Vector3.forward * patrolRadius;
-                Vector3 endPoint = patrolCenter + Quaternion.Euler(0, anglePerSegment * (i + 1), 0) * Vector3.forward * patrolRadius;
+                Vector3 startPoint =
+                    patrolCenter
+                    + Quaternion.Euler(0, anglePerSegment * i, 0) * Vector3.forward * patrolRadius;
+                Vector3 endPoint =
+                    patrolCenter
+                    + Quaternion.Euler(0, anglePerSegment * (i + 1), 0)
+                        * Vector3.forward
+                        * patrolRadius;
                 Debug.DrawLine(startPoint, endPoint, Color.yellow);
             }
         }

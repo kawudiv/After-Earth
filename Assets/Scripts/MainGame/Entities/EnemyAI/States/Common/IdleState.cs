@@ -1,5 +1,5 @@
-using UnityEngine;
 using EnemyAI.Base;
+using UnityEngine;
 
 namespace EnemyAI.States.Common
 {
@@ -8,7 +8,8 @@ namespace EnemyAI.States.Common
         private float checkTime = 1f; // Time between checks
         private float timer = 0f;
 
-        public IdleState(EnemyBase _enemy, StateMachine _stateMachine) : base(_enemy, _stateMachine) { }
+        public IdleState(EnemyBase _enemy, StateMachine _stateMachine)
+            : base(_enemy, _stateMachine) { }
 
         public override void Enter()
         {
@@ -29,16 +30,21 @@ namespace EnemyAI.States.Common
             {
                 timer = 0f; // Reset timer
 
-                float distance = Vector3.Distance(enemy.transform.position, enemy.target.position);
+                if (enemy != null && enemy.target != null && enemy.enemySensor != null)
+                {
+                    float distance = Vector3.Distance(
+                        enemy.transform.position,
+                        enemy.target.position
+                    );
 
-                if (distance <= enemy.detectionRange)
-                {
-                    stateMachine.ChangeState(enemy.ChaseState);
+                    if (distance <= enemy.detectionRange && enemy.enemySensor.CanSeePlayer())
+                    {
+                        stateMachine.ChangeState(enemy.ChaseState);
+                        return;
+                    }
                 }
-                else
-                {
-                    stateMachine.ChangeState(enemy.PatrolState);
-                }
+
+                stateMachine.ChangeState(enemy.PatrolState);
             }
         }
 

@@ -1,5 +1,5 @@
-using EnemyAI.States.Common; // Include the Common States namespace
 using EnemyAI.Components; // Include Components
+using EnemyAI.States.Common; // Include the Common States namespace
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -30,6 +30,7 @@ namespace EnemyAI.Base
         protected EnemyHealth enemyHealth;
         protected EnemyAnimation enemyAnimation;
         protected EnemySound enemySound;
+        protected EnemyRagdoll enemyRagdoll;
 
         public StateMachine stateMachine { get; private set; }
 
@@ -49,6 +50,7 @@ namespace EnemyAI.Base
             enemyAnimation = GetComponent<EnemyAnimation>();
             enemySound = GetComponent<EnemySound>();
             enemySensor = GetComponent<EnemySensor>();
+            enemyRagdoll=  GetComponent<EnemyRagdoll>();
 
             GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
             if (playerObj != null)
@@ -85,9 +87,11 @@ namespace EnemyAI.Base
         {
             stateMachine.currentState?.LogicUpdate();
 
-            if (!CanSeePlayer() && stateMachine.currentState == ChaseState)
+            if (!enemySensor.CanSeePlayer() && stateMachine.currentState == ChaseState)
             {
-                Debug.Log("Lost sight of player. Returning to PatrolState.");
+                Debug.Log(
+                    "Lost sight of player. Returning to PatrolState.{enemySensor.CanSeePlayer}"
+                );
                 stateMachine.ChangeState(PatrolState);
             }
         }
@@ -113,11 +117,5 @@ namespace EnemyAI.Base
                 HandleDeath();
             }
         }
-        private bool CanSeePlayer()
-        {
-            if (target == null) return false;
-            return Vector3.Distance(transform.position, target.position) <= detectionRange;
-        }
-        
     }
 }

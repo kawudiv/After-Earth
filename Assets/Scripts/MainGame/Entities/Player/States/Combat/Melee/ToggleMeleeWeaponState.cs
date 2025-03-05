@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Player.States.Combat.Melee
 {
-    public class ToggleMeleeWeaponState : BaseMeleeState
+    public class ToggleMeleeWeaponState : BaseWeaponState
     {
         private float toggleTime;
         private const float defaultToggleDuration = 0.5f;

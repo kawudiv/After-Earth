@@ -16,14 +16,13 @@ namespace EnemyAI.Enemies.Melee.Type
         {
             base.Start();
             maxHealth = 150f; // More HP than standard melee
-            health = maxHealth;
             attackDamage = 20f; // Midway between Berserker & Assassin
             attackCooldown = 1.8f; // Slightly slower than normal melee
         }
         // protected override void Update()
         // {
-        //     base.Update(); 
-        //     SomeStuff(); 
+        //     base.Update();
+        //     SomeStuff();
         // }
 
         // private void SomeStuff()

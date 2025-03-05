@@ -14,7 +14,6 @@ namespace EnemyAI.Enemies.Boss.Type
         {
             base.Start();
             maxHealth = 300f; // Overlord has more health
-            health = maxHealth;
             attackDamage = 40f; // Stronger attacks
             attackCooldown = 2.5f; // Slower attacks
             armor = 15f; // High defense

@@ -2,12 +2,11 @@ using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
 {
-    [SerializeField]
-    private GameObject _enemyPrefab;
-    [SerializeField]
-    private float _minimumSpawnTime;
-    [SerializeField]
-    private float _maximumSpawnTime;
+    [SerializeField] private GameObject _enemyPrefab;
+    [SerializeField] private Transform _spawnContainer; // Add a container reference
+    [SerializeField] private float _minimumSpawnTime = 1f;
+    [SerializeField] private float _maximumSpawnTime = 3f;
+    
     private float _timeUntilSpawn;
 
     void Awake()
@@ -21,8 +20,19 @@ public class EnemySpawner : MonoBehaviour
 
         if (_timeUntilSpawn <= 0)
         {
-            Instantiate(_enemyPrefab, transform.position, Quaternion.identity);
+            SpawnEnemy();
             SetTimeUntilSpawn();
+        }
+    }
+
+    private void SpawnEnemy()
+    {
+        GameObject newEnemy = Instantiate(_enemyPrefab, transform.position, Quaternion.identity);
+
+        // If a spawn container is set, parent the enemy to it
+        if (_spawnContainer != null)
+        {
+            newEnemy.transform.SetParent(_spawnContainer);
         }
     }
 

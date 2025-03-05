@@ -4,16 +4,23 @@ namespace Weapons.Base
 {
     public abstract class WeaponBase : MonoBehaviour
     {
-        // Unique ID for animation blending
-        public int weaponTypeID;
+        [Header("Base Weapon Stats")]
+        [SerializeField]
+        protected string weaponName;
 
-        // Basic properties of the weapon.
-        public string weaponName;
-        public float damage; // Additional damage provided by the weapon.
-        public float attackSpeed; // Time between attacks.
-        public float attackRange; // Effective range (useful for both melee and ranged).
+        [SerializeField]
+        protected int weaponTypeID;
 
-        // ✅ Position and Rotation Offsets for Equipping
+        [SerializeField]
+        protected float damage;
+
+        [SerializeField]
+        protected float attackSpeed;
+
+        [SerializeField]
+        protected float attackRange;
+
+        // ✅ Serialized Transform Offsets (for equipping)
         [Header("Equipped Transform Offsets")]
         [SerializeField]
         private Vector3 equipPositionOffset;
@@ -21,13 +28,18 @@ namespace Weapons.Base
         [SerializeField]
         private Vector3 equipRotationOffset;
 
-        // Optionally, you can add an initialization method to set up the weapon.
-        public virtual void Initialize()
+        public string WeaponName => weaponName;
+        public int WeaponTypeID => weaponTypeID;
+        public float Damage => damage;
+        public float AttackSpeed => attackSpeed;
+        public float AttackRange => attackRange;
+
+        protected virtual void Awake()
         {
-            // Initialization code if needed.
+            // Base setup, no collider here!
         }
 
-        // ✅ Apply offsets when equipping
+        // ✅ Automatically apply equip offsets
         public void ApplyEquipTransform(Transform weaponTransform)
         {
             weaponTransform.localPosition = equipPositionOffset;

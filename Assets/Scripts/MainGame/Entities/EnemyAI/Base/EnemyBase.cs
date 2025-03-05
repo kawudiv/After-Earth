@@ -15,7 +15,6 @@ namespace EnemyAI.Base
 
         [Header("Stats")]
         public float maxHealth = 100f;
-        public float health;
         public float armor = 5f;
         public float attackDamage = 15f;
         public float attackCooldown = 1.5f;
@@ -50,7 +49,7 @@ namespace EnemyAI.Base
             enemyAnimation = GetComponent<EnemyAnimation>();
             enemySound = GetComponent<EnemySound>();
             enemySensor = GetComponent<EnemySensor>();
-            enemyRagdoll=  GetComponent<EnemyRagdoll>();
+            enemyRagdoll = GetComponent<EnemyRagdoll>();
 
             GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
             if (playerObj != null)
@@ -80,7 +79,6 @@ namespace EnemyAI.Base
         protected virtual void Start()
         {
             stateMachine.Initialize(IdleState);
-            health = maxHealth;
         }
 
         protected virtual void Update()
@@ -97,7 +95,7 @@ namespace EnemyAI.Base
         }
 
         protected virtual void FixedUpdate()
-        {
+        {// asdasdas
             stateMachine.currentState?.PhysicsUpdate();
         }
 
@@ -111,6 +109,9 @@ namespace EnemyAI.Base
 
         protected virtual void HandleHealthChange(float current, float max)
         {
+            if (enemyHealth == null)
+                return; // Prevents null reference issues
+
             Debug.Log($"{name} health changed: {current}/{max}");
             if (current <= 0)
             {

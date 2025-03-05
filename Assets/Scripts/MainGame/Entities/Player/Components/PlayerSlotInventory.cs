@@ -14,7 +14,7 @@ namespace Player.Components
         [SerializeField]
         private WeaponUI weaponUI;
 
-        [SerializeField] 
+        [SerializeField]
         private List<ItemBase> items = new List<ItemBase>();
 
         private WeaponBase meleeWeaponSlot;
@@ -24,13 +24,15 @@ namespace Player.Components
         {
             if (playerInventory == null)
             {
-                Debug.LogError("[PlayerSlotInventory] PlayerInventory is not assigned!");
+                Debug.LogError("[PlayerSlotInventory] ❌ PlayerInventory is not assigned!");
             }
 
             if (weaponUI == null)
             {
-                Debug.LogError("[PlayerSlotInventory] WeaponUI is not assigned!");
+                Debug.LogError("[PlayerSlotInventory] ❌ WeaponUI is not assigned!");
             }
+
+            Debug.Log("[PlayerSlotInventory] ✅ Inventory initialized.");
 
             // Initial UI update (no weapon equipped)
             weaponUI.UpdateWeaponUI(false, false);
@@ -40,14 +42,17 @@ namespace Player.Components
         {
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
+                Debug.Log("[PlayerSlotInventory] 🔄 Toggle Melee Weapon.");
                 ToggleMeleeWeapon();
             }
             else if (Input.GetKeyDown(KeyCode.Alpha2))
             {
+                Debug.Log("[PlayerSlotInventory] 🔄 Toggle Ranged Weapon.");
                 ToggleRangedWeapon();
             }
             else if (Input.GetKeyDown(KeyCode.Q))
             {
+                Debug.Log("[PlayerSlotInventory] 🗑 Dropping equipped weapon.");
                 DropEquippedWeapon();
             }
         }
@@ -56,13 +61,23 @@ namespace Player.Components
         {
             if (playerInventory.EquippedMeleeWeapon != null)
             {
+                Debug.Log(
+                    $"[PlayerSlotInventory] 🗑 Dropping melee weapon: {playerInventory.EquippedMeleeWeapon.WeaponName}"
+                );
                 playerInventory.DropWeapon(playerInventory.EquippedMeleeWeapon);
                 weaponUI.UpdateWeaponUI(false, rangedWeaponSlot != null);
             }
             else if (playerInventory.EquippedRangedWeapon != null)
             {
+                Debug.Log(
+                    $"[PlayerSlotInventory] 🗑 Dropping ranged weapon: {playerInventory.EquippedRangedWeapon.WeaponName}"
+                );
                 playerInventory.DropWeapon(playerInventory.EquippedRangedWeapon);
                 weaponUI.UpdateWeaponUI(meleeWeaponSlot != null, false);
+            }
+            else
+            {
+                Debug.Log("[PlayerSlotInventory] ❌ No weapon equipped to drop.");
             }
         }
 
@@ -70,21 +85,25 @@ namespace Player.Components
         {
             if (weapon == meleeWeaponSlot)
             {
+                Debug.Log($"[PlayerSlotInventory] ❌ Removed melee weapon: {weapon.WeaponName}");
                 meleeWeaponSlot = null;
             }
             else if (weapon == rangedWeaponSlot)
             {
+                Debug.Log($"[PlayerSlotInventory] ❌ Removed ranged weapon: {weapon.WeaponName}");
                 rangedWeaponSlot = null;
             }
         }
 
         public void ClearMeleeWeapon()
         {
+            Debug.Log("[PlayerSlotInventory] 🗑 Clearing melee weapon slot.");
             meleeWeaponSlot = null;
         }
 
         public void ClearRangedWeapon()
         {
+            Debug.Log("[PlayerSlotInventory] 🗑 Clearing ranged weapon slot.");
             rangedWeaponSlot = null;
         }
 
@@ -93,10 +112,12 @@ namespace Player.Components
             if (newWeapon is MeleeWeapon)
             {
                 meleeWeaponSlot = newWeapon;
+                Debug.Log($"[PlayerSlotInventory] ✅ Added melee weapon: {newWeapon.WeaponName}");
             }
             else if (newWeapon is RangedWeapon)
             {
                 rangedWeaponSlot = newWeapon;
+                Debug.Log($"[PlayerSlotInventory] ✅ Added ranged weapon: {newWeapon.WeaponName}");
             }
 
             newWeapon.gameObject.SetActive(false);
@@ -106,14 +127,24 @@ namespace Player.Components
         {
             if (playerInventory.EquippedMeleeWeapon == meleeWeaponSlot)
             {
+                Debug.Log(
+                    $"[PlayerSlotInventory] 🔄 Unequipping melee weapon: {meleeWeaponSlot.WeaponName}"
+                );
                 playerInventory.UnequipWeapon();
                 weaponUI.UpdateWeaponUI(false, playerInventory.EquippedRangedWeapon != null);
             }
             else if (meleeWeaponSlot != null)
             {
+                Debug.Log(
+                    $"[PlayerSlotInventory] 🔄 Equipping melee weapon: {meleeWeaponSlot.WeaponName}"
+                );
                 playerInventory.UnequipWeapon();
                 playerInventory.EquipWeapon(meleeWeaponSlot);
                 weaponUI.UpdateWeaponUI(true, false);
+            }
+            else
+            {
+                Debug.Log("[PlayerSlotInventory] ❌ No melee weapon to equip.");
             }
         }
 
@@ -121,14 +152,24 @@ namespace Player.Components
         {
             if (playerInventory.EquippedRangedWeapon == rangedWeaponSlot)
             {
+                Debug.Log(
+                    $"[PlayerSlotInventory] 🔄 Unequipping ranged weapon: {rangedWeaponSlot.WeaponName}"
+                );
                 playerInventory.UnequipWeapon();
                 weaponUI.UpdateWeaponUI(playerInventory.EquippedMeleeWeapon != null, false);
             }
             else if (rangedWeaponSlot != null)
             {
+                Debug.Log(
+                    $"[PlayerSlotInventory] 🔄 Equipping ranged weapon: {rangedWeaponSlot.WeaponName}"
+                );
                 playerInventory.UnequipWeapon();
                 playerInventory.EquipWeapon(rangedWeaponSlot);
                 weaponUI.UpdateWeaponUI(false, true);
+            }
+            else
+            {
+                Debug.Log("[PlayerSlotInventory] ❌ No ranged weapon to equip.");
             }
         }
 
@@ -136,11 +177,10 @@ namespace Player.Components
         {
             if (newItem == null)
             {
-                Debug.LogError("[PlayerSlotInventory] Cannot add a null item to the inventory!");
+                Debug.LogError("[PlayerSlotInventory] ❌ Cannot add a null item to the inventory!");
                 return;
             }
 
-            // Add the item to the inventory
             items.Add(newItem);
             Debug.Log(
                 $"✅ [PlayerSlotInventory] Added item: {newItem.ItemName} (ID: {newItem.ItemID})"

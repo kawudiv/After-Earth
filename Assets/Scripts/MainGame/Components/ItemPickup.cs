@@ -1,34 +1,36 @@
-using System;
+using Items.Base;
 using Player.Components;
 using UnityEngine;
-using Weapons.Base;
 
 public class ItemPickup : MonoBehaviour
 {
     [SerializeField]
-    public WeaponBase weaponPrefab; 
+    private ItemBase itemPrefab; // The item prefab to be picked up
 
-    public void PickupWeapon(PlayerInventory inventory)
+    public void PickupItem(PlayerInventory inventory)
     {
-        if (weaponPrefab == null)
+        if (itemPrefab == null)
         {
-            Debug.LogError("[ItemPickup] No weapon prefab assigned to this pickup!");
+            Debug.LogError("[ItemPickup] No item prefab assigned to this pickup!");
             return;
         }
 
-        WeaponBase newWeapon = Instantiate(weaponPrefab);
-        newWeapon.transform.position = transform.position;
-        newWeapon.transform.rotation = transform.rotation;
+        // Instantiate the item
+        ItemBase newItem = Instantiate(itemPrefab);
+        newItem.transform.position = transform.position;
+        newItem.transform.rotation = transform.rotation;
 
-        inventory.EquipWeapon(newWeapon);
+        // Add the item to the player's inventory
+        inventory.AddItem(newItem);
 
-        Debug.Log($"✅ [ItemPickup] Picked up {newWeapon.WeaponName}");
+        Debug.Log($"✅ [ItemPickup] Picked up {newItem.ItemName}");
 
-        gameObject.SetActive(false);
+        // Disable the pickup object in the scene
+        newItem.gameObject.SetActive(false);
     }
 
-    internal WeaponBase GetWeaponPrefab()
+    internal ItemBase GetItemPrefab()
     {
-        throw new NotImplementedException();
+        return itemPrefab;
     }
 }

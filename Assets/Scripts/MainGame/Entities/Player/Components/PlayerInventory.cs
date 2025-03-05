@@ -1,3 +1,4 @@
+using Items.Base;
 using Player.Base;
 using UnityEngine;
 using Weapons.Base;
@@ -46,26 +47,63 @@ namespace Player.Components
             return "None";
         }
 
-        public void TryPickUpWeapon()
+        public void TryPickUpPrefab()
         {
-            Collider[] colliders = Physics.OverlapSphere(transform.position, 2f);
+            Collider[] colliders = Physics.OverlapSphere(transform.position, 2f); // Check for nearby colliders
             foreach (Collider collider in colliders)
             {
-                ItemPickup pickup = collider.GetComponent<ItemPickup>();
-                if (pickup != null)
+                // Check for WeaponPickup
+                WeaponPickup weaponPickup = collider.GetComponent<WeaponPickup>();
+                if (weaponPickup != null)
                 {
-                    WeaponBase weapon = pickup.weaponPrefab;
-                    FindAnyObjectByType<PlayerSlotInventory>()?.AddWeapon(weapon);
-                    pickup.gameObject.SetActive(false);
-                    return;
+                    WeaponBase weaponPrefab = weaponPickup.GetWeaponPrefab();
+                    if (weaponPrefab != null)
+                    {
+                        // Instantiate the weapon and add it to the inventory
+                        WeaponBase newWeapon = Instantiate(weaponPrefab);
+                        FindAnyObjectByType<PlayerSlotInventory>()?.AddWeapon(newWeapon);
+                        Debug.Log($"✅ [PlayerInventory] Picked up weapon: {newWeapon.WeaponName}");
+
+                        // Disable the pickup object in the scene
+                        weaponPickup.gameObject.SetActive(false);
+                        return;
+                    }
+                    else
+                    {
+                        Debug.LogError("[PlayerInventory] Weapon prefab is null!");
+                    }
+                }
+
+                // Check for ItemPickup
+                ItemPickup itemPickup = collider.GetComponent<ItemPickup>();
+                if (itemPickup != null)
+                {
+                    ItemBase itemPrefab = itemPickup.GetItemPrefab();
+                    if (itemPrefab != null)
+                    {
+                        // Instantiate the item and add it to the inventory
+                        ItemBase newItem = Instantiate(itemPrefab);
+                        FindAnyObjectByType<PlayerSlotInventory>()?.AddItem(newItem);
+                        Debug.Log($"✅ [PlayerInventory] Picked up item: {newItem.ItemName}");
+
+                        // Disable the pickup object in the scene
+                        itemPickup.gameObject.SetActive(false);
+                        return;
+                    }
+                    else
+                    {
+                        Debug.LogError("[PlayerInventory] Item prefab is null!");
+                    }
                 }
             }
-            Debug.Log("[PlayerInventory] No weapon found to pick up.");
+
+            Debug.Log("[PlayerInventory] No pickup found to pick up.");
         }
 
         public void EquipWeapon(WeaponBase newWeapon)
         {
-            if (newWeapon == null) return;
+            if (newWeapon == null)
+                return;
 
             UnequipWeapon();
 
@@ -137,6 +175,11 @@ namespace Player.Components
                 equippedRangedWeapon = null;
                 Debug.Log("❌ [PlayerInventory] Ranged Weapon Unequipped");
             }
+        }
+
+        public void AddItem(ItemBase newItem)
+        {
+            newItem.gameObject.SetActive(false);
         }
     }
 }

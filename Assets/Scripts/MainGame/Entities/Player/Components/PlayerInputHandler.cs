@@ -152,15 +152,14 @@ namespace Player.Components
         {
             if (value.isPressed)
             {
-                if (playerInventory != null)
+                if (playerInventory == null)
                 {
-                    Debug.Log("Trying to pick up weapon...");
-                    playerInventory.TryPickUpWeapon();
+                    Debug.LogError("[PlayerInputHandler] PlayerInventory is not assigned!");
+                    return;
                 }
-                else
-                {
-                    Debug.LogError("PlayerInventory is not assigned in PlayerInputHandler!");
-                }
+
+                Debug.Log("Trying to pick up weapon...");
+                playerInventory.TryPickUpPrefab();
             }
         }
 
@@ -207,7 +206,7 @@ namespace Player.Components
 
         public void SetIsAttack(bool value)
         {
-            IsAttack= value;
+            IsAttack = value;
         }
 
         public void SetCanMove(bool value)

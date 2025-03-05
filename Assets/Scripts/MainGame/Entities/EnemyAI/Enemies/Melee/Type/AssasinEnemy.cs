@@ -14,11 +14,11 @@ namespace EnemyAI.Enemies.Melee.Type
         {
             base.Start();
             maxHealth = 60f; // Lower health
-            health = maxHealth;
             patrolSpeed = 3.5f;
             chaseSpeed = 6f; // Very fast
             attackRange = 1.5f;
         }
+
         protected override void Update()
         {
             base.Update(); // Runs the default EnemyBase update logic

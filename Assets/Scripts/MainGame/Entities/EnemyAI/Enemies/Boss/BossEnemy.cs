@@ -29,7 +29,8 @@ namespace EnemyAI.Enemies.Boss
         /// <summary>
         /// Determines if the boss can use the special attack (if health is below 30%)
         /// </summary>
-        public bool CanUseSpecialAttack => health <= maxHealth * 0.3f;
+        public bool CanUseSpecialAttack =>
+            enemyHealth != null && enemyHealth.GetHealthPercentage() <= 0.3f;
 
         /// <summary>
         /// Executes a special attack.

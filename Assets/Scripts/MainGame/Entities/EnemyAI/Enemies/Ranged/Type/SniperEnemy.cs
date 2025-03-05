@@ -16,7 +16,6 @@ namespace EnemyAI.Enemies.Ranged.Type
         {
             base.Start();
             maxHealth = 80f; // Lower health due to sniper role
-            health = maxHealth;
             armor = 3f; // Light armor for mobility
             attackDamage = 40f; // High damage for long-range shots
             attackCooldown = 3f; // Longer cooldown due to charge mechanic

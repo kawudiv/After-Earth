@@ -6,6 +6,7 @@ namespace Items.Type
     public class QuestItem : ItemBase
     {
         public int Id;
+        public bool isCollected;
 
         protected override void Awake()
         {

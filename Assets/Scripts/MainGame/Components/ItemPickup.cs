@@ -4,21 +4,27 @@ using UnityEngine;
 
 public class ItemPickup : MonoBehaviour
 {
-    [SerializeField]
-    private ItemBase itemPrefab; 
+    [SerializeField] private ItemBase itemPrefab; // Fixed capitalization
+    [SerializeField] private Signage signage; // Fixed capitalization
 
     public void PickupItem(PlayerInventory inventory)
     {
         if (itemPrefab == null)
         {
-            Debug.LogError("[ItemPickup] No item prefab assigned to this pickup!");
+            Debug.LogError("[ItemPickup] No Item prefab assigned to this pickup");
             return;
         }
-        inventory.AddItem(itemPrefab);
 
-        Debug.Log($"✅ [ItemPickup] Picked up {itemPrefab.ItemName}");
+        inventory.AddItem(itemPrefab); // Fixed method name (Additem -> AddItem)
 
-        gameObject.SetActive(false); 
+        Debug.Log($"✅[ItemPickup] Picked Up {itemPrefab.ItemName}");
+
+        if (signage != null)
+        {
+            signage.CollectItem();
+        }
+
+        gameObject.SetActive(false);
     }
 
     internal ItemBase GetItemPrefab()

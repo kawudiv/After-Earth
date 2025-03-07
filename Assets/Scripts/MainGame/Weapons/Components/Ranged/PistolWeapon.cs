@@ -5,35 +5,26 @@ namespace Weapons.Components.Ranged
 {
     public class PistolWeapon : RangedWeapon
     {
-        [SerializeField]
-        private float pistolDamage = 20f;
-
-        [SerializeField]
-        private float pistolAttackSpeed = 0.5f;
-
-        [SerializeField]
-        private float pistolRange = 50f;
-
-        [SerializeField]
-        private float pistolBulletSpeed = 30f;
-
-        [SerializeField]
-        private float pistolBulletLifeTime = 3f;
-
-        private void Awake()
+        protected override void Awake()
         {
-            // Set default values for the pistol.
+            base.Awake();
             weaponName = "Pistol";
-            damage = pistolDamage;
-            attackSpeed = pistolAttackSpeed;
-            attackRange = pistolRange;
+            damage = 20f;
+            attackSpeed = 0.5f;
+            attackRange = 50f;
+            bulletSpeed = 30f;
+            bulletLifeTime = 3f;
+            bulletForce = 10f;
 
-            bulletSpeed = pistolBulletSpeed;
-            bulletLifeTime = pistolBulletLifeTime;
+            // Assign layer masks & impact effects
+            enemyLayers = LayerMask.GetMask("Enemy");
+            environmentLayers = LayerMask.GetMask("Default");
+            //impactEffectPrefab = Resources.Load<GameObject>("Effects/BulletImpact");
+
 
             rangeID = 0;
 
-            // Optionally, assign or validate the attackPoint.
+            // Assign or validate attackPoint
             if (attackPoint == null)
             {
                 attackPoint = transform.Find("AttackPoint");
@@ -43,7 +34,7 @@ namespace Weapons.Components.Ranged
         public override void Attack()
         {
             base.Attack();
-            Debug.Log($"{weaponName} fires a bullet with a special effect!");
+            Debug.Log($"{weaponName} fires a bullet!");
         }
     }
 }

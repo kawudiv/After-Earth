@@ -88,7 +88,7 @@ namespace Player.Components
             else if (playerInventory.EquippedWeapon is RangedWeapon rangedWeapon)
             {
                 Debug.Log("[PlayerCombat] Performing ranged attack.");
-                player.PlayerAnimation.SetTrigger("Shoot");
+                player.PlayerAnimation.SetTrigger("RangedAttack");
                 rangedWeapon.Attack();
             }
             else

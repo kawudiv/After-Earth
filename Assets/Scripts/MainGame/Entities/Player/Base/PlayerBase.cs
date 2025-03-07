@@ -100,7 +100,7 @@ namespace Player.Base
             if (
                 PlayerInputHandler.IsMeleeDraw
                 && !(StateMachine.CurrentState is ToggleWeaponState)
-                && PlayerInventory.EquippedMeleeWeapon != null
+                && PlayerInventory.EquippedWeapon != null
             )
             {
                 StateMachine.ChangeState(ToggleWeaponState);
@@ -109,7 +109,7 @@ namespace Player.Base
             if (
                 PlayerInputHandler.IsAttack
                 && !(StateMachine.CurrentState is AttackWeaponState)
-                && PlayerInventory.EquippedMeleeWeapon != null
+                && PlayerInventory.EquippedWeapon != null
             )
             {
                 PlayerInputHandler.SetIsAttack(false);

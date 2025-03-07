@@ -8,18 +8,18 @@ namespace EnemyAI.Base
     public abstract class EnemyBase : MonoBehaviour
     {
         [Header("General Settings")]
-        public float patrolSpeed = 2f;
-        public float chaseSpeed = 4f;
-        public float attackRange = 2f;
-        public float detectionRange = 10f;
+        public float patrolSpeed;
+        public float chaseSpeed;
+        public float attackRange;
+        public float detectionRange;
 
         [Header("Stats")]
-        public float maxHealth = 100f;
-        public float armor = 5f;
-        public float attackDamage = 15f;
-        public float attackCooldown = 1.5f;
-        public float criticalChance = 0.1f;
-        public float criticalDamage = 2f;
+        public float health;
+        public float armor;
+        public float attackDamage;
+        public float attackCooldown;
+        public float criticalChance;
+        public float criticalDamage;
 
         [Header("Components")]
         public Transform target;
@@ -41,6 +41,20 @@ namespace EnemyAI.Base
         public abstract State ChaseState { get; }
         public abstract State AttackState { get; }
 
+        // Enemy General Settings
+        public float PatrolSpeed => patrolSpeed;
+        public float ChaseSpeed => chaseSpeed;
+        public float AttackRange => attackRange;
+        public float DetectionRange => detectionRange;
+
+        // Enemy Stats Settings
+        public float Health => health;
+        public float Armor => armor;
+        public float AttackDamage => attackDamage;
+        public float AttackCooldown => attackCooldown;
+        public float CriticalChance => criticalChance;
+        public float CriticalDamage => criticalDamage;
+
         protected virtual void Awake()
         {
             agent = GetComponent<NavMeshAgent>();
@@ -60,13 +74,6 @@ namespace EnemyAI.Base
             {
                 Debug.LogWarning("No GameObject with tag 'Player' found in the scene!");
                 target = null; // Handle this case gracefully in states
-            }
-
-            // Set up health events
-            if (enemyHealth != null)
-            {
-                enemyHealth.OnDeath += HandleDeath;
-                enemyHealth.OnHealthChanged += HandleHealthChange;
             }
 
             stateMachine = new StateMachine();
@@ -95,28 +102,8 @@ namespace EnemyAI.Base
         }
 
         protected virtual void FixedUpdate()
-        {// asdasdas
+        {
             stateMachine.currentState?.PhysicsUpdate();
-        }
-
-        protected virtual void HandleDeath()
-        {
-            Debug.Log($"{name} has died.");
-            enemyAnimation?.PlayDeath();
-            enemySound?.PlayDeathSound();
-            Destroy(gameObject, 2f);
-        }
-
-        protected virtual void HandleHealthChange(float current, float max)
-        {
-            if (enemyHealth == null)
-                return; // Prevents null reference issues
-
-            Debug.Log($"{name} health changed: {current}/{max}");
-            if (current <= 0)
-            {
-                HandleDeath();
-            }
         }
     }
 }

@@ -1,8 +1,8 @@
 using UnityEngine;
 
-namespace EnemyAI.Components
+namespace EnemyAi.Test
 {
-    public class EnemyRagdoll : MonoBehaviour
+    public class TestRagdoll : MonoBehaviour
     {
         private Rigidbody[] rigidbodies;
         private Animator animator;

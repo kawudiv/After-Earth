@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using Core;
+using EnemyAi.Test;
 using UnityEngine;
 using Weapons.Base;
 
@@ -52,19 +54,35 @@ namespace Weapons.Types
                 hitboxRadius,
                 enemyLayers
             );
+
+            if (hitEnemies.Length == 0)
+            {
+                Debug.Log("❌ No enemies hit!");
+                return;
+            }
+
+            // ✅ Track already damaged enemies
+            HashSet<IDamageable> damagedEnemies = new HashSet<IDamageable>();
+
             foreach (Collider enemy in hitEnemies)
             {
-                // ✅ Apply damage inside Attack()
-                if (enemy.TryGetComponent(out IDamageable damageable))
-                {
-                    damageable.TakeDamage(damage);
-                    Debug.Log($"{weaponName} hit {enemy.name} for {damage} damage!");
+                Debug.Log($"🎯 Hit detected on: {enemy.name}");
 
-                    // ✅ Spawn hit effect at impact position
-                    if (hitEffectPrefab != null)
+                // ✅ Get the root object
+                Transform root = enemy.transform.root;
+
+                if (root.TryGetComponent<IDamageable>(out var damageable))
+                {
+                    if (!damagedEnemies.Contains(damageable)) // ✅ Avoid double damage
                     {
-                        Instantiate(hitEffectPrefab, enemy.transform.position, Quaternion.identity);
+                        Debug.Log($"⚔️ {weaponName} dealing {damage} damage to {root.name}");
+                        damageable.TakeDamage(damage);
+                        damagedEnemies.Add(damageable); // ✅ Mark as damaged
                     }
+                }
+                else
+                {
+                    Debug.Log($"❌ {root.name} does NOT implement IDamageable!");
                 }
 
                 // ✅ Call SwordImpact() to handle physics separately
@@ -74,25 +92,40 @@ namespace Weapons.Types
 
         private void SwordImpact(Collider enemy)
         {
-            // ✅ Apply force to ragdoll/enemy rigidbody
-            if (enemy.TryGetComponent(out Rigidbody rb))
+            // ✅ First, check if the enemy has a health system
+            EnemyHealth enemyHealth = enemy.GetComponentInParent<EnemyHealth>();
+
+            if (enemyHealth != null && enemyHealth.isDead) // ✅ Only ragdoll if the enemy is dead
             {
+                TestRagdoll ragdoll = enemy.GetComponentInParent<TestRagdoll>();
+                if (ragdoll != null)
+                {
+                    Vector3 hitPoint = enemy.ClosestPoint(attackPoint.position);
+                    Vector3 forceDirection =
+                        (enemy.transform.position - attackPoint.position).normalized * impactForce;
+
+                    ragdoll.TriggerRagdoll(); // ✅ Activate ragdoll first
+                    ragdoll.ApplyForceToRagdoll(hitPoint, forceDirection); // ✅ Apply force after ragdoll
+
+                    //Debug.Log($"💀 {enemy.name} is dead! Ragdoll activated & force applied.");
+                }
+            }
+            else if (enemy.TryGetComponent(out Rigidbody rb))
+            {
+                // ✅ Apply force if there's no ragdoll (for non-ragdoll enemies)
                 Vector3 forceDirection =
                     (enemy.transform.position - attackPoint.position).normalized * impactForce;
                 rb.AddForce(forceDirection, ForceMode.Impulse);
-                Debug.Log(
-                    $"Applied {impactForce} force to {enemy.name}, making them stagger/slash away!"
-                );
+                Debug.Log($"💥 Knockback applied to {enemy.name}!");
             }
 
-            // ✅ Spawn hit effect at impact position
+            // ✅ Spawn hit effect
             if (hitEffectPrefab != null)
             {
                 Instantiate(hitEffectPrefab, enemy.transform.position, Quaternion.identity);
             }
         }
 
-        // ✅ Configure sword collider
         private void ConfigureSwordCollider()
         {
             hitbox = GetComponent<Collider>();
@@ -100,8 +133,14 @@ namespace Weapons.Types
             if (hitbox == null)
             {
                 BoxCollider boxCollider = gameObject.AddComponent<BoxCollider>();
-                boxCollider.size = new Vector3(1f, 0.2f, 2f); // Adjust for sword shape
+                boxCollider.size = new Vector3(1f, 0.2f, 2f);
                 hitbox = boxCollider;
+
+                Debug.Log($"⚠️ No collider found! Adding BoxCollider to {gameObject.name}.");
+            }
+            else
+            {
+                Debug.Log($"✅ Collider found on {gameObject.name}: {hitbox.GetType()}");
             }
 
             hitbox.isTrigger = false;

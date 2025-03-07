@@ -13,7 +13,7 @@ namespace EnemyAI.Enemies.Melee.Type
         protected override void Start()
         {
             base.Start();
-            maxHealth = 60f; // Lower health
+            health = 60f; // Lower health
             patrolSpeed = 3.5f;
             chaseSpeed = 6f; // Very fast
             attackRange = 1.5f;

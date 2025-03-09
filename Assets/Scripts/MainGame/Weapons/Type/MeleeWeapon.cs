@@ -77,18 +77,18 @@ namespace Weapons.Types
 
             Transform root = other.transform.root;
 
-            if (root.TryGetComponent<IDamageable>(out var damageable))
+            if (root.GetComponentInChildren<IDamageable>() is IDamageable damageable)
             {
                 if (!damagedEnemies.Contains(damageable))
                 {
                     Debug.Log($"⚔️ {weaponName} dealing {damage} damage to {root.name}");
                     damageable.TakeDamage(damage);
-                    damagedEnemies.Add(damageable); // ✅ Prevent multiple damage instances
+                    damagedEnemies.Add(damageable);
                 }
             }
             else
             {
-                Debug.Log($"❌ {root.name} does NOT implement IDamageable!");
+                Debug.Log($"❌ {root.name} does NOT have IDamageable (even in children)!");
             }
 
             // ✅ Handle ragdoll and physics impact

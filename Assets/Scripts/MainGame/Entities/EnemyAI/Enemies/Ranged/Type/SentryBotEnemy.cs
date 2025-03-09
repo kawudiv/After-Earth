@@ -13,7 +13,7 @@ namespace EnemyAI.Enemies.Ranged.Type
         protected override void Start()
         {
             base.Start();
-            maxHealth = 120f; // Decent health for a standard ranged enemy
+            health = 120f; // Decent health for a standard ranged enemy
             armor = 4f; // Slightly armored but not tanky
             attackDamage = 10f; // Moderate damage
             attackCooldown = 2f; // Standard cooldown between shots

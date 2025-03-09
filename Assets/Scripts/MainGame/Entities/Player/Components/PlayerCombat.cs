@@ -88,12 +88,38 @@ namespace Player.Components
             else if (playerInventory.EquippedWeapon is RangedWeapon rangedWeapon)
             {
                 Debug.Log("[PlayerCombat] Performing ranged attack.");
-                player.PlayerAnimation.SetTrigger("Shoot");
+                player.PlayerAnimation.SetTrigger("RangedAttack");
                 rangedWeapon.Attack();
             }
             else
             {
                 Debug.LogWarning("[PlayerCombat] Equipped weapon type is unknown.");
+            }
+        }
+
+        // ✅ Called from Animation Event (Start of attack)
+        public void EnableWeaponCollider()
+        {
+            if (playerInventory.EquippedWeapon is MeleeWeapon meleeWeapon)
+            {
+                meleeWeapon.EnableWeaponCollider();
+            }
+            else
+            {
+                Debug.LogWarning("[PlayerCombat] No melee weapon equipped!");
+            }
+        }
+
+        // ✅ Called from Animation Event (End of attack)
+        public void DisableWeaponCollider()
+        {
+            if (playerInventory.EquippedWeapon is MeleeWeapon meleeWeapon)
+            {
+                meleeWeapon.DisableWeaponCollider();
+            }
+            else
+            {
+                Debug.LogWarning("[PlayerCombat] No melee weapon equipped!");
             }
         }
     }

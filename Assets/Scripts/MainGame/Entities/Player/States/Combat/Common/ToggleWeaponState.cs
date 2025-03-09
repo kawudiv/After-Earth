@@ -20,31 +20,27 @@ namespace Player.States.Combat.Common
             if (player.PlayerInventory.EquippedMeleeWeapon == null)
             {
                 Debug.LogWarning("[ToggleMeleeWeaponState] No melee weapon equipped! Cannot draw.");
-                // player.PlayerInputHandler.SetAllDraw(false);
                 stateMachine.ChangeState(player.IdleState); // Return to Idle if no weapon is equipped
                 return;
             }
 
-            if (player.PlayerInputHandler.IsMeleeDraw)
+            bool isMeleeDraw = player.PlayerInputHandler.IsMeleeDraw;
+            bool isRangedDraw = player.PlayerInputHandler.IsRangedDraw;
+
+            if (isMeleeDraw || isRangedDraw)
             {
                 player.PlayerInputHandler.ClearDraw();
 
-                if (player.IsWeaponDrawn)
-                {
-                    player.PlayerAnimation.SetTrigger("Sheath");
-                    Debug.Log("[ToggleMeleeWeaponState] SheathMelee triggered.");
-                }
-                else
-                {
-                    player.PlayerAnimation.SetTrigger("DrawMelee");
-                    Debug.Log("[ToggleMeleeWeaponState] DrawMelee triggered.");
-                }
+                // Determine animation trigger
+                string animationTrigger = GetDrawSheathTrigger(isMeleeDraw);
+                player.PlayerAnimation.SetTrigger(animationTrigger);
+                Debug.Log($"[ToggleMeleeWeaponState] Triggered: {animationTrigger}");
 
                 toggleTime = defaultToggleDuration;
             }
             else
             {
-                Debug.Log("[ToggleMeleeWeaponState] No melee draw input detected, exiting state.");
+                Debug.Log("[ToggleMeleeWeaponState] No valid draw input detected, exiting state.");
                 stateMachine.ChangeState(player.IdleState);
             }
         }
@@ -70,9 +66,14 @@ namespace Player.States.Combat.Common
             Debug.Log("[ToggleMeleeWeaponState] Exiting ToggleMeleeWeaponState");
         }
 
-        protected override void HandleWeaponAction()
-        {
+        protected override void HandleWeaponAction() { }
 
+        private string GetDrawSheathTrigger(bool isMelee)
+        {
+            if (player.IsWeaponDrawn)
+                return "Sheath";
+
+            return isMelee ? "DrawMelee" : "DrawRanged";
         }
     }
 }

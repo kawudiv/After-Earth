@@ -1,51 +1,43 @@
-using System;
-using EnemyAI.Base;
+using System; // ✅ Required for events
 using UnityEngine;
 
-namespace EnemyAI.Components
+namespace EnemyAi.Test
 {
     public class EnemyHealth : MonoBehaviour, Core.IDamageable
     {
+        public float maxHealth = 100f;
+
         [SerializeField] // ✅ Now visible in the Inspector
         private float currentHealth;
-        private bool isDead = false;
+        private TestRagdoll ragdoll;
+        public bool isDead = false; // ✅ Prevent multiple death triggers
+
+        // ✅ Event: Notifies when HP changes (for UI, sound, etc.)
         public event Action<float, float> OnHealthChanged;
 
+        // ✅ Optional: Blood effect on damage
         [SerializeField]
         private GameObject damageEffectPrefab;
-        private EnemyBase enemyBase;
-        private EnemyRagdoll ragdoll;
 
-        public float CurrentHealth => currentHealth; // ✅ Read-only access
-
-        private void Awake()
+        void Awake()
         {
-           ragdoll = GetComponent<EnemyRagdoll>();
-            enemyBase = GetComponentInParent<EnemyBase>();
-
-            if (enemyBase == null)
-            {
-                Debug.LogError($"{name} is missing an EnemyBase component!");
-                return; // Prevents further errors
-            }  
-        }
-        private void Start()
-        {
-            currentHealth = enemyBase.health;
+            currentHealth = maxHealth;
+            ragdoll = GetComponent<TestRagdoll>();
         }
 
+        // ✅ This method is required by IDamageable
         public void TakeDamage(float damage)
         {
             if (isDead)
                 return; // ✅ Ignore further damage if already dead
 
             currentHealth -= damage;
-            currentHealth = Mathf.Clamp(currentHealth, 0, enemyBase.health); // ✅ Prevent negative HP
+            currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth); // ✅ Prevent negative HP
 
             Debug.Log($"🩸 {gameObject.name} took {damage} damage! Current HP: {currentHealth}");
 
             // ✅ Trigger the health update event
-            OnHealthChanged?.Invoke(currentHealth, enemyBase.health);
+            OnHealthChanged?.Invoke(currentHealth, maxHealth);
 
             // ✅ Show damage effect (blood splatter)
             if (damageEffectPrefab != null)

@@ -6,64 +6,96 @@ namespace Weapons.Types
 {
     public class RangedWeapon : WeaponBase
     {
-        // The point from which the bullet originates.
         public Transform attackPoint;
 
-        // The bullet prefab to be instantiated when firing.
-        public GameObject bulletPrefab;
+        [Header("Bullet Settings")]
+        [SerializeField]
+        protected float bulletSpeed;
 
-        // The speed at which the bullet travels.
-        public float bulletSpeed = 20f;
+        [SerializeField]
+        protected float bulletLifeTime;
 
-        // The lifetime of the bullet before it is destroyed.
-        public float bulletLifeTime = 5f;
+        [SerializeField]
+        protected float bulletForce;
 
-        // Unique ranged weapon ID (for animation blending if needed).
+        [Header("Weapon Layers")]
+        [SerializeField]
+        protected LayerMask enemyLayers;
+
+        [SerializeField]
+        protected LayerMask environmentLayers;
+
+        [Header("Weapon Effects")]
+        [SerializeField]
+        protected GameObject impactEffectPrefab;
+
         public int rangeID;
 
         public override void Attack()
         {
-            // Assign ranged ID to weaponTypeID (for animation system use).
+            base.Awake();
             weaponTypeID = rangeID;
 
-            if (bulletPrefab == null || attackPoint == null)
+            if (attackPoint == null)
             {
-                Debug.LogWarning(
-                    $"{weaponName} cannot attack because bulletPrefab or attackPoint is not assigned."
-                );
+                Debug.LogWarning($"{weaponName} has no attackPoint assigned!");
                 return;
             }
 
-            // Instantiate a bullet at the attack point's position and rotation.
-            GameObject bulletInstance = Instantiate(
-                bulletPrefab,
-                attackPoint.position,
-                attackPoint.rotation
-            );
-
-            // Apply velocity if the bullet has a Rigidbody component.
-            if (bulletInstance.TryGetComponent(out Rigidbody rb))
+            RaycastHit hit;
+            if (
+                Physics.Raycast(
+                    attackPoint.position,
+                    attackPoint.forward,
+                    out hit,
+                    attackRange,
+                    enemyLayers | environmentLayers
+                )
+            )
             {
-                rb.linearVelocity = attackPoint.forward * bulletSpeed;
+                Debug.Log($"{weaponName} hit {hit.collider.name}!");
+
+                // Apply damage if it's an enemy
+                if (hit.collider.TryGetComponent(out IDamageable damageable))
+                {
+                    damageable.TakeDamage(damage);
+                }
+
+                // Apply impact force
+                BulletImpact(hit, bulletForce);
+
+                // Spawn impact effect if it hits an environment layer
+                if (
+                    impactEffectPrefab != null
+                    && (environmentLayers & (1 << hit.collider.gameObject.layer)) != 0
+                )
+                {
+                    Instantiate(impactEffectPrefab, hit.point, Quaternion.LookRotation(hit.normal));
+                }
             }
             else
             {
-                Debug.LogWarning("Bullet prefab does not have a Rigidbody component.");
+                Debug.Log($"{weaponName} missed!");
             }
-
-            // Destroy the bullet after a certain time to prevent memory leaks.
-            Destroy(bulletInstance, bulletLifeTime);
-
-            Debug.Log($"{weaponName} fired a bullet!");
         }
 
-        // Draw a visual representation of the attack point in the Unity Editor.
+        // ✅ Handles bullet impact force on rigidbodies
+        private void BulletImpact(RaycastHit hit, float bulletForce)
+        {
+            if (hit.rigidbody != null)
+            {
+                hit.rigidbody.AddForce(-hit.normal * bulletForce, ForceMode.Impulse);
+                Debug.Log($"Applied {bulletForce} force to {hit.collider.name}");
+            }
+        }
+
+        // Debugging: Draw ray in Scene View
         private void OnDrawGizmos()
         {
             if (attackPoint != null)
             {
                 Gizmos.color = Color.blue;
-                Gizmos.DrawWireSphere(attackPoint.position, 0.1f);
+                Gizmos.DrawRay(attackPoint.position, attackPoint.forward * attackRange);
             }
         }
     }

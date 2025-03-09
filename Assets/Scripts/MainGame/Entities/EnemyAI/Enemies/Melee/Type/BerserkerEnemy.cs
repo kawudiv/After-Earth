@@ -13,7 +13,7 @@ namespace EnemyAI.Enemies.Melee.Type
         protected override void Start()
         {
             base.Start();
-            maxHealth = 200f; // High health
+            health = 200f; // High health
             patrolSpeed = 2f;
             chaseSpeed = 3.5f; // Slower speed
         }
@@ -28,7 +28,7 @@ namespace EnemyAI.Enemies.Melee.Type
         {
             if (enemyHealth == null)
                 return;
-            float healthPercentage = enemyHealth.GetHealthPercentage();
+            float healthPercentage = enemyHealth.CurrentHealth;
             float attackSpeedMultiplier = 1f + (1f - healthPercentage); // Faster at low health
             animator.SetFloat("AttackSpeed", attackSpeedMultiplier);
         }

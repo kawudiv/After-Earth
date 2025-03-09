@@ -5,13 +5,13 @@ namespace Items.Type
 {
     public class QuestItem : ItemBase
     {
-        public int Id;
-        public bool isCollected;
+        public int Id; // Unique ID for the quest item
+        public bool isCollected; // Tracks if the item has been collected
 
         protected override void Awake()
         {
             base.Awake();
-            itemID = Id;
+            itemID = Id; // Set the item ID
         }
 
         public override void Use()

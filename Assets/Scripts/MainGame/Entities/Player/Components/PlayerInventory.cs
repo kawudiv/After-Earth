@@ -193,7 +193,8 @@ namespace Player.Components
 
         public void AddItem(ItemBase newItem)
         {
-            newItem.gameObject.SetActive(false);
+            newItem.gameObject.SetActive(false); // Disable the item in the scene
+            Debug.Log($"✅ [PlayerInventory] Added item: {newItem.ItemName} (ID: {newItem.ItemID})");
         }
     }
 }

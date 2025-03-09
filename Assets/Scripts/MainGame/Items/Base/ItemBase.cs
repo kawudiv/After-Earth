@@ -5,15 +5,15 @@ namespace Items.Base
     public abstract class ItemBase : MonoBehaviour
     {
         [SerializeField]
-        protected int itemID; 
+        protected int itemID; // Unique ID for the item
 
         [SerializeField]
-        protected string itemName; 
+        protected string itemName; // Name of the item
 
         public int ItemID => itemID;
-        public string ItemName => itemName; 
+        public string ItemName => itemName;
 
-        public Sprite ItemSprite;
+        public Sprite ItemSprite; // Sprite for the item (optional)
 
         protected virtual void Awake()
         {
@@ -29,6 +29,6 @@ namespace Items.Base
             }
         }
 
-        public abstract void Use();
+        public abstract void Use(); // Abstract method for item usage
     }
 }

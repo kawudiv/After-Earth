@@ -96,5 +96,31 @@ namespace Player.Components
                 Debug.LogWarning("[PlayerCombat] Equipped weapon type is unknown.");
             }
         }
+
+        // ✅ Called from Animation Event (Start of attack)
+        public void EnableWeaponCollider()
+        {
+            if (playerInventory.EquippedWeapon is MeleeWeapon meleeWeapon)
+            {
+                meleeWeapon.EnableWeaponCollider();
+            }
+            else
+            {
+                Debug.LogWarning("[PlayerCombat] No melee weapon equipped!");
+            }
+        }
+
+        // ✅ Called from Animation Event (End of attack)
+        public void DisableWeaponCollider()
+        {
+            if (playerInventory.EquippedWeapon is MeleeWeapon meleeWeapon)
+            {
+                meleeWeapon.DisableWeaponCollider();
+            }
+            else
+            {
+                Debug.LogWarning("[PlayerCombat] No melee weapon equipped!");
+            }
+        }
     }
 }

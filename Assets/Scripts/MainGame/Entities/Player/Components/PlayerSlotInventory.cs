@@ -125,21 +125,25 @@ namespace Player.Components
 
         private void ToggleMeleeWeapon()
         {
-            if (playerInventory.EquippedMeleeWeapon == meleeWeaponSlot)
+            if (playerInventory.EquippedMeleeWeapon is MeleeWeapon meleeWeapon)
             {
                 Debug.Log(
-                    $"[PlayerSlotInventory] 🔄 Unequipping melee weapon: {meleeWeaponSlot.WeaponName}"
+                    $"[PlayerSlotInventory] 🔄 Unequipping melee weapon: {meleeWeapon.WeaponName}"
                 );
+                meleeWeapon.OnDrop();
+                Debug.Log("[PlayerSlotInventory] OnDrop is called");
                 playerInventory.UnequipWeapon();
                 weaponUI.UpdateWeaponUI(false, playerInventory.EquippedRangedWeapon != null);
             }
-            else if (meleeWeaponSlot != null)
+            else if (meleeWeaponSlot is MeleeWeapon newMeleeWeapon)
             {
                 Debug.Log(
-                    $"[PlayerSlotInventory] 🔄 Equipping melee weapon: {meleeWeaponSlot.WeaponName}"
+                    $"[PlayerSlotInventory] 🔄 Equipping melee weapon: {newMeleeWeapon.WeaponName}"
                 );
+                newMeleeWeapon.OnPickup();
+                Debug.Log("[PlayerSlotInventory] OnPickup is called");
                 playerInventory.UnequipWeapon();
-                playerInventory.EquipWeapon(meleeWeaponSlot);
+                playerInventory.EquipWeapon(newMeleeWeapon);
                 weaponUI.UpdateWeaponUI(true, false);
             }
             else

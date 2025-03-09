@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Core;
 using EnemyAi.Test;
@@ -12,14 +13,11 @@ namespace Weapons.Types
 
         [Header("Hitbox Settings")]
         [SerializeField]
-        protected float hitboxRadius = 1.5f;
-
-        [SerializeField]
         protected LayerMask enemyLayers;
 
         [Header("Physics Settings")]
         [SerializeField]
-        protected float impactForce = 10f; // Force applied to ragdoll
+        protected float impactForce; // Force applied to ragdoll
 
         [Header("Weapon Effects")]
         [SerializeField]
@@ -28,74 +26,80 @@ namespace Weapons.Types
         [SerializeField]
         protected GameObject hitEffectPrefab; // Enemy hit effect
 
+        [HideInInspector]
         public int meleeID;
-        private Collider hitbox;
+        private MeshCollider hitbox; // Mesh Collider for hit detection
+        private HashSet<IDamageable> damagedEnemies = new HashSet<IDamageable>();
 
         protected override void Awake()
         {
             base.Awake();
             weaponTypeID = meleeID;
-            ConfigureSwordCollider();
+            ConfigureMeleeCollider();
         }
 
         public override void Attack()
         {
             Debug.Log($"{weaponName} is attacking!");
+            damagedEnemies.Clear(); // ✅ Clear previous hit records
+        }
 
-            // ✅ Spawn weapon trail effect
-            if (impactEffectPrefab != null)
+        internal void EnableWeaponCollider()
+        {
+            if (hitbox != null)
             {
-                Instantiate(impactEffectPrefab, attackPoint.position, attackPoint.rotation);
-            }
-
-            // ✅ Perform melee hit detection
-            Collider[] hitEnemies = Physics.OverlapSphere(
-                attackPoint.position,
-                hitboxRadius,
-                enemyLayers
-            );
-
-            if (hitEnemies.Length == 0)
-            {
-                Debug.Log("❌ No enemies hit!");
-                return;
-            }
-
-            // ✅ Track already damaged enemies
-            HashSet<IDamageable> damagedEnemies = new HashSet<IDamageable>();
-
-            foreach (Collider enemy in hitEnemies)
-            {
-                Debug.Log($"🎯 Hit detected on: {enemy.name}");
-
-                // ✅ Get the root object
-                Transform root = enemy.transform.root;
-
-                if (root.TryGetComponent<IDamageable>(out var damageable))
-                {
-                    if (!damagedEnemies.Contains(damageable)) // ✅ Avoid double damage
-                    {
-                        Debug.Log($"⚔️ {weaponName} dealing {damage} damage to {root.name}");
-                        damageable.TakeDamage(damage);
-                        damagedEnemies.Add(damageable); // ✅ Mark as damaged
-                    }
-                }
-                else
-                {
-                    Debug.Log($"❌ {root.name} does NOT implement IDamageable!");
-                }
-
-                // ✅ Call SwordImpact() to handle physics separately
-                SwordImpact(enemy);
+                hitbox.enabled = true;
+                hitbox.isTrigger = true; // ✅ Enable trigger to detect enemy hits
+                Debug.Log($"[MeleeWeapon] Enabled hitbox for {gameObject.name}");
             }
         }
 
-        private void SwordImpact(Collider enemy)
+        internal void DisableWeaponCollider()
         {
-            // ✅ First, check if the enemy has a health system
+            if (hitbox != null)
+            {
+                hitbox.enabled = false;
+                Debug.Log($"[MeleeWeapon] Disabled hitbox for {gameObject.name}");
+            }
+        }
+
+        private void OnTriggerEnter(Collider other)
+        {
+            if (!hitbox.enabled || !hitbox.isTrigger)
+                return; // ✅ Ignore if the hitbox is disabled or not in attack mode
+
+            if (((1 << other.gameObject.layer) & enemyLayers) == 0)
+            {
+                return; // Ignore non-enemy collisions
+            }
+
+            Debug.Log($"🎯 Hit detected on: {other.name}");
+
+            Transform root = other.transform.root;
+
+            if (root.TryGetComponent<IDamageable>(out var damageable))
+            {
+                if (!damagedEnemies.Contains(damageable))
+                {
+                    Debug.Log($"⚔️ {weaponName} dealing {damage} damage to {root.name}");
+                    damageable.TakeDamage(damage);
+                    damagedEnemies.Add(damageable); // ✅ Prevent multiple damage instances
+                }
+            }
+            else
+            {
+                Debug.Log($"❌ {root.name} does NOT implement IDamageable!");
+            }
+
+            // ✅ Handle ragdoll and physics impact
+            MeleeImpact(other);
+        }
+
+        private void MeleeImpact(Collider enemy)
+        {
             EnemyHealth enemyHealth = enemy.GetComponentInParent<EnemyHealth>();
 
-            if (enemyHealth != null && enemyHealth.isDead) // ✅ Only ragdoll if the enemy is dead
+            if (enemyHealth != null && enemyHealth.isDead)
             {
                 TestRagdoll ragdoll = enemy.GetComponentInParent<TestRagdoll>();
                 if (ragdoll != null)
@@ -104,15 +108,12 @@ namespace Weapons.Types
                     Vector3 forceDirection =
                         (enemy.transform.position - attackPoint.position).normalized * impactForce;
 
-                    ragdoll.TriggerRagdoll(); // ✅ Activate ragdoll first
-                    ragdoll.ApplyForceToRagdoll(hitPoint, forceDirection); // ✅ Apply force after ragdoll
-
-                    //Debug.Log($"💀 {enemy.name} is dead! Ragdoll activated & force applied.");
+                    ragdoll.TriggerRagdoll();
+                    ragdoll.ApplyForceToRagdoll(hitPoint, forceDirection);
                 }
             }
             else if (enemy.TryGetComponent(out Rigidbody rb))
             {
-                // ✅ Apply force if there's no ragdoll (for non-ragdoll enemies)
                 Vector3 forceDirection =
                     (enemy.transform.position - attackPoint.position).normalized * impactForce;
                 rb.AddForce(forceDirection, ForceMode.Impulse);
@@ -126,35 +127,44 @@ namespace Weapons.Types
             }
         }
 
-        private void ConfigureSwordCollider()
+        private void ConfigureMeleeCollider()
         {
-            hitbox = GetComponent<Collider>();
+            hitbox = GetComponent<MeshCollider>();
 
             if (hitbox == null)
             {
-                BoxCollider boxCollider = gameObject.AddComponent<BoxCollider>();
-                boxCollider.size = new Vector3(1f, 0.2f, 2f);
-                hitbox = boxCollider;
-
-                Debug.Log($"⚠️ No collider found! Adding BoxCollider to {gameObject.name}.");
+                hitbox = gameObject.AddComponent<MeshCollider>();
+                hitbox.convex = true; // ✅ Required for trigger detection
+                Debug.Log($"⚠️ No MeshCollider found! Adding MeshCollider to {gameObject.name}.");
             }
             else
             {
-                Debug.Log($"✅ Collider found on {gameObject.name}: {hitbox.GetType()}");
+                Debug.Log($"✅ MeshCollider found on {gameObject.name}");
             }
 
-            hitbox.isTrigger = false;
             hitbox.enabled = true;
+            hitbox.isTrigger = false; // ✅ Enable for pickup but prevent damage while on ground
         }
 
-        // Debugging: Draw melee hitbox in Scene View
-        private void OnDrawGizmosSelected()
+        public void OnPickup()
         {
-            if (attackPoint != null)
+            if (hitbox != null)
             {
-                Gizmos.color = Color.red;
-                Gizmos.DrawWireSphere(attackPoint.position, hitboxRadius);
+                hitbox.enabled = false; // ✅ Disable collider when equipped
             }
+            Debug.Log($"[MeleeWeapon] Picked up, collider disabled on {gameObject.name}");
+        }
+
+        public void OnDrop()
+        {
+            if (hitbox != null)
+            {
+                hitbox.enabled = true;
+                hitbox.isTrigger = false; // ✅ Enable pickup but prevent damage
+            }
+            Debug.Log(
+                $"[MeleeWeapon] Dropped, collider enabled but non-damaging on {gameObject.name}"
+            );
         }
     }
 }

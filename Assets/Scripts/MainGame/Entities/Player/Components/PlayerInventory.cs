@@ -128,6 +128,7 @@ namespace Player.Components
             newWeapon.transform.SetParent(weaponHolder);
             newWeapon.ApplyEquipTransform(newWeapon.transform);
             newWeapon.gameObject.SetActive(true);
+            Debug.Log("[PlayerInventory] EquipWeapon is called");
         }
 
         public void DropCurrentWeapon()

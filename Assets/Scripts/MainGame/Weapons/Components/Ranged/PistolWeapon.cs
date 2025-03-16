@@ -12,29 +12,26 @@ namespace Weapons.Components.Ranged
             damage = 20f;
             attackSpeed = 0.5f;
             attackRange = 50f;
-            bulletSpeed = 30f;
-            bulletLifeTime = 3f;
-            bulletForce = 10f;
+            bulletCount = 1; // ✅ Always fires straight
 
-            // Assign layer masks & impact effects
             enemyLayers = LayerMask.GetMask("Enemy");
             environmentLayers = LayerMask.GetMask("Default");
-            //impactEffectPrefab = Resources.Load<GameObject>("Effects/BulletImpact");
-
 
             rangeID = 0;
 
-            // Assign or validate attackPoint
+            // // IK settings for the left hand
+            // leftHandIKWeight = 1f;
+            // leftHandIKPosition = new Vector3(-0.04f, 0.05f, 0.04f);
+            // leftHandIKRotation = Quaternion.Euler(-6.9f, -167.96f, 15.6f);
+
+            // // ✅ NEW: Set Tracking Weights for Aiming
+            // bodyTrackingWeight = 0.3f;
+            // gunTrackingWeight = 1f;
+
             if (attackPoint == null)
             {
                 attackPoint = transform.Find("AttackPoint");
             }
-        }
-
-        public override void Attack()
-        {
-            base.Attack();
-            Debug.Log($"{weaponName} fires a bullet!");
         }
     }
 }

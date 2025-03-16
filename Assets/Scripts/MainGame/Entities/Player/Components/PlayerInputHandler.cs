@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Interactions;
+using Weapons.Types;
 
 namespace Player.Components
 {
@@ -14,11 +15,13 @@ namespace Player.Components
         private PlayerCombat playerCombat;
 
         public Vector2 MoveInput { get; private set; }
+        public Vector3 LookTarget { get; private set; }
         public bool IsSprinting { get; set; }
         public bool IsRolling { get; set; }
         public bool IsWalking { get; private set; } = false;
         public bool IsDraw { get; set; }
         public bool IsBlock { get; set; }
+        public bool IsAim { get; set; }
 
         // New flags for differentiating draw input.
         public bool IsMeleeDraw { get; private set; }
@@ -31,6 +34,24 @@ namespace Player.Components
         public bool CanMove { get; private set; } = true;
 
         private Dictionary<string, bool> values = new Dictionary<string, bool>();
+
+        private void OnLook(InputValue value)
+        {
+            Vector2 mousePosition = Mouse.current.position.ReadValue();
+            Ray ray = Camera.main.ScreenPointToRay(mousePosition);
+
+            if (Physics.Raycast(ray, out RaycastHit hit))
+            {
+                Vector3 targetPosition = hit.point; // Store hit position
+                targetPosition.y = transform.position.y; // Keep it level with player
+
+                LookTarget = targetPosition; // Assign the modified value
+
+                // Debug.Log(
+                //     $"🎯 Pointing at: {hit.collider.gameObject.name}, Target Position: {LookTarget}"
+                // );
+            }
+        }
 
         private void OnMove(InputValue value)
         {
@@ -177,10 +198,34 @@ namespace Player.Components
             }
         }
 
-        private void OnBlock(InputValue value)
+        private void OnRightClick(InputValue value)
         {
-            IsBlock = value.isPressed;
-            Debug.Log($"[PlayerInputHandler] IsBlock: {IsBlock}");
+            if (playerInventory == null)
+            {
+                Debug.LogError("[PlayerInputHandler] PlayerInventory is not assigned!");
+                return;
+            }
+
+            if (playerInventory.EquippedWeapon == null)
+            {
+                Debug.Log("[PlayerInputHandler] Equip a weapon first!");
+                return;
+            }
+
+            bool isPressed = value.isPressed;
+
+            if (playerInventory.EquippedWeapon is MeleeWeapon)
+            {
+                IsBlock = isPressed;
+                Debug.Log($"[PlayerInputHandler] Blocking: {IsBlock}");
+                playerCombat.RightClickHandler("Block", isPressed);
+            }
+            else if (playerInventory.EquippedWeapon is RangedWeapon)
+            {
+                IsAim = isPressed;
+                Debug.Log($"[PlayerInputHandler] Aiming: {IsAim}");
+                playerCombat.RightClickHandler("Aim", isPressed);
+            }
         }
 
         private void Update()
@@ -198,7 +243,7 @@ namespace Player.Components
         public void SetAllDraw(bool value)
         {
             IsMeleeDraw = value;
-            IsMeleeDraw = value;
+            IsRangedDraw = value;
             IsDraw = value;
         }
 
@@ -216,5 +261,37 @@ namespace Player.Components
         {
             values[key] = value;
         }
+
+        // private void OnDrawGizmos()
+        // {
+        //     if (Mouse.current != null)
+        //     {
+        //         // Get mouse position in screen space
+        //         Vector2 mousePosition = Mouse.current.position.ReadValue();
+
+        //         // Convert to world position using a ray
+        //         Ray ray = Camera.main.ScreenPointToRay(mousePosition);
+
+        //         if (Physics.Raycast(ray, out RaycastHit hit))
+        //         {
+        //             // Player's position
+        //             Vector3 playerPosition = transform.position;
+
+        //             // Target point where the mouse is pointing
+        //             Vector3 lookTarget = hit.point;
+        //             lookTarget.y = playerPosition.y; // Keep it level with the player
+
+        //             // Set Gizmo color
+        //             Gizmos.color = Color.red;
+
+        //             // Draw a directional line in Scene View
+        //             Gizmos.DrawLine(playerPosition, lookTarget);
+        //             Gizmos.DrawSphere(lookTarget, 0.1f);
+
+        //             // 🔥 Draw a temporary line in **Game View** (disappears after 0.5s)
+        //             Debug.DrawLine(playerPosition, lookTarget, Color.red, 0.5f);
+        //         }
+        //     }
+        // }
     }
 }

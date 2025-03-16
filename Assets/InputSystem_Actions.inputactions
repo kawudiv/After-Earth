@@ -78,7 +78,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Block",
+                    "name": "RightClick",
                     "type": "Button",
                     "id": "aa64d300-18ca-46e5-a673-e94abfc2d7c9",
                     "expectedControlType": "",
@@ -501,7 +501,7 @@
                     "interactions": "Hold",
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
-                    "action": "Block",
+                    "action": "RightClick",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

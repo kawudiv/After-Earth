@@ -1,3 +1,4 @@
+using Constraints.TargetTracking;
 using Player.Base;
 using Player.States.Combat.Common;
 using UnityEngine;
@@ -10,12 +11,16 @@ namespace Player.Components
         private PlayerBase player;
         private PlayerInputHandler inputHandler;
         private PlayerInventory playerInventory;
+        public PlayerInventory PlayerInventory => playerInventory;
+
+        private TargetTrackingController targetTrackingController;
 
         private void Awake()
         {
             player = GetComponent<PlayerBase>();
             inputHandler = GetComponent<PlayerInputHandler>();
             playerInventory = GetComponent<PlayerInventory>();
+            targetTrackingController = FindAnyObjectByType<TargetTrackingController>();
             Debug.Log("[PlayerCombat] Initialized.");
         }
 
@@ -27,6 +32,80 @@ namespace Player.Components
             return isEquipped;
         }
 
+        public void RightClickHandler(string actionType, bool isPressed)
+        {
+            Debug.Log(
+                $"[PlayerCombat] RightClickHandler called - Action: {actionType}, IsPressed: {isPressed}"
+            );
+
+            if (!IsEquip())
+            {
+                Debug.LogError($"[PlayerCombat] Cannot perform {actionType}: No weapon equipped.");
+                return;
+            }
+
+            switch (actionType)
+            {
+                case "Block":
+                    inputHandler.IsBlock = isPressed;
+                    player.PlayerAnimation.SetBool("IsBlocking", isPressed);
+                    Debug.Log($"[PlayerCombat] Block action set to {inputHandler.IsBlock}");
+                    break;
+
+                case "Aim":
+                    inputHandler.IsAim = isPressed;
+                    player.PlayerAnimation.SetBool("IsAiming", isPressed);
+                    Debug.Log($"[PlayerCombat] Aim action set to {inputHandler.IsAim}");
+
+                    if (targetTrackingController != null)
+                    {
+                        Debug.Log(
+                            $"[PlayerCombat] TargetTrackingController found. Updating tracking..."
+                        );
+
+                        if (isPressed) // Aiming
+                        {
+                            RangedWeapon rangedWeapon =
+                                playerInventory.EquippedWeapon as RangedWeapon;
+
+                            if (rangedWeapon != null)
+                            {
+                                Debug.Log(
+                                    $"[PlayerCombat] Ranged weapon detected: {rangedWeapon.WeaponName}"
+                                );
+                                Debug.Log(
+                                    $"[PlayerCombat] Applying Tracking Weights - Gun: {rangedWeapon.gunTrackingWeight}, Body: {rangedWeapon.bodyTrackingWeight}"
+                                );
+
+                                // ✅ Apply weapon-specific tracking settings
+                                targetTrackingController.InitializeWeaponIK(rangedWeapon);
+                                targetTrackingController.SetAiming(true);
+                            }
+                            else
+                            {
+                                Debug.LogWarning("[PlayerCombat] No RangedWeapon equipped!");
+                            }
+                        }
+                        else // Stop Aiming
+                        {
+                            Debug.Log("[PlayerCombat] Resetting Tracking to default.");
+                            targetTrackingController.SetAiming(false);
+                        }
+                    }
+                    else
+                    {
+                        Debug.LogError(
+                            "[PlayerCombat] TargetTrackingController is NULL! Cannot update tracking."
+                        );
+                    }
+                    break;
+
+                default:
+                    Debug.LogWarning($"[PlayerCombat] Unknown action: {actionType}");
+                    break;
+            }
+        }
+
         // Checks if the player is currently in an attack state
         public bool IsAttacking()
         {
@@ -35,7 +114,6 @@ namespace Player.Components
             return isAttacking;
         }
 
-        // Starts an attack if conditions are met
         public void StartAttack()
         {
             Debug.Log("[PlayerCombat] Attempting to start attack...");
@@ -45,12 +123,6 @@ namespace Player.Components
                 Debug.LogWarning("[PlayerCombat] Cannot attack: No weapon equipped.");
                 return;
             }
-
-            // if (!player.IsWeaponDrawn)
-            // {
-            //     Debug.LogWarning("[PlayerCombat] Cannot attack: Weapon is not drawn.");
-            //     return;
-            // }
 
             if (IsAttacking())
             {
@@ -62,39 +134,33 @@ namespace Player.Components
             player.StateMachine.ChangeState(new AttackWeaponState(player, player.StateMachine));
         }
 
-        // Performs an attack animation and triggers weapon logic
-        public void PerformLightAttack()
+        public void PerformAttack()
         {
-            Debug.Log("[PlayerCombat] Performing light attack...");
-
             if (!IsEquip())
-            {
-                Debug.LogWarning("[PlayerCombat] Cannot attack: No weapon equipped.");
                 return;
-            }
 
-            // if (!player.IsWeaponDrawn)
-            // {
-            //     Debug.LogWarning("[PlayerCombat] Cannot attack: Weapon is not drawn.");
-            //     return;
-            // }
+            if (playerInventory.EquippedWeapon is MeleeWeapon)
+            {
+                PerformMeleeAttack();
+            }
+            else if (playerInventory.EquippedWeapon is RangedWeapon)
+            {
+                PerformRangedAttack();
+            }
+        }
 
-            if (playerInventory.EquippedWeapon is MeleeWeapon meleeWeapon)
-            {
-                Debug.Log("[PlayerCombat] Performing melee attack.");
-                player.PlayerAnimation.SetTrigger("MeleeAttack");
-                meleeWeapon.Attack();
-            }
-            else if (playerInventory.EquippedWeapon is RangedWeapon rangedWeapon)
-            {
-                Debug.Log("[PlayerCombat] Performing ranged attack.");
-                player.PlayerAnimation.SetTrigger("RangedAttack");
-                rangedWeapon.Attack();
-            }
-            else
-            {
-                Debug.LogWarning("[PlayerCombat] Equipped weapon type is unknown.");
-            }
+        private void PerformMeleeAttack()
+        {
+            Debug.Log("[PlayerCombat] Performing melee attack.");
+            player.PlayerAnimation.SetTrigger("MeleeAttack");
+            (playerInventory.EquippedWeapon as MeleeWeapon)?.Attack();
+        }
+
+        private void PerformRangedAttack()
+        {
+            Debug.Log("[PlayerCombat] Performing ranged attack.");
+            player.PlayerAnimation.SetTrigger("RangedAttack");
+            (playerInventory.EquippedWeapon as RangedWeapon)?.Attack();
         }
 
         // ✅ Called from Animation Event (Start of attack)

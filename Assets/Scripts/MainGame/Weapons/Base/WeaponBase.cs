@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using Core;
 using UnityEngine;
 
 namespace Weapons.Base
@@ -28,6 +30,8 @@ namespace Weapons.Base
         [SerializeField]
         private Vector3 equipRotationOffset;
 
+        protected HashSet<IDamageable> damagedEnemies = new HashSet<IDamageable>();
+
         public string WeaponName => weaponName;
         public int WeaponTypeID => weaponTypeID;
         public float Damage => damage;
@@ -48,5 +52,10 @@ namespace Weapons.Base
 
         // Each weapon must implement its own attack logic.
         public abstract void Attack();
+
+        protected void ResetHitRecords()
+        {
+            damagedEnemies.Clear();
+        }
     }
 }

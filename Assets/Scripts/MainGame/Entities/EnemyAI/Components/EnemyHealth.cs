@@ -8,7 +8,7 @@ namespace EnemyAI.Components
     {
         [SerializeField] // ✅ Now visible in the Inspector
         private float currentHealth;
-        private bool isDead = false;
+        public bool isDead = false;
         public event Action<float, float> OnHealthChanged;
 
         [SerializeField]

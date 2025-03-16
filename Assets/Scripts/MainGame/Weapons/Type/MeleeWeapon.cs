@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Core;
-using EnemyAi.Test;
+using EnemyAI.Components;
 using UnityEngine;
 using Weapons.Base;
 
@@ -29,10 +29,10 @@ namespace Weapons.Types
         [HideInInspector]
         public int meleeID;
         private MeshCollider hitbox; // Mesh Collider for hit detection
-        private HashSet<IDamageable> damagedEnemies = new HashSet<IDamageable>();
+       // private HashSet<IDamageable> damagedEnemies = new HashSet<IDamageable>();
 
         protected override void Awake()
-        {
+        {   
             base.Awake();
             weaponTypeID = meleeID;
             ConfigureMeleeCollider();
@@ -41,7 +41,7 @@ namespace Weapons.Types
         public override void Attack()
         {
             Debug.Log($"{weaponName} is attacking!");
-            damagedEnemies.Clear(); // ✅ Clear previous hit records
+            ResetHitRecords(); 
         }
 
         internal void EnableWeaponCollider()
@@ -101,7 +101,7 @@ namespace Weapons.Types
 
             if (enemyHealth != null && enemyHealth.isDead)
             {
-                TestRagdoll ragdoll = enemy.GetComponentInParent<TestRagdoll>();
+                EnemyRagdoll ragdoll = enemy.GetComponentInParent<EnemyRagdoll>();
                 if (ragdoll != null)
                 {
                     Vector3 hitPoint = enemy.ClosestPoint(attackPoint.position);

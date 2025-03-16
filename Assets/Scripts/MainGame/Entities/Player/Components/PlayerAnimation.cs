@@ -40,6 +40,15 @@ namespace Player.Components
             Debug.Log($"[PlayerAnimation] SetTrigger: {parameter} on {gameObject.name}", this);
         }
 
+        public void SetBool(string parameter, bool value)
+        {
+            animator.SetBool(parameter, value);
+            Debug.Log(
+                $"[PlayerAnimation] SetBool: {parameter} = {value} on {gameObject.name}",
+                this
+            );
+        }
+
         /// <summary>
         /// Sets the melee weapon type parameter in the animator.
         /// </summary>

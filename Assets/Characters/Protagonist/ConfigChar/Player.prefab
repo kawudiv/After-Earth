@@ -376,10 +376,10 @@ MonoBehaviour:
   gunTrackingConstraint: {fileID: 7302955352575810406}
   leftHandIKConstraint: {fileID: 8586902116421984451}
   rightHandIKConstraint: {fileID: 3452532307443809074}
-  leftHandIKTarget: {fileID: 0}
-  leftHandIK_Hint: {fileID: 0}
-  rightHandIKTarget: {fileID: 0}
-  rightHandIK_Hint: {fileID: 0}
+  leftHandIKTarget: {fileID: 6652227035631273998}
+  leftHandIK_Hint: {fileID: 5140448927086147276}
+  rightHandIKTarget: {fileID: 3078167075530931369}
+  rightHandIK_Hint: {fileID: 3148406405038957722}
 --- !u!1 &6778111374430696628
 GameObject:
   m_ObjectHideFlags: 0

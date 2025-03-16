@@ -157,7 +157,7 @@ MonoBehaviour:
   attackSpeed: 0
   attackRange: 0
   equipPositionOffset: {x: 0, y: 0, z: 0}
-  equipRotationOffset: {x: 0, y: 0, z: 0}
+  equipRotationOffset: {x: 0, y: -90, z: -90}
   attackPoint: {fileID: 4360543279658834515}
   aimPrefab: {fileID: 0}
   bulletForce: 500

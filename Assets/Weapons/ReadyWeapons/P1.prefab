@@ -174,8 +174,8 @@ MonoBehaviour:
   damage: 0
   attackSpeed: 0
   attackRange: 0
-  equipPositionOffset: {x: -0.0022, y: 0.0732, z: 0.026}
-  equipRotationOffset: {x: -7.74, y: -88.202, z: -102.549}
+  equipPositionOffset: {x: 0.03, y: 0.049, z: 0}
+  equipRotationOffset: {x: 0, y: -90, z: -90}
   attackPoint: {fileID: 8948558634028850652}
   aimPrefab: {fileID: 0}
   bulletForce: 0
@@ -190,13 +190,13 @@ MonoBehaviour:
   impactEffectPrefab: {fileID: 0}
   hitEffectPrefab: {fileID: 0}
   leftHandIKWeight: 1
-  leftHandIKPosition: {x: 0, y: 0, z: 0}
-  leftHandIKRotation: {x: 0, y: 0, z: 0, w: 0}
-  leftHandIKHintPosition: {x: 0, y: 0, z: 0}
+  leftHandIKPosition: {x: 0.02, y: 0.118, z: 0.058}
+  leftHandIKRotation: {x: 0.110615894, y: 0.69840115, z: -0.30553073, w: -0.6376919}
+  leftHandIKHintPosition: {x: 0.083, y: -0.269, z: 0.177}
   rightHandIKWeight: 1
-  rightHandIKPosition: {x: 0, y: 0, z: 0}
+  rightHandIKPosition: {x: 0, y: 0.004, z: 0}
   rightHandIKRotation: {x: 0, y: 0, z: 0, w: 0}
-  rightHandIKHintPosition: {x: 0, y: 0, z: 0}
+  rightHandIKHintPosition: {x: 0.135, y: -0.257, z: -0.255}
   bodyTrackingWeight: 1
   gunTrackingWeight: 1
   rangeID: 0

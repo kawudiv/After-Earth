@@ -6,54 +6,56 @@ namespace EnemyAI.Components
 {
     public class EnemyHealth : MonoBehaviour, Core.IDamageable
     {
-        [SerializeField] // ✅ Now visible in the Inspector
+        [SerializeField]
         private float currentHealth;
         public bool isDead = false;
         public event Action<float, float> OnHealthChanged;
 
         [SerializeField]
         private GameObject damageEffectPrefab;
+
         private EnemyBase enemyBase;
         private EnemyRagdoll ragdoll;
+        private float regen; // ✅ Added regeneration variable
 
-        public float CurrentHealth => currentHealth; // ✅ Read-only access
+        public float CurrentHealth => currentHealth;
 
         private void Awake()
         {
-           ragdoll = GetComponent<EnemyRagdoll>();
+            ragdoll = GetComponent<EnemyRagdoll>();
             enemyBase = GetComponentInParent<EnemyBase>();
 
             if (enemyBase == null)
             {
                 Debug.LogError($"{name} is missing an EnemyBase component!");
-                return; // Prevents further errors
-            }  
+                return;
+            }
         }
+
         private void Start()
         {
             currentHealth = enemyBase.health;
+            regen = enemyBase.regeneration;
+            InvokeRepeating(nameof(RegenerateHealth), 1f, 1f); // ✅ Start health regeneration every second
         }
 
         public void TakeDamage(float damage)
         {
             if (isDead)
-                return; // ✅ Ignore further damage if already dead
+                return;
 
             currentHealth -= damage;
-            currentHealth = Mathf.Clamp(currentHealth, 0, enemyBase.health); // ✅ Prevent negative HP
+            currentHealth = Mathf.Clamp(currentHealth, 0, enemyBase.health);
 
             Debug.Log($"🩸 {gameObject.name} took {damage} damage! Current HP: {currentHealth}");
 
-            // ✅ Trigger the health update event
             OnHealthChanged?.Invoke(currentHealth, enemyBase.health);
 
-            // ✅ Show damage effect (blood splatter)
             if (damageEffectPrefab != null)
             {
                 Instantiate(damageEffectPrefab, transform.position, Quaternion.identity);
             }
 
-            // ✅ If HP reaches 0, trigger full death ragdoll
             if (currentHealth <= 0)
             {
                 Die();
@@ -61,7 +63,6 @@ namespace EnemyAI.Components
             else
             {
                 Debug.Log($"😡 {gameObject.name} flinches from damage!");
-                // ✅ Play a stagger animation if needed (requires Animator)
                 Animator animator = GetComponent<Animator>();
                 if (animator != null)
                 {
@@ -70,17 +71,30 @@ namespace EnemyAI.Components
             }
         }
 
+        private void RegenerateHealth()
+        {
+            if (isDead || currentHealth <= 0 || regen <= 0)
+                return;
+
+            currentHealth += regen;
+            currentHealth = Mathf.Clamp(currentHealth, 0, enemyBase.health);
+
+            Debug.Log($"🟢 {gameObject.name} regenerates {regen} HP! Current HP: {currentHealth}");
+
+            OnHealthChanged?.Invoke(currentHealth, enemyBase.health);
+        }
+
         private void Die()
         {
             if (isDead)
-                return; // ✅ Prevent multiple calls
+                return;
 
             isDead = true;
-            ragdoll.TriggerRagdoll(); // ✅ Fully activate ragdoll on death
+            CancelInvoke(nameof(RegenerateHealth)); // ✅ Stop regeneration on death
+            ragdoll.TriggerRagdoll();
 
             Debug.Log($"💀 {gameObject.name} has died!");
-
-            Destroy(gameObject, 5f); // ✅ Remove enemy after 5 sec (optional)
+            Destroy(gameObject, 5f);
         }
     }
 }

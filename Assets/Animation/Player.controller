@@ -809,9 +809,6 @@ AnimatorStateTransition:
   - m_ConditionMode: 2
     m_ConditionEvent: IsAiming
     m_EventTreshold: 0
-  - m_ConditionMode: 1
-    m_ConditionEvent: Cancel
-    m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -5374832982478724030}
   m_Solo: 0

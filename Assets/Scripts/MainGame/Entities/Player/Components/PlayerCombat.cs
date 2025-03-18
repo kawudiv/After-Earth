@@ -1,6 +1,7 @@
 using Constraints.TargetTracking;
 using Player.Base;
 using Player.States.Combat.Common;
+using Player.States.Movement;
 using UnityEngine;
 using Weapons.Types;
 
@@ -50,6 +51,11 @@ namespace Player.Components
                     inputHandler.IsBlock = isPressed;
                     player.PlayerAnimation.SetBool("IsBlocking", isPressed);
                     Debug.Log($"[PlayerCombat] Block action set to {inputHandler.IsBlock}");
+                    if (player.StateMachine.CurrentState is IdleState idleState)
+                    {
+                        idleState.CanMove = !isPressed;
+                        Debug.Log($"[PlayerCombat] CanMove set to {idleState.CanMove}");
+                    }
                     break;
 
                 case "Aim":
@@ -97,6 +103,11 @@ namespace Player.Components
                         Debug.LogError(
                             "[PlayerCombat] TargetTrackingController is NULL! Cannot update tracking."
                         );
+                    }
+                    if (player.StateMachine.CurrentState is IdleState idleStateAim)
+                    {
+                        idleStateAim.CanMove = !isPressed;
+                        Debug.Log($"[PlayerCombat] CanMove set to {idleStateAim.CanMove}");
                     }
                     break;
 

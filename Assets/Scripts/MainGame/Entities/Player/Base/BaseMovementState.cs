@@ -14,6 +14,8 @@ namespace Player.Base
         private float speedTransitionDuration = 0.1f;
         public float speedTransitionTime = 0f;
 
+        public bool CanMove { get; set; } = true; // Movement toggle
+
         protected BaseMovementState(PlayerBase player, StateMachine stateMachine)
             : base(player, stateMachine)
         {
@@ -21,12 +23,13 @@ namespace Player.Base
             playerAnimation = player.PlayerAnimation;
         }
 
-        // Move the character with smooth transitions
         protected void MoveCharacter(Vector2 moveInput, float targetSpeed)
         {
+            if (!CanMove)
+                return; // Prevent movement when disabled
+
             Vector3 moveDirection = new Vector3(moveInput.x, 0, moveInput.y).normalized;
 
-            // Rotate only if there's movement input
             if (moveDirection != Vector3.zero)
             {
                 Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
@@ -37,29 +40,29 @@ namespace Player.Base
                 );
             }
 
-            // Smooth speed transition
             currentSpeed = Mathf.Lerp(
                 currentSpeed,
                 targetSpeed,
                 Time.deltaTime / speedTransitionDuration
             );
-
-            // Apply movement
             characterController.Move(moveDirection * currentSpeed * Time.deltaTime);
-
-            // Update the animation's speed parameter.
             playerAnimation.UpdateSpeed(currentSpeed);
         }
 
-        // Gradually slow down when no input is given
         protected void Decelerate()
         {
+            if (!CanMove)
+                return; // Prevent deceleration updates
+
             currentSpeed = Mathf.Lerp(currentSpeed, 0f, Time.deltaTime / speedTransitionDuration);
             playerAnimation.UpdateSpeed(currentSpeed);
         }
 
         public void PerformRoll()
         {
+            if (!CanMove)
+                return; // Prevent rolling when movement is disabled
+
             if (player.PlayerInputHandler.IsRolling && characterController.isGrounded)
             {
                 Debug.Log("🔄 Rolling initiated!");
@@ -67,7 +70,6 @@ namespace Player.Base
             }
         }
 
-        // Apply gravity
         protected void ApplyGravity()
         {
             if (!characterController.isGrounded)
@@ -76,7 +78,7 @@ namespace Player.Base
             }
             else
             {
-                velocity.y = 0f; // Reset gravity when grounded
+                velocity.y = 0f;
             }
 
             characterController.Move(velocity * Time.deltaTime);

@@ -13,11 +13,17 @@ namespace Player.States.Movement
             base.Enter();
             Debug.Log("Entered Sprint State");
             speedTransitionTime = 0f;
+            CanMove = true;
         }
 
         public override void LogicUpdate()
         {
             base.LogicUpdate();
+            if (!CanMove)
+            {
+                Debug.Log("[SprintState] CanMove is FALSE. Player remains idle.");
+                return; // Prevent movement state transitions
+            }
 
             Vector2 moveInput = player.PlayerInputHandler.MoveInput;
             bool isSprinting = player.PlayerInputHandler.IsSprinting;

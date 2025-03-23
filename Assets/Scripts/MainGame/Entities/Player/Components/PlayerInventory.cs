@@ -3,6 +3,7 @@ using Player.Base;
 using UnityEngine;
 using Weapons.Base;
 using Weapons.Types;
+using System.Collections.Generic;  // For List
 
 namespace Player.Components
 {
@@ -13,20 +14,17 @@ namespace Player.Components
 
         public WeaponBase EquippedMeleeWeapon => equippedMeleeWeapon;
         public WeaponBase EquippedRangedWeapon => equippedRangedWeapon;
-
         public WeaponBase EquippedWeapon => equippedMeleeWeapon ?? equippedRangedWeapon;
 
-        [SerializeField]
-        private Transform weaponHolder;
-
-        [SerializeField]
-        private Transform dropPoint;
+        [SerializeField] private Transform weaponHolder;
+        [SerializeField] private Transform dropPoint;
         private PlayerAnimation playerAnimation;
         private PlayerBase player;
         public GameObject itemPrefab;
 
-        [SerializeField]
-        private ItemUI itemUI;
+        // ✅ Updated: Support multiple ItemUI slots
+        [SerializeField] private List<ItemUI> itemSlots = new List<ItemUI>();
+        private ItemBase[] inventoryItems = new ItemBase[3];  // To track collected items
 
         private void Awake()
         {
@@ -36,6 +34,12 @@ namespace Player.Components
             if (playerAnimation == null)
             {
                 Debug.LogError("[PlayerInventory] PlayerAnimation component is missing!");
+            }
+
+            // Safety check to avoid null exceptions
+            if (itemSlots.Count != 3)
+            {
+                Debug.LogError("[PlayerInventory] Please assign exactly 3 ItemUI slots in the inspector.");
             }
         }
 
@@ -55,7 +59,7 @@ namespace Player.Components
 
         public void TryPickUpPrefab()
         {
-            Collider[] colliders = Physics.OverlapSphere(transform.position, 2f); 
+            Collider[] colliders = Physics.OverlapSphere(transform.position, 2f);
             foreach (Collider collider in colliders)
             {
                 // Check for WeaponPickup
@@ -65,14 +69,9 @@ namespace Player.Components
                     WeaponBase weaponPrefab = weaponPickup.GetWeaponPrefab();
                     if (weaponPrefab != null)
                     {
-                        // Directly add the existing weapon to the inventory without instantiating
-                        FindAnyObjectByType<PlayerSlotInventory>()
-                            ?.AddWeapon(weaponPrefab);
-                        Debug.Log(
-                            $"✅ [PlayerInventory] Picked up weapon: {weaponPrefab.WeaponName}"
-                        );
+                        FindAnyObjectByType<PlayerSlotInventory>()?.AddWeapon(weaponPrefab);
+                        Debug.Log($"✅ [PlayerInventory] Picked up weapon: {weaponPrefab.WeaponName}");
 
-                        // Disable the pickup object in the scene
                         weaponPickup.gameObject.SetActive(false);
                         return;
                     }
@@ -89,18 +88,15 @@ namespace Player.Components
                     ItemBase itemPrefab = itemPickup.GetItemPrefab();
                     if (itemPrefab != null)
                     {
-                        // Directly add the existing item to the inventory without instantiating
-                        FindAnyObjectByType<PlayerSlotInventory>()
-                            ?.AddItem(itemPrefab);
-                        Debug.Log($"✅ [PlayerInventory] Picked up item: {itemPrefab.ItemName}");
-
-                        // Update the ItemCollectedSlot image with the item's sprite
-                        if (itemUI != null)
+                        if (AddItem(itemPrefab))
                         {
-                            itemUI.UpdateItemUI(itemPrefab.ItemSprite);
+                            Debug.Log($"✅ [PlayerInventory] Picked up item: {itemPrefab.ItemName}");
+                            itemPickup.gameObject.SetActive(false);
                         }
-
-                        itemPickup.gameObject.SetActive(false);
+                        else
+                        {
+                            Debug.LogWarning("[PlayerInventory] Inventory full. Can't pick up item.");
+                        }
                         return;
                     }
                     else
@@ -113,10 +109,38 @@ namespace Player.Components
             Debug.Log("[PlayerInventory] No pickup found to pick up.");
         }
 
+        public bool AddItem(ItemBase newItem)
+        {
+            // Look for an empty slot in the inventory
+            for (int i = 0; i < inventoryItems.Length; i++)
+            {
+                if (inventoryItems[i] == null)
+                {
+                    inventoryItems[i] = newItem;
+                    newItem.gameObject.SetActive(false);
+
+                    // Update the UI slot if it exists
+                    if (i < itemSlots.Count)
+                    {
+                        itemSlots[i].UpdateItemUI(newItem.ItemSprite);
+                        Debug.Log($"✅ [PlayerInventory] Added item to slot {i}: {newItem.ItemName} (ID: {newItem.ItemID})");
+                    }
+                    else
+                    {
+                        Debug.LogError($"[PlayerInventory] No UI slot found for item {newItem.ItemName} at index {i}.");
+                    }
+
+                    return true;
+                }
+            }
+
+            Debug.LogWarning("[PlayerInventory] No empty slot available for new item.");
+            return false;
+        }
+
         public void EquipWeapon(WeaponBase newWeapon)
         {
-            if (newWeapon == null)
-                return;
+            if (newWeapon == null) return;
 
             UnequipWeapon();
 
@@ -143,8 +167,7 @@ namespace Player.Components
 
         public void DropWeapon(WeaponBase weaponToDrop)
         {
-            if (weaponToDrop == null)
-                return;
+            if (weaponToDrop == null) return;
 
             weaponToDrop.transform.SetParent(null);
             weaponToDrop.transform.position = transform.position + transform.forward * 1f;
@@ -189,12 +212,6 @@ namespace Player.Components
                 equippedRangedWeapon = null;
                 Debug.Log("❌ [PlayerInventory] Ranged Weapon Unequipped");
             }
-        }
-
-        public void AddItem(ItemBase newItem)
-        {
-            newItem.gameObject.SetActive(false); // Disable the item in the scene
-            Debug.Log($"✅ [PlayerInventory] Added item: {newItem.ItemName} (ID: {newItem.ItemID})");
         }
     }
 }

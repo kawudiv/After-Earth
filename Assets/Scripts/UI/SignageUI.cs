@@ -7,7 +7,7 @@ public class SignageUI : MonoBehaviour
 
     private void Start()
     {
-        entranceUI.SetActive(false); // Hide the UI on start
+        entranceUI.SetActive(false); 
     }
 
     // Show the UI message

@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class ItemPickup : MonoBehaviour
 {
-    [SerializeField] private ItemBase itemPrefab; // The item to be picked up
-    [SerializeField] private Signage signage; // The signage that blocks the entrance
+    [SerializeField] private ItemBase itemPrefab;
+    [SerializeField] private Signage signage; 
 
     public void PickupItem(PlayerInventory inventory)
     {
@@ -15,18 +15,15 @@ public class ItemPickup : MonoBehaviour
             return;
         }
 
-        // Add the item to the player's inventory
         inventory.AddItem(itemPrefab);
 
         Debug.Log($"✅[ItemPickup] Picked Up {itemPrefab.ItemName}");
 
-        // Notify the signage that the item has been collected
         if (signage != null)
         {
             signage.CollectItem();
         }
 
-        // Disable the item in the scene after pickup
         gameObject.SetActive(false);
     }
 

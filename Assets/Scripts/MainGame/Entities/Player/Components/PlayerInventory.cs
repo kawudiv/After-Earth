@@ -109,7 +109,7 @@ namespace Player.Components
             Debug.Log("[PlayerInventory] No pickup found to pick up.");
         }
 
-        public bool AddItem(ItemBase newItem)
+        /*public bool AddItem(ItemBase newItem)
         {
             // Look for an empty slot in the inventory
             for (int i = 0; i < inventoryItems.Length; i++)
@@ -135,6 +135,46 @@ namespace Player.Components
             }
 
             Debug.LogWarning("[PlayerInventory] No empty slot available for new item.");
+            return false;
+        }*/
+
+        public bool AddItem(ItemBase newItem)
+        {
+            if (newItem == null)
+            {
+                Debug.LogError("[PlayerInventory] ❌ Cannot add a null item to the inventory!");
+                return false;
+            }
+
+            // Look for an empty slot in the inventory
+            for (int i = 0; i < inventoryItems.Length; i++)
+            {
+                if (inventoryItems[i] == null)
+                {
+                    Debug.Log($"[PlayerInventory] 🟢 Found empty slot at index {i}.");
+                    inventoryItems[i] = newItem;
+                    newItem.gameObject.SetActive(false);
+
+                    if (i < itemSlots.Count)
+                    {
+                        Debug.Log($"[PlayerInventory] 🔄 Updating Item UI Slot {i} with item: {newItem.ItemName}");
+                        itemSlots[i].UpdateItemUI(newItem.ItemSprite);
+                        Debug.Log($"✅ [PlayerInventory] Added item to slot {i}: {newItem.ItemName} (ID: {newItem.ItemID})");
+                    }
+                    else
+                    {
+                        Debug.LogError($"[PlayerInventory] ❌ No UI slot found for item {newItem.ItemName} at index {i}.");
+                    }
+
+                    return true;
+                }
+                else
+                {
+                    Debug.Log($"[PlayerInventory] Slot {i} is already occupied by: {inventoryItems[i].ItemName}");
+                }
+            }
+
+            Debug.LogWarning("[PlayerInventory] ⚠️ No empty slot available for new item.");
             return false;
         }
 

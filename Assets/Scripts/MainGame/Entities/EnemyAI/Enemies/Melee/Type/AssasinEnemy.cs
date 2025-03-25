@@ -22,13 +22,13 @@ namespace EnemyAI.Enemies.Melee.Type
         protected override void Update()
         {
             base.Update(); // Runs the default EnemyBase update logic
-            SomeStuff(); // Custom behavior for the Overlord boss
+            SomeStuff(); // Custom behavior
         }
 
         private void SomeStuff()
         {
             Debug.Log($"{name} is doing something unique!");
-            // Additional custom logic specific to OverlordBoss
+            // Additional custom logic 
         }
     }
 }

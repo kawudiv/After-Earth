@@ -7,8 +7,9 @@ namespace EnemyAI.Enemies.Melee.Type
         protected override void Awake()
         {
             base.Awake();
-            Debug.Log($"{name} is a Brute - slow but powerful!");
+            Debug.Log($"{name} is a Soldier - he has nothing to lose!");
 
+            enemyID = 1;
             patrolSpeed = 1f;
             chaseSpeed = 3f;
             attackRange = 2f;
@@ -21,15 +22,12 @@ namespace EnemyAI.Enemies.Melee.Type
             attackCooldown = 1.8f;
 
             canFlee = true;
-            Debug.Log($"{name} has flee ability enabled.");
         }
 
-        protected override void CheckHealthAndReact()
+        protected override void Update()
         {
-            base.CheckHealthAndReact(); // ✅ Already handles fleeing logic in MeleeEnemy
-
-            // ✅ Only add extra behavior if needed
-            Debug.Log($"{name} (KriegEnemy) Health Check: {enemyHealth.CurrentHealth}");
+            base.Update();
+            CanFlee();
         }
     }
 }

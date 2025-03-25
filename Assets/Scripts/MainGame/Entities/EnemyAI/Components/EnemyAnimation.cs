@@ -22,6 +22,7 @@ namespace EnemyAI.Components
         {
             float speed = agent.velocity.magnitude; // Get the actual movement speed
             animator.SetFloat("Speed", speed); // Update Blend Tree parameter
+            animator.SetFloat("Enemy", enemy.enemyID);
         }
 
         public void SetTrigger(string parameter)

@@ -7,30 +7,28 @@ namespace EnemyAI.Enemies.Melee.Type
         protected override void Awake()
         {
             base.Awake();
-            Debug.Log($"{name} is a Berserker - strong but slow!");
-        }
+            Debug.Log($"{name} is a Berserker - relentless and fearless!");
 
-        protected override void Start()
-        {
-            base.Start();
-            health = 200f; // High health
-            patrolSpeed = 2f;
-            chaseSpeed = 3.5f; // Slower speed
+            enemyID = 2;
+            patrolSpeed = 1.2f;
+            chaseSpeed = 4.5f; // ✅ Faster than KriegEnemy
+            attackRange = 1.5f;
+            detectionRange = 12f; // ✅ More aggressive detection range
+
+            health = 180f;
+            armor = 3f;
+            regeneration = 0f; // ❌ No health regeneration
+            attackDamage = 25f; // ✅ Higher damage than KriegEnemy
+            attackCooldown = 1.2f; // ✅ Attacks faster
+
+            canFlee = false; // ❌ This enemy will NEVER flee
+            Debug.Log($"{name} is fearless and will fight to the death!");
         }
 
         protected override void Update()
         {
             base.Update();
-            AdjustAttackSpeed();
-        }
-
-        private void AdjustAttackSpeed()
-        {
-            if (enemyHealth == null)
-                return;
-            float healthPercentage = enemyHealth.CurrentHealth;
-            float attackSpeedMultiplier = 1f + (1f - healthPercentage); // Faster at low health
-            animator.SetFloat("AttackSpeed", attackSpeedMultiplier);
+            // ❌ No need to call CanFlee() because Berserker never flees
         }
     }
 }

@@ -22,7 +22,6 @@ namespace EnemyAI.Enemies.Melee
             // Assign melee-specific states
             _meleeChaseState = new MeleeChaseState(this, stateMachine);
             _meleeAttackState = new MeleeAttackState(this, stateMachine);
-            _fleeState = new FleeState(this, stateMachine);
 
             if (canFlee)
             {
@@ -31,6 +30,7 @@ namespace EnemyAI.Enemies.Melee
             }
             else
             {
+                _fleeState = null; // Ensure no invalid state reference
                 Debug.Log($"{name} cannot flee.");
             }
 
@@ -42,36 +42,29 @@ namespace EnemyAI.Enemies.Melee
         protected override void Update()
         {
             base.Update();
-            CheckHealthAndReact(); // ✅ Call this instead of adding logic directly
+            CanFlee(); // ✅ No need for parameters, `canFlee` will be checked inside
         }
 
-        protected override void CheckHealthAndReact()
+        public void CanFlee()
         {
-            if (enemyHealth == null)
-            {
-                Debug.LogError($"{name} is missing an EnemyHealth component!");
-                return;
-            }
+            if (!canFlee || _fleeState == null || enemyHealth == null)
+                return; // ✅ Skip fleeing behavior if `canFlee` is false
 
-            float currentHealth = enemyHealth.CurrentHealth; // ✅ Get current health
-            Debug.Log($"{name} Health Check: {currentHealth}");
+            float currentHealth = enemyHealth.CurrentHealth;
+            float maxHealth = enemyHealth.MaxHealth; // Assuming MaxHealth is available
+            float healthPercentage = currentHealth / maxHealth * 100f;
 
-            // ✅ Ensure we only switch states when necessary
-            if (canFlee && _fleeState != null && currentHealth <= 20)
+            Debug.Log($"{name} Health Check for Fleeing: {currentHealth} ({healthPercentage}%)");
+
+            if (healthPercentage <= 50 && stateMachine.currentState != _fleeState)
             {
-                if (stateMachine.currentState != _fleeState) // ❌ Prevent re-entering the same state
-                {
-                    Debug.Log($"{name} health is low! Switching to FleeState.");
-                    stateMachine.ChangeState(_fleeState);
-                }
+                Debug.Log($"{name} health is below 50%! Switching to FleeState.");
+                stateMachine.ChangeState(_fleeState);
             }
-            else if (canFlee && _fleeState != null && currentHealth >= 22) // ✅ Added a buffer to prevent rapid switching
+            else if (healthPercentage >= 60 && stateMachine.currentState == _fleeState)
             {
-                if (stateMachine.currentState == _fleeState) // ✅ Only switch if currently fleeing
-                {
-                    Debug.Log($"{name} health is sufficient! Switching to PatrolState.");
-                    stateMachine.ChangeState(PatrolState);
-                }
+                Debug.Log($"{name} health recovered to 60%! Returning to PatrolState.");
+                stateMachine.ChangeState(PatrolState);
             }
         }
     }

@@ -1,4 +1,5 @@
 using EnemyAI.Base;
+using EnemyAI.Components;
 using UnityEngine;
 
 namespace EnemyAI.States.Melee
@@ -7,9 +8,13 @@ namespace EnemyAI.States.Melee
     {
         private float lastAttackTime;
         private bool isAttacking = false;
+        private EnemyCombat enemyCombat;
 
         public MeleeAttackState(EnemyBase _enemy, StateMachine _stateMachine)
-            : base(_enemy, _stateMachine) { }
+            : base(_enemy, _stateMachine) 
+        {
+            enemyCombat = _enemy.GetComponent<EnemyCombat>();
+        }
 
         public override void Enter()
         {
@@ -32,7 +37,8 @@ namespace EnemyAI.States.Melee
                 direction.y = 0; // Prevent tilting up/down
                 enemy.transform.rotation = Quaternion.LookRotation(direction);
             }
-            enemy.animator.SetTrigger("Attack");
+
+            enemyCombat?.PerformAttack();
             lastAttackTime = Time.time;
         }
 
@@ -40,7 +46,7 @@ namespace EnemyAI.States.Melee
         {
             base.LogicUpdate();
 
-            // Check if attack should restart
+            // Check if attack should restart based on enemy's attack cooldown
             if (Time.time - lastAttackTime >= enemy.attackCooldown && isAttacking)
             {
                 Debug.Log($"{enemy.name} cooldown over, attacking again!");
@@ -48,10 +54,7 @@ namespace EnemyAI.States.Melee
             }
 
             // Stop attacking if player moves away
-            if (
-                Vector3.Distance(enemy.transform.position, enemy.target.position)
-                > enemy.attackRange
-            )
+            if (Vector3.Distance(enemy.transform.position, enemy.target.position) > enemy.attackRange)
             {
                 Debug.Log($"{enemy.name} target out of range, switching to ChaseState!");
                 isAttacking = false;

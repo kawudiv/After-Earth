@@ -40,70 +40,26 @@ namespace Player.States.Combat.Common
 
             if (playerInventory.EquippedWeapon is RangedWeapon)
             {
-                if (timePassed >= 0.3f) // Adjust based on fire rate
-                {
-                    Debug.Log("[AttackWeaponState] 🎯 Ranged attack finished. Returning to Idle.");
-                    stateMachine.ChangeState(player.IdleState);
-                }
-                return;
+                HandleRangedAttack();
             }
-
-            int currentLayer = 2;
-            float layerWeight = player.animator.GetLayerWeight(currentLayer);
-
-            if (layerWeight == 0)
+            else if (playerInventory.EquippedWeapon is MeleeWeapon)
             {
-                Debug.Log(
-                    "[AttackWeaponState] ❌ Layer 2 is inactive! Cannot detect attack animations."
-                );
-                return;
+                HandleMeleeAttack();
             }
+        }
 
-            AnimatorStateInfo stateInfo = player.animator.GetCurrentAnimatorStateInfo(currentLayer);
-            bool isNewState = stateInfo.shortNameHash == 0;
-            if (isNewState)
+        private void HandleRangedAttack()
+        {
+            if (timePassed >= 0.3f) // Adjust based on fire rate
             {
-                Debug.Log(
-                    "[AttackWeaponState] ❌ 'New State' detected. Waiting for valid animation..."
-                );
-                return;
-            }
-
-            int meleeHash = Animator.StringToHash("Melee");
-            bool isInMeleeBlendTree = stateInfo.shortNameHash == meleeHash;
-
-            if (isInMeleeBlendTree || stateInfo.IsTag("Attack"))
-            {
-                Debug.Log(
-                    "[AttackWeaponState] ✅ Detected 'Melee' Blend Tree or 'Attack' animation."
-                );
-            }
-            else
-            {
-                Debug.Log("[AttackWeaponState] ❌ No valid attack animation detected.");
-            }
-
-            if (!stateInfo.IsTag("Attack"))
-            {
-                Debug.Log("[AttackWeaponState] ⚠️ Attack animation ended. Switching to Idle.");
-                stateMachine.ChangeState(player.IdleState);
-                return;
-            }
-
-            if (stateInfo.length > 0)
-            {
-                clipLength = stateInfo.length;
-                clipSpeed = stateInfo.speed;
-                Debug.Log(
-                    $"[AttackWeaponState] 🎥 Clip Length: {clipLength:F2}s, Speed: {clipSpeed:F2}"
-                );
-            }
-
-            if (timePassed >= clipLength / clipSpeed)
-            {
-                Debug.Log("[AttackWeaponState] ⏹ Attack animation finished. Returning to Idle.");
+                Debug.Log("[AttackWeaponState] 🎯 Ranged attack finished. Returning to Idle.");
                 stateMachine.ChangeState(player.IdleState);
             }
+        }
+
+        private void HandleMeleeAttack()
+        {
+           
         }
 
         public override void Exit()

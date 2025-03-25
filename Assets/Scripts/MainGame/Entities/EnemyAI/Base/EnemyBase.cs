@@ -16,6 +16,7 @@ namespace EnemyAI.Base
         [Header("Stats")]
         public float health;
         public float armor;
+        public float regeneration;
         public float attackDamage;
         public float attackCooldown;
         public float criticalChance;
@@ -32,6 +33,8 @@ namespace EnemyAI.Base
         protected EnemyRagdoll enemyRagdoll;
 
         public StateMachine stateMachine { get; private set; }
+        public State CurrentState => stateMachine.currentState;
+
 
         // States
         public IdleState IdleState { get; private set; }
@@ -40,6 +43,11 @@ namespace EnemyAI.Base
         // Abstract States
         public abstract State ChaseState { get; }
         public abstract State AttackState { get; }
+
+        // Optional Flee State (Only defined in subclasses that need it)
+        public virtual State FleeState => null; // Default to null (since not all enemies flee)
+        // Determines if this enemy type can flee
+        protected bool canFlee = false;
 
         // Enemy General Settings
         public float PatrolSpeed => patrolSpeed;
@@ -105,5 +113,7 @@ namespace EnemyAI.Base
         {
             stateMachine.currentState?.PhysicsUpdate();
         }
+
+        protected virtual void CheckHealthAndReact() { }
     }
 }

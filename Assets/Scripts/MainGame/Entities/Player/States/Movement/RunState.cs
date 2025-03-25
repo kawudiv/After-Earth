@@ -13,11 +13,17 @@ namespace Player.States.Movement
             base.Enter();
             Debug.Log("[State] Entered Run");
             speedTransitionTime = 0f;
+            CanMove = true;
         }
 
         public override void LogicUpdate()
         {
             base.LogicUpdate();
+            if (!CanMove)
+            {
+                Debug.Log("[RunState] CanMove is FALSE. Player remains idle.");
+                return; // Prevent movement state transitions
+            }
 
             Vector2 moveInput = player.PlayerInputHandler.MoveInput;
 

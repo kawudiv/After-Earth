@@ -13,11 +13,17 @@ namespace Player.States.Movement
             base.Enter();
             Debug.Log("[State] Entered Idle");
             speedTransitionTime = 0f; // Reset transition time
+            CanMove = true;
         }
 
         public override void LogicUpdate()
         {
             base.LogicUpdate();
+            if (!CanMove)
+            {
+                Debug.Log("[IdleState] CanMove is FALSE. Player remains idle.");
+                return; // Prevent movement state transitions
+            }
             Vector2 moveInput = player.PlayerInputHandler.MoveInput;
 
             if (player.PlayerInputHandler.IsRolling && characterController.isGrounded)

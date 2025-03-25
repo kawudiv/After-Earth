@@ -5,7 +5,6 @@ namespace EnemyAI.States.Melee
 {
     public class MeleeAttackState : State
     {
-        private float attackCooldown = 1.5f;
         private float lastAttackTime;
         private bool isAttacking = false;
 
@@ -42,7 +41,7 @@ namespace EnemyAI.States.Melee
             base.LogicUpdate();
 
             // Check if attack should restart
-            if (Time.time - lastAttackTime >= attackCooldown && isAttacking)
+            if (Time.time - lastAttackTime >= enemy.attackCooldown && isAttacking)
             {
                 Debug.Log($"{enemy.name} cooldown over, attacking again!");
                 PerformAttack(); // Restart attack

@@ -11,12 +11,18 @@ namespace Player.States.Movement
         public override void Enter()
         {
             base.Enter();
+            CanMove = true;
             Debug.Log("[State] Entered Walk");
         }
 
         public override void LogicUpdate()
         {
             base.LogicUpdate();
+            if (!CanMove)
+            {
+                Debug.Log("[WalkState] CanMove is FALSE. Player remains idle.");
+                return; // Prevent movement state transitions
+            }
             Vector2 moveInput = player.PlayerInputHandler.MoveInput;
 
             // Check for roll input first.

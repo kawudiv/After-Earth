@@ -8,6 +8,7 @@ namespace EnemyAI.Base
     public abstract class EnemyBase : MonoBehaviour
     {
         [Header("General Settings")]
+        public int enemyID;
         public float patrolSpeed;
         public float chaseSpeed;
         public float attackRange;
@@ -22,6 +23,9 @@ namespace EnemyAI.Base
         public float criticalChance;
         public float criticalDamage;
 
+        [Header("Traits")]
+        public bool canFlee;
+
         [Header("Components")]
         public Transform target;
         public NavMeshAgent agent;
@@ -31,10 +35,10 @@ namespace EnemyAI.Base
         protected EnemyAnimation enemyAnimation;
         protected EnemySound enemySound;
         protected EnemyRagdoll enemyRagdoll;
+        protected EnemyCombat enemyCombat;
 
         public StateMachine stateMachine { get; private set; }
         public State CurrentState => stateMachine.currentState;
-
 
         // States
         public IdleState IdleState { get; private set; }
@@ -46,8 +50,6 @@ namespace EnemyAI.Base
 
         // Optional Flee State (Only defined in subclasses that need it)
         public virtual State FleeState => null; // Default to null (since not all enemies flee)
-        // Determines if this enemy type can flee
-        protected bool canFlee = false;
 
         // Enemy General Settings
         public float PatrolSpeed => patrolSpeed;
@@ -72,7 +74,7 @@ namespace EnemyAI.Base
             enemySound = GetComponent<EnemySound>();
             enemySensor = GetComponent<EnemySensor>();
             enemyRagdoll = GetComponent<EnemyRagdoll>();
-
+            enemyCombat = GetComponent<EnemyCombat>();
             GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
             if (playerObj != null)
             {
@@ -113,7 +115,5 @@ namespace EnemyAI.Base
         {
             stateMachine.currentState?.PhysicsUpdate();
         }
-
-        protected virtual void CheckHealthAndReact() { }
     }
 }

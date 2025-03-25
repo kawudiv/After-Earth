@@ -1,37 +1,34 @@
 using UnityEngine;
 using Weapons.Types;
 
-namespace Weapons.Components.Melee
+namespace Weapons.Components.Melee.Enemy
 {
-    public class SwordWeapon : MeleeWeapon
+    public class ShovelWeapon : MeleeWeapon
     {
         protected override void Awake()
         {
             base.Awake();
-            weaponName = "Sword";
+            weaponName = "Enemy Shovel";
             damage = 10f;
             attackSpeed = 1.2f;
             attackRange = 1.5f;
             impactForce = 15f;
+            meleeID = 100;
 
-            enemyLayers = LayerMask.GetMask("Enemy");
-            //impactEffectPrefab = Resources.Load<GameObject>("Effects/BulletImpact");
+            // Only target player layer
+            entityLayers = LayerMask.GetMask("Player");
 
-
-            meleeID = 0;
-            // Assign or validate attackPoint
+            // Assign attack point
             if (attackPoint == null)
             {
                 attackPoint = transform.Find("AttackPoint");
             }
-
-            enemyLayers = LayerMask.GetMask("Enemy");
         }
 
         public override void Attack()
         {
             base.Attack();
-            Debug.Log($"{weaponName} slashes with impact!");
+            Debug.Log($"[{weaponName}] Enemy performing shovel attack!");
         }
     }
 }

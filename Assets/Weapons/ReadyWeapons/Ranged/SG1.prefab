@@ -172,13 +172,13 @@ MonoBehaviour:
   impactEffectPrefab: {fileID: 0}
   hitEffectPrefab: {fileID: 0}
   leftHandIKWeight: 1
-  leftHandIKPosition: {x: 0.077, y: 0.07, z: 0}
-  leftHandIKRotation: {x: -0.00056443043, y: 0.7626681, z: -0.0006655536, w: -0.6467895}
-  leftHandIKHintPosition: {x: 0.217, y: 0, z: 0.289}
+  leftHandIKPosition: {x: -0.006, y: -0.006, z: 0.05}
+  leftHandIKRotation: {x: 0.16590834, y: 0.8646376, z: -0.08936231, w: -0.46571514}
+  leftHandIKHintPosition: {x: 0, y: 0.072, z: 0.286}
   rightHandIKWeight: 1
-  rightHandIKPosition: {x: 0.041, y: -0.252, z: 0.021}
-  rightHandIKRotation: {x: -0.5757476, y: -0.47005486, z: 0.40463373, w: 0.5327613}
-  rightHandIKHintPosition: {x: 0.028, y: -0.306, z: 0}
+  rightHandIKPosition: {x: 0.011, y: -0.123, z: 0}
+  rightHandIKRotation: {x: 0, y: 0, z: 0, w: 1}
+  rightHandIKHintPosition: {x: 0.03, y: -0.202, z: -0.086}
   bodyTrackingWeight: 1
   gunTrackingWeight: 1
   rangeID: 0

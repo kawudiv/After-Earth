@@ -1,4 +1,5 @@
 using EnemyAI.Base;
+using EnemyAI.Components;
 using EnemyAI.Enemies.Ranged;
 using UnityEngine;
 
@@ -6,12 +7,15 @@ namespace EnemyAI.States.Ranged
 {
     public class RangedAttackState : State
     {
-        private float attackCooldown = 2f;
         private float lastAttackTime;
         private float stopDistance = 5f; // Keeps distance from the player
+        private EnemyCombat enemyCombat;
 
         public RangedAttackState(EnemyBase _enemy, StateMachine _stateMachine)
-            : base(_enemy, _stateMachine) { }
+            : base(_enemy, _stateMachine) 
+        {
+            enemyCombat = _enemy.GetComponent<EnemyCombat>();
+        }
 
         public override void Enter()
         {
@@ -22,10 +26,7 @@ namespace EnemyAI.States.Ranged
 
         public override void LogicUpdate()
         {
-            float distanceToPlayer = Vector3.Distance(
-                enemy.transform.position,
-                enemy.target.position
-            );
+            float distanceToPlayer = Vector3.Distance(enemy.transform.position, enemy.target.position);
 
             // If too far, chase the player again
             if (distanceToPlayer > stopDistance + 2f)
@@ -36,29 +37,17 @@ namespace EnemyAI.States.Ranged
             }
 
             // Attack if cooldown is over
-            if (Time.time - lastAttackTime >= attackCooldown)
+            if (Time.time - lastAttackTime >= enemy.attackCooldown)
             {
                 lastAttackTime = Time.time;
                 enemy.animator.SetTrigger("Attack");
-                ShootProjectile();
+                enemyCombat?.PerformAttack();
             }
         }
 
         public override void Exit()
         {
             enemy.agent.isStopped = false;
-        }
-
-        private void ShootProjectile()
-        {
-            if (enemy is RangedEnemy rangedEnemy)
-            {
-                rangedEnemy.FireProjectile();
-            }
-            else
-            {
-                Debug.LogWarning("Enemy is not a RangedEnemy. Cannot fire projectile.");
-            }
         }
     }
 }

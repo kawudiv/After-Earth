@@ -13,7 +13,7 @@ namespace Weapons.Types
 
         [Header("Hitbox Settings")]
         [SerializeField]
-        protected LayerMask enemyLayers;
+        protected LayerMask entityLayers;
 
         [Header("Physics Settings")]
         [SerializeField]
@@ -68,7 +68,7 @@ namespace Weapons.Types
             if (!hitbox.enabled || !hitbox.isTrigger)
                 return; // ✅ Ignore if the hitbox is disabled or not in attack mode
 
-            if (((1 << other.gameObject.layer) & enemyLayers) == 0)
+            if (((1 << other.gameObject.layer) & entityLayers) == 0)
             {
                 return; // Ignore non-enemy collisions
             }
@@ -95,35 +95,35 @@ namespace Weapons.Types
             MeleeImpact(other);
         }
 
-        private void MeleeImpact(Collider enemy)
+        private void MeleeImpact(Collider entity)
         {
-            EnemyHealth enemyHealth = enemy.GetComponentInParent<EnemyHealth>();
+            EnemyHealth enemyHealth = entity.GetComponentInParent<EnemyHealth>();
 
             if (enemyHealth != null && enemyHealth.isDead)
             {
-                EnemyRagdoll ragdoll = enemy.GetComponentInParent<EnemyRagdoll>();
+                EnemyRagdoll ragdoll = entity.GetComponentInParent<EnemyRagdoll>();
                 if (ragdoll != null)
                 {
-                    Vector3 hitPoint = enemy.ClosestPoint(attackPoint.position);
+                    Vector3 hitPoint = entity.ClosestPoint(attackPoint.position);
                     Vector3 forceDirection =
-                        (enemy.transform.position - attackPoint.position).normalized * impactForce;
+                        (entity.transform.position - attackPoint.position).normalized * impactForce;
 
                     ragdoll.TriggerRagdoll();
                     ragdoll.ApplyForceToRagdoll(hitPoint, forceDirection);
                 }
             }
-            else if (enemy.TryGetComponent(out Rigidbody rb))
+            else if (entity.TryGetComponent(out Rigidbody rb))
             {
                 Vector3 forceDirection =
-                    (enemy.transform.position - attackPoint.position).normalized * impactForce;
+                    (entity.transform.position - attackPoint.position).normalized * impactForce;
                 rb.AddForce(forceDirection, ForceMode.Impulse);
-                Debug.Log($"💥 Knockback applied to {enemy.name}!");
+                Debug.Log($"💥 Knockback applied to {entity.name}!");
             }
 
             // ✅ Spawn hit effect
             if (hitEffectPrefab != null)
             {
-                Instantiate(hitEffectPrefab, enemy.transform.position, Quaternion.identity);
+                Instantiate(hitEffectPrefab, entity.transform.position, Quaternion.identity);
             }
         }
 

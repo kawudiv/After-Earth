@@ -32,12 +32,11 @@ namespace EnemyAI.Components
                 Debug.LogError($"{name} is missing an EnemyBase component!");
                 return;
             }
-
-            MaxHealth = enemyBase.health; // ✅ Assign MaxHealth from EnemyBase
         }
 
         private void Start()
         {
+            MaxHealth = enemyBase.health; // ✅ Assign MaxHealth from EnemyBase
             currentHealth = MaxHealth; // ✅ Start at full HP
             regen = enemyBase.regeneration;
             InvokeRepeating(nameof(RegenerateHealth), 1f, 1f); // ✅ Start health regeneration every second
@@ -51,7 +50,9 @@ namespace EnemyAI.Components
             currentHealth -= damage;
             currentHealth = Mathf.Clamp(currentHealth, 0, MaxHealth); // ✅ Use MaxHealth
 
-            Debug.Log($"🩸 {gameObject.name} took {damage} damage! Current HP: {currentHealth}/{MaxHealth}");
+            Debug.Log(
+                $"🩸 {gameObject.name} took {damage} damage! Current HP: {currentHealth}/{MaxHealth}"
+            );
 
             OnHealthChanged?.Invoke(currentHealth, MaxHealth); // ✅ Send MaxHealth as reference
 
@@ -83,7 +84,9 @@ namespace EnemyAI.Components
             currentHealth += regen;
             currentHealth = Mathf.Clamp(currentHealth, 0, MaxHealth); // ✅ Use MaxHealth for clamping
 
-            Debug.Log($"🟢 {gameObject.name} regenerates {regen} HP! Current HP: {currentHealth}/{MaxHealth}");
+            Debug.Log(
+                $"🟢 {gameObject.name} regenerates {regen} HP! Current HP: {currentHealth}/{MaxHealth}"
+            );
 
             OnHealthChanged?.Invoke(currentHealth, MaxHealth); // ✅ Use MaxHealth
         }
@@ -98,7 +101,7 @@ namespace EnemyAI.Components
 
             enemyBase.agent.enabled = false; // Fully disable NavMeshAgent
             // enemyBase.stateMachine.ChangeState(null); // Clear AI state
-            
+
             ragdoll.TriggerRagdoll();
 
             Debug.Log($"💀 {gameObject.name} has died!");

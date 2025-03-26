@@ -47,24 +47,51 @@ namespace EnemyAI.Enemies.Melee
 
         public void CanFlee()
         {
-            if (!canFlee || _fleeState == null || enemyHealth == null)
-                return; // ✅ Skip fleeing behavior if `canFlee` is false
+            //Debug.Log($"[CanFlee] Checking flee conditions for {name}...");
+
+            if (!canFlee)
+            {
+                Debug.LogWarning($"[CanFlee] ❌ {name} cannot flee (canFlee is false).");
+                return;
+            }
+
+            if (_fleeState == null)
+            {
+                Debug.LogWarning($"[CanFlee] ❌ {name} has no FleeState assigned!");
+                return;
+            }
+
+            if (enemyHealth == null)
+            {
+                Debug.LogError($"[CanFlee] ❌ {name} - enemyHealth is NULL! Check initialization.");
+                return;
+            }
 
             float currentHealth = enemyHealth.CurrentHealth;
-            float maxHealth = enemyHealth.MaxHealth; // Assuming MaxHealth is available
-            float healthPercentage = currentHealth / maxHealth * 100f;
+            float maxHealth = enemyHealth.MaxHealth; // ✅ Ensure we use MaxHealth from EnemyHealth
+            float healthPercentage = (currentHealth / maxHealth) * 100f;
 
-            Debug.Log($"{name} Health Check for Fleeing: {currentHealth} ({healthPercentage}%)");
+            // Debug.Log(
+            //     $"[CanFlee] 🩸 {name} Health: {currentHealth}/{maxHealth} ({healthPercentage:F2}%)"
+            // );
 
             if (healthPercentage <= 50 && stateMachine.currentState != _fleeState)
             {
-                Debug.Log($"{name} health is below 50%! Switching to FleeState.");
+                Debug.Log($"[CanFlee] 🚨 {name} health is **below 50%**! Switching to FleeState.");
                 stateMachine.ChangeState(_fleeState);
             }
             else if (healthPercentage >= 60 && stateMachine.currentState == _fleeState)
             {
-                Debug.Log($"{name} health recovered to 60%! Returning to PatrolState.");
+                Debug.Log(
+                    $"[CanFlee] ✅ {name} health recovered to **60%**! Returning to PatrolState."
+                );
                 stateMachine.ChangeState(PatrolState);
+            }
+            else
+            {
+                // Debug.Log(
+                //     $"[CanFlee] ℹ️ {name} remains in {stateMachine.currentState} (Health: {healthPercentage:F2}%)"
+                // );
             }
         }
     }

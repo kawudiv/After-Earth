@@ -20,7 +20,6 @@ namespace Player.Base
 
         [Header("Stats")]
         public float maxHealth = 100f;
-        public float health;
         public float armor = 5f;
         public float attackDamage = 15f;
         public float attackCooldown = 1.5f;
@@ -34,6 +33,7 @@ namespace Player.Base
         public Animator animator;
         public CharacterController characterController;
         public PlayerHealth PlayerHealth { get; private set; }
+        public PlayerRagdoll PlayerRagdoll { get; private set; }
         public PlayerAnimation PlayerAnimation { get; private set; }
         public PlayerSound PlayerSound { get; private set; }
         public PlayerInputHandler PlayerInputHandler { get; private set; }
@@ -60,17 +60,11 @@ namespace Player.Base
             characterController = GetComponent<CharacterController>();
             PlayerInputHandler = GetComponent<PlayerInputHandler>();
             PlayerHealth = GetComponent<PlayerHealth>();
+            PlayerRagdoll = GetComponent<PlayerRagdoll>();
             PlayerAnimation = GetComponent<PlayerAnimation>();
             PlayerSound = GetComponent<PlayerSound>();
             PlayerInventory = GetComponent<PlayerInventory>();
             PlayerCombat = GetComponent<PlayerCombat>();
-
-            // Set up health event listeners
-            if (PlayerHealth != null)
-            {
-                PlayerHealth.OnDeath += HandleDeath;
-                PlayerHealth.OnHealthChanged += HandleHealthChange;
-            }
 
             StateMachine = new StateMachine();
 
@@ -89,7 +83,6 @@ namespace Player.Base
         protected virtual void Start()
         {
             StateMachine.Initialize(IdleState);
-            health = maxHealth;
         }
 
         protected virtual void Update()
@@ -120,24 +113,6 @@ namespace Player.Base
         protected virtual void FixedUpdate()
         {
             StateMachine.CurrentState?.PhysicsUpdate();
-        }
-
-        protected virtual void HandleHealthChange(float current, float max)
-        {
-            health = current;
-            Debug.Log($"Player Health: {current}/{max}");
-
-            if (health <= 0)
-                HandleDeath();
-        }
-
-        protected virtual void HandleDeath()
-        {
-            Debug.Log("Player has died!");
-            StateMachine.ChangeState(null);
-            PlayerAnimation?.PlayDeath();
-            PlayerSound?.PlayDeathSound();
-            this.enabled = false;
         }
 
         public void EquipWeapon(WeaponBase newWeapon)

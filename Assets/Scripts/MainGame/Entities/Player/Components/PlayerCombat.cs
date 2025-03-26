@@ -150,9 +150,9 @@ namespace Player.Components
             if (!IsEquip())
                 return;
 
-            if (playerInventory.EquippedWeapon is MeleeWeapon)
+            if (playerInventory.EquippedWeapon is MeleeWeapon meleeWeapon)
             {
-                PerformMeleeAttack();
+                PerformMeleeAttack(meleeWeapon);
             }
             else if (playerInventory.EquippedWeapon is RangedWeapon)
             {
@@ -160,7 +160,7 @@ namespace Player.Components
             }
         }
 
-        private void PerformMeleeAttack()
+        private void PerformMeleeAttack(MeleeWeapon meleeWeapon)
         {
             Debug.Log("[PlayerCombat] Performing melee attack.");
             player.PlayerAnimation.SetTrigger("MeleeAttack");

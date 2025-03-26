@@ -11,13 +11,13 @@ namespace Weapons.Base
         protected string weaponName;
 
         [SerializeField]
-        protected int weaponTypeID;
+        public int weaponTypeID;
 
         [SerializeField]
         protected float damage;
 
         [SerializeField]
-        protected float attackSpeed;
+        public float attackSpeed;
 
         [SerializeField]
         protected float attackRange;

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Items.Base;
+using Player.Base;
 using UnityEngine;
 using Weapons.Base;
 using Weapons.Types;
@@ -19,9 +20,11 @@ namespace Player.Components
 
         private WeaponBase meleeWeaponSlot;
         private WeaponBase rangedWeaponSlot;
+        private PlayerBase playerBase;
 
         private void Start()
         {
+            playerBase = GetComponent<PlayerBase>();
             if (playerInventory == null)
             {
                 Debug.LogError("[PlayerSlotInventory] ❌ PlayerInventory is not assigned!");
@@ -131,7 +134,7 @@ namespace Player.Components
                     $"[PlayerSlotInventory] 🔄 Unequipping melee weapon: {meleeWeapon.WeaponName}"
                 );
                 meleeWeapon.OnDrop();
-                Debug.Log("[PlayerSlotInventory] OnDrop is called");
+                playerBase.PlayerAnimation.SetDrawSheathAnimation(false);
                 playerInventory.UnequipWeapon();
                 weaponUI.UpdateWeaponUI(false, playerInventory.EquippedRangedWeapon != null);
             }
@@ -141,7 +144,8 @@ namespace Player.Components
                     $"[PlayerSlotInventory] 🔄 Equipping melee weapon: {newMeleeWeapon.WeaponName}"
                 );
                 newMeleeWeapon.OnPickup();
-                Debug.Log("[PlayerSlotInventory] OnPickup is called");
+                playerBase.PlayerAnimation.SetMeleeWeaponType(newMeleeWeapon.meleeID);
+                playerBase.PlayerAnimation.SetDrawSheathAnimation(true);
                 playerInventory.UnequipWeapon();
                 playerInventory.EquipWeapon(newMeleeWeapon);
                 weaponUI.UpdateWeaponUI(true, false);

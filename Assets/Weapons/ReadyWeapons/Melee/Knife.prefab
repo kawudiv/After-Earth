@@ -40,6 +40,18 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 486c71d75dbfdf743bd317f1cfb9decf, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 486c71d75dbfdf743bd317f1cfb9decf, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 486c71d75dbfdf743bd317f1cfb9decf, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 486c71d75dbfdf743bd317f1cfb9decf, type: 3}
       propertyPath: m_LocalPosition.x
       value: -3.045
       objectReference: {fileID: 0}
@@ -78,6 +90,10 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 486c71d75dbfdf743bd317f1cfb9decf, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 486c71d75dbfdf743bd317f1cfb9decf, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 486c71d75dbfdf743bd317f1cfb9decf, type: 3}
       propertyPath: m_Name
@@ -162,8 +178,8 @@ MonoBehaviour:
   damage: 0
   attackSpeed: 0
   attackRange: 0
-  equipPositionOffset: {x: 0, y: 0, z: 0}
-  equipRotationOffset: {x: 0, y: 0, z: 0}
+  equipPositionOffset: {x: -0.002, y: 0.088, z: 0.023}
+  equipRotationOffset: {x: -0.375, y: -102.994, z: 75.064}
   attackPoint: {fileID: 6781574344121878440}
   entityLayers:
     serializedVersion: 2

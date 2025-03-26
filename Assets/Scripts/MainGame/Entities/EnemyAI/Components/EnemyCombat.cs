@@ -1,6 +1,7 @@
 using EnemyAI.Base;
 using UnityEngine;
 using Weapons.Base;
+using Weapons.Types;
 
 namespace EnemyAI.Components
 {
@@ -42,16 +43,33 @@ namespace EnemyAI.Components
             weapon.Attack();
         }
 
-        // Called from Animation Event (Start of attack)
-        // public void EnableWeaponCollider()
-        // {
-        //     weapon?.EnableWeaponCollider();
-        // }
+        public void EnableWeaponCollider()
+        {
+            if (weapon is MeleeWeapon meleeWeapon)
+            {
+                meleeWeapon.EnableWeaponCollider();
+            }
+            else
+            {
+                Debug.LogWarning(
+                    $"[EnemyCombat] {gameObject.name} does not have a melee weapon with a collider!"
+                );
+            }
+        }
 
-        // // Called from Animation Event (End of attack)
-        // public void DisableWeaponCollider()
-        // {
-        //     weapon?.DisableWeaponCollider();
-        // }
+        // Called from Animation Event (End of attack)
+        public void DisableWeaponCollider()
+        {
+            if (weapon is MeleeWeapon meleeWeapon)
+            {
+                meleeWeapon.DisableWeaponCollider();
+            }
+            else
+            {
+                Debug.LogWarning(
+                    $"[EnemyCombat] {gameObject.name} does not have a melee weapon with a collider!"
+                );
+            }
+        }
     }
 }

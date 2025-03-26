@@ -9,7 +9,7 @@ namespace Weapons.Components.Melee.Player
         {
             base.Awake();
             weaponName = "Sword";
-            damage = 10f;
+            damage = 35f;
             attackSpeed = 1.2f;
             attackRange = 1.5f;
             impactForce = 15f;

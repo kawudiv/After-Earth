@@ -9,14 +9,14 @@ namespace Weapons.Components.Melee.Player
         {
             base.Awake();
             weaponName = "Axe";
-            damage = 18f;
+            damage = 60f;
             attackSpeed = 1.0f;
             attackRange = 1.7f;
             impactForce = 20f;
 
             entityLayers = LayerMask.GetMask("Enemy");
 
-            meleeID = 3;
+            meleeID = 2;
 
             if (attackPoint == null)
             {

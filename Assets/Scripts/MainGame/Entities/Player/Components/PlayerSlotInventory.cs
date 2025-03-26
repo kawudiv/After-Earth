@@ -53,11 +53,11 @@ namespace Player.Components
                 Debug.Log("[PlayerSlotInventory] 🔄 Toggle Ranged Weapon.");
                 ToggleRangedWeapon();
             }
-            else if (Input.GetKeyDown(KeyCode.Q))
-            {
-                Debug.Log("[PlayerSlotInventory] 🗑 Dropping equipped weapon.");
-                DropEquippedWeapon();
-            }
+            // else if (Input.GetKeyDown(KeyCode.Q))
+            // {
+            //     Debug.Log("[PlayerSlotInventory] 🗑 Dropping equipped weapon.");
+            //     DropEquippedWeapon();
+            // }
         }
 
         private void DropEquippedWeapon()
@@ -67,6 +67,7 @@ namespace Player.Components
                 Debug.Log(
                     $"[PlayerSlotInventory] 🗑 Dropping melee weapon: {playerInventory.EquippedMeleeWeapon.WeaponName}"
                 );
+                playerBase.PlayerAnimation.SetTrigger("Cancel");
                 playerInventory.DropWeapon(playerInventory.EquippedMeleeWeapon);
                 weaponUI.UpdateWeaponUI(false, rangedWeaponSlot != null);
             }

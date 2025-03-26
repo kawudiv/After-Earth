@@ -9,7 +9,7 @@ namespace Weapons.Components.Ranged
         {
             base.Awake();
             weaponName = "Shotgun";
-            damage = 25f; // Lower damage per bullet
+            damage = 30f; // Lower damage per bullet
             attackSpeed = 1.2f; // Slower than other weapons
             attackRange = 30f; // Shorter range
             bulletCount = 8; // Fires 8 pellets

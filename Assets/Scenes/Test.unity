@@ -1124,6 +1124,7 @@ MonoBehaviour:
   currentHealth: 0
   isDead: 0
   damageEffectPrefab: {fileID: 0}
+  healthBar: {fileID: 0}
 --- !u!114 &361659351
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12006,7 +12007,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 503309422298704424, guid: 8782160d6cee2704cb04d2db3cb33f84, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 503309422298704424, guid: 8782160d6cee2704cb04d2db3cb33f84, type: 3}
       propertyPath: m_TagString

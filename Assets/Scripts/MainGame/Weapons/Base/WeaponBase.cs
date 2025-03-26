@@ -22,7 +22,6 @@ namespace Weapons.Base
         [SerializeField]
         protected float attackRange;
 
-        // ✅ Serialized Transform Offsets (for equipping)
         [Header("Equipped Transform Offsets")]
         [SerializeField]
         private Vector3 equipPositionOffset;
@@ -30,6 +29,7 @@ namespace Weapons.Base
         [SerializeField]
         private Vector3 equipRotationOffset;
 
+        // Changed to protected to allow derived classes to access
         protected HashSet<IDamageable> damagedEnemies = new HashSet<IDamageable>();
 
         public string WeaponName => weaponName;
@@ -40,22 +40,59 @@ namespace Weapons.Base
 
         protected virtual void Awake()
         {
-            // Base setup, no collider here!
+            // Base initialization
         }
 
-        // ✅ Automatically apply equip offsets
         public void ApplyEquipTransform(Transform weaponTransform)
         {
             weaponTransform.localPosition = equipPositionOffset;
             weaponTransform.localRotation = Quaternion.Euler(equipRotationOffset);
         }
 
-        // Each weapon must implement its own attack logic.
         public abstract void Attack();
 
-        protected void ResetHitRecords()
+        // Made virtual so derived classes can extend if needed
+        protected virtual void ResetHitRecords()
         {
-            damagedEnemies.Clear();
+            if (damagedEnemies != null)
+            {
+                damagedEnemies.Clear();
+            }
+            else
+            {
+                damagedEnemies = new HashSet<IDamageable>();
+            }
+            Debug.Log($"[WeaponBase] Cleared damage records for {weaponName}");
+        }
+
+        // New helper method to check if enemy was already damaged
+        protected bool HasDamaged(IDamageable damageable)
+        {
+            if (damagedEnemies == null)
+            {
+                damagedEnemies = new HashSet<IDamageable>();
+                return false;
+            }
+            return damagedEnemies.Contains(damageable);
+        }
+
+        // New helper method to mark enemy as damaged
+        protected void MarkAsDamaged(IDamageable damageable)
+        {
+            if (damagedEnemies == null)
+            {
+                damagedEnemies = new HashSet<IDamageable>();
+            }
+            damagedEnemies.Add(damageable);
+        }
+
+        // Cleanup when weapon is destroyed
+        protected virtual void OnDestroy()
+        {
+            if (damagedEnemies != null)
+            {
+                damagedEnemies.Clear();
+            }
         }
     }
 }

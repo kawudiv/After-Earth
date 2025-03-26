@@ -1343,6 +1343,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   enemyYOffset: 0
+  player: {fileID: 154560182}
+  playerYOffset: 0
 --- !u!135 &84484194
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -1360,7 +1362,7 @@ SphereCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
@@ -13550,6 +13552,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 160662926284895072, guid: e5e96471f368b8741810dffc1130bfa0, type: 3}
+      propertyPath: m_Data.m_SourceObjects.m_Item0.transform
+      value: 
+      objectReference: {fileID: 84484197}
     - target: {fileID: 1461432363757488097, guid: e5e96471f368b8741810dffc1130bfa0, type: 3}
       propertyPath: weaponUI
       value: 
@@ -13574,6 +13580,18 @@ PrefabInstance:
       propertyPath: 'itemSlots.Array.data[2]'
       value: 
       objectReference: {fileID: 1750023207}
+    - target: {fileID: 5324343811910938868, guid: e5e96471f368b8741810dffc1130bfa0, type: 3}
+      propertyPath: m_Data.m_SourceObjects.m_Item0.transform
+      value: 
+      objectReference: {fileID: 84484197}
+    - target: {fileID: 7302955352575810406, guid: e5e96471f368b8741810dffc1130bfa0, type: 3}
+      propertyPath: m_Data.m_SourceObjects.m_Item0.transform
+      value: 
+      objectReference: {fileID: 84484197}
+    - target: {fileID: 7508104592318936096, guid: e5e96471f368b8741810dffc1130bfa0, type: 3}
+      propertyPath: m_Data.m_SourceObjects.m_Item0.transform
+      value: 
+      objectReference: {fileID: 84484197}
     - target: {fileID: 8100838495376714494, guid: e5e96471f368b8741810dffc1130bfa0, type: 3}
       propertyPath: m_LocalPosition.x
       value: -18.33662

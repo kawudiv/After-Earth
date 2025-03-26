@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Core;
 using EnemyAI.Components;
 using UnityEngine;
@@ -11,17 +12,17 @@ namespace Weapons.Types
 
         [Header("Aim Prefab")]
         [SerializeField]
-        private Transform aimPrefab; // Reference to your aim prefab
+        private Transform aimPrefab;
 
         [Header("Bullet Settings")]
         [SerializeField]
-        protected float bulletForce = 10f; // Force applied to ragdoll
+        protected float bulletForce = 10f;
 
         [SerializeField]
-        protected int bulletCount = 1; // Default 1 bullet per shot
+        protected int bulletCount = 1;
 
         [SerializeField]
-        protected float spreadAngle = 5f; // Shotgun spread angle
+        protected float spreadAngle = 5f;
 
         [Header("Weapon Layers")]
         [SerializeField]
@@ -35,29 +36,29 @@ namespace Weapons.Types
         private GameObject impactEffectPrefab;
 
         [SerializeField]
-        private GameObject hitEffectPrefab; // Enemy hit effect
+        private GameObject hitEffectPrefab;
 
-        [Header("Left Hand IK Settings")]
+        [Header("IK Settings")]
         public float leftHandIKWeight;
         public Vector3 leftHandIKPosition;
         public Quaternion leftHandIKRotation;
         public Vector3 leftHandIKHintPosition;
-
-        [Header("Right Hand IK Settings")] // ✅ NEW: Right Hand IK Settings
         public float rightHandIKWeight;
         public Vector3 rightHandIKPosition;
         public Quaternion rightHandIKRotation;
         public Vector3 rightHandIKHintPosition;
-
-        [Header("Tracking Weights")]
         public float bodyTrackingWeight;
         public float gunTrackingWeight;
 
         [HideInInspector]
         public int rangeID;
 
-        // Store last shot directions for Gizmos
         private Vector3[] lastShotDirections;
+        private Dictionary<Collider, IDamageable> damageableCache =
+            new Dictionary<Collider, IDamageable>();
+        private Dictionary<Collider, HashSet<int>> pelletHitsThisAttack =
+            new Dictionary<Collider, HashSet<int>>();
+        private int currentPelletID = 0;
 
         protected override void Awake()
         {
@@ -65,19 +66,17 @@ namespace Weapons.Types
             weaponTypeID = rangeID;
 
             if (attackPoint == null)
-            {
                 Debug.LogWarning($"{weaponName} has no attackPoint assigned!");
-            }
-
             if (aimPrefab == null)
-            {
                 Debug.LogWarning($"{weaponName} has no aimPrefab assigned!");
-            }
         }
 
         public override void Attack()
         {
             Debug.Log($"{weaponName} fires {bulletCount} ray(s)!");
+            ResetHitRecords();
+            pelletHitsThisAttack.Clear();
+            currentPelletID = 0;
 
             if (attackPoint == null || aimPrefab == null)
             {
@@ -85,25 +84,19 @@ namespace Weapons.Types
                 return;
             }
 
-            // Store shot directions for Gizmos
             lastShotDirections = new Vector3[bulletCount];
 
             for (int i = 0; i < bulletCount; i++)
             {
-                Vector3 shootDirection;
+                currentPelletID = i; // Track which pellet we're firing
+                Vector3 shootDirection =
+                    i == 0
+                        ? (aimPrefab.position - attackPoint.position).normalized
+                        : GetSpreadDirection(
+                            (aimPrefab.position - attackPoint.position).normalized
+                        );
 
-                if (i == 0)
-                {
-                    // First shot is always accurate and aligned with the aim prefab
-                    shootDirection = (aimPrefab.position - attackPoint.position).normalized;
-                }
-                else
-                {
-                    // Subsequent shots are dispersed around the first shot
-                    shootDirection = GetSpreadDirection((aimPrefab.position - attackPoint.position).normalized);
-                }
-
-                lastShotDirections[i] = shootDirection; // Store direction for Gizmos
+                lastShotDirections[i] = shootDirection;
                 FireRaycast(shootDirection);
             }
         }
@@ -112,12 +105,11 @@ namespace Weapons.Types
         {
             Debug.Log($"🔫 {weaponName} firing raycast...");
 
-            RaycastHit hit;
             if (
                 Physics.Raycast(
                     attackPoint.position,
                     direction,
-                    out hit,
+                    out RaycastHit hit,
                     Mathf.Infinity,
                     enemyLayers | environmentLayers
                 )
@@ -125,41 +117,72 @@ namespace Weapons.Types
             {
                 Debug.Log($"✅ Raycast hit {hit.collider.gameObject.name} at {hit.point}");
 
-                // Check if the hit object is an enemy
+                // Handle enemy hit
                 if (((1 << hit.collider.gameObject.layer) & enemyLayers) != 0)
                 {
-                    Debug.Log($"💥 {weaponName} hit an enemy: {hit.collider.gameObject.name}");
-
-                    IDamageable damageable = hit.collider.GetComponentInParent<IDamageable>();
-                    if (damageable != null)
-                    {
-                        damageable.TakeDamage(damage);
-                    }
-
-                    // Spawn enemy hit effect
-                    if (hitEffectPrefab != null)
-                    {
-                        Instantiate(hitEffectPrefab, hit.point, Quaternion.identity);
-                    }
-
-                    // Apply force to ragdoll if the enemy has one
-                    RangedImpact(hit.collider, hit.point);
+                    HandleEnemyHit(hit.collider, hit.point);
                 }
+                // Handle environment hit
                 else if (((1 << hit.collider.gameObject.layer) & environmentLayers) != 0)
                 {
-                    Debug.Log("🌲 Raycast hit the environment!");
-
-                    // Spawn impact effect on environment
-                    if (impactEffectPrefab != null)
-                    {
-                        Instantiate(impactEffectPrefab, hit.point, Quaternion.identity);
-                    }
+                    HandleEnvironmentHit(hit.point);
                 }
             }
             else
             {
                 Debug.Log("❌ Raycast didn't hit anything!");
             }
+        }
+
+        private void HandleEnemyHit(Collider enemyCollider, Vector3 hitPoint)
+        {
+            Debug.Log($"💥 {weaponName} hit an enemy: {enemyCollider.gameObject.name}");
+
+            // Get or cache the IDamageable component
+            if (!damageableCache.TryGetValue(enemyCollider, out IDamageable damageable))
+            {
+                damageable = enemyCollider.GetComponentInParent<IDamageable>();
+                if (damageable != null)
+                    damageableCache[enemyCollider] = damageable;
+            }
+
+            if (damageable != null)
+            {
+                // Check if this specific pellet has already hit this enemy
+                if (!pelletHitsThisAttack.TryGetValue(enemyCollider, out HashSet<int> hitPelletIDs))
+                {
+                    hitPelletIDs = new HashSet<int>();
+                    pelletHitsThisAttack[enemyCollider] = hitPelletIDs;
+                }
+
+                if (!hitPelletIDs.Contains(currentPelletID))
+                {
+                    hitPelletIDs.Add(currentPelletID);
+                    damageable.TakeDamage(damage);
+
+                    if (hitEffectPrefab != null)
+                        Instantiate(hitEffectPrefab, hitPoint, Quaternion.identity);
+
+                    RangedImpact(enemyCollider, hitPoint);
+                }
+                else
+                {
+                    Debug.Log($"🚫 Pellet {currentPelletID} already hit this enemy");
+                }
+            }
+        }
+
+        protected override void ResetHitRecords()
+        {
+            base.ResetHitRecords();
+            pelletHitsThisAttack.Clear();
+        }
+
+        private void HandleEnvironmentHit(Vector3 hitPoint)
+        {
+            Debug.Log("🌲 Raycast hit the environment!");
+            if (impactEffectPrefab != null)
+                Instantiate(impactEffectPrefab, hitPoint, Quaternion.identity);
         }
 
         private void RangedImpact(Collider enemy, Vector3 hitPoint)
@@ -173,7 +196,6 @@ namespace Weapons.Types
                 {
                     Vector3 forceDirection =
                         (enemy.transform.position - attackPoint.position).normalized * bulletForce;
-
                     ragdoll.TriggerRagdoll();
                     ragdoll.ApplyForceToRagdoll(hitPoint, forceDirection);
                 }
@@ -191,13 +213,9 @@ namespace Weapons.Types
         {
             float spreadX = Random.Range(-spreadAngle, spreadAngle);
             float spreadY = Random.Range(-spreadAngle, spreadAngle);
-            Quaternion spreadRotation = Quaternion.Euler(spreadX, spreadY, 0);
-            return spreadRotation * baseDirection;
+            return Quaternion.Euler(spreadX, spreadY, 0) * baseDirection;
         }
 
-        /// <summary>
-        /// Draw Gizmos to visualize raycast shots.
-        /// </summary>
         private void OnDrawGizmos()
         {
             if (attackPoint == null || lastShotDirections == null)
@@ -205,10 +223,14 @@ namespace Weapons.Types
 
             for (int i = 0; i < lastShotDirections.Length; i++)
             {
-                Vector3 shotDirection = lastShotDirections[i];
-                Gizmos.color = (i == 0) ? Color.red : Color.blue; // Main shot = red, spread shots = blue
-                Gizmos.DrawRay(attackPoint.position, shotDirection * 100f); // Extend the ray for visualization
+                Gizmos.color = (i == 0) ? Color.red : Color.blue;
+                Gizmos.DrawRay(attackPoint.position, lastShotDirections[i] * 100f);
             }
+        }
+
+        private void OnDestroy()
+        {
+            damageableCache.Clear();
         }
     }
 }

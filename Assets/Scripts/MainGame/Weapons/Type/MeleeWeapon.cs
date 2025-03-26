@@ -29,10 +29,11 @@ namespace Weapons.Types
         [HideInInspector]
         public int meleeID;
         private MeshCollider hitbox; // Mesh Collider for hit detection
-       // private HashSet<IDamageable> damagedEnemies = new HashSet<IDamageable>();
+        private Dictionary<Collider, IDamageable> damageableCache =
+            new Dictionary<Collider, IDamageable>();
 
         protected override void Awake()
-        {   
+        {
             base.Awake();
             weaponTypeID = meleeID;
             ConfigureMeleeCollider();
@@ -41,7 +42,7 @@ namespace Weapons.Types
         public override void Attack()
         {
             Debug.Log($"{weaponName} is attacking!");
-            ResetHitRecords(); 
+            ResetHitRecords();
         }
 
         internal void EnableWeaponCollider()
@@ -49,7 +50,7 @@ namespace Weapons.Types
             if (hitbox != null)
             {
                 hitbox.enabled = true;
-                hitbox.isTrigger = true; // ✅ Enable trigger to detect enemy hits
+                hitbox.isTrigger = true;
                 Debug.Log($"[MeleeWeapon] Enabled hitbox for {gameObject.name}");
             }
         }
@@ -66,7 +67,7 @@ namespace Weapons.Types
         private void OnTriggerEnter(Collider other)
         {
             if (!hitbox.enabled || !hitbox.isTrigger)
-                return; // ✅ Ignore if the hitbox is disabled or not in attack mode
+                return;
 
             if (((1 << other.gameObject.layer) & entityLayers) == 0)
             {
@@ -75,24 +76,34 @@ namespace Weapons.Types
 
             Debug.Log($"🎯 Hit detected on: {other.name}");
 
-            Transform root = other.transform.root;
+            // Get or cache the IDamageable component
+            if (!damageableCache.TryGetValue(other, out IDamageable damageable))
+            {
+                damageable = other.GetComponentInParent<IDamageable>();
+                if (damageable != null)
+                {
+                    damageableCache[other] = damageable;
+                }
+            }
 
-            if (root.GetComponentInChildren<IDamageable>() is IDamageable damageable)
+            if (damageable != null)
             {
                 if (!damagedEnemies.Contains(damageable))
                 {
-                    Debug.Log($"⚔️ {weaponName} dealing {damage} damage to {root.name}");
+                    Debug.Log(
+                        $"⚔️ {weaponName} dealing {damage} damage to {other.transform.root.name}"
+                    );
                     damageable.TakeDamage(damage);
                     damagedEnemies.Add(damageable);
+
+                    // Handle impact effects
+                    MeleeImpact(other);
                 }
             }
             else
             {
-                Debug.Log($"❌ {root.name} does NOT have IDamageable (even in children)!");
+                Debug.Log($"❌ {other.transform.root.name} does NOT have IDamageable!");
             }
-
-            // ✅ Handle ragdoll and physics impact
-            MeleeImpact(other);
         }
 
         private void MeleeImpact(Collider entity)
@@ -120,7 +131,7 @@ namespace Weapons.Types
                 Debug.Log($"💥 Knockback applied to {entity.name}!");
             }
 
-            // ✅ Spawn hit effect
+            // Spawn hit effect
             if (hitEffectPrefab != null)
             {
                 Instantiate(hitEffectPrefab, entity.transform.position, Quaternion.identity);
@@ -134,7 +145,7 @@ namespace Weapons.Types
             if (hitbox == null)
             {
                 hitbox = gameObject.AddComponent<MeshCollider>();
-                hitbox.convex = true; // ✅ Required for trigger detection
+                hitbox.convex = true;
                 Debug.Log($"⚠️ No MeshCollider found! Adding MeshCollider to {gameObject.name}.");
             }
             else
@@ -143,14 +154,14 @@ namespace Weapons.Types
             }
 
             hitbox.enabled = true;
-            hitbox.isTrigger = false; // ✅ Enable for pickup but prevent damage while on ground
+            hitbox.isTrigger = false;
         }
 
         public void OnPickup()
         {
             if (hitbox != null)
             {
-                hitbox.enabled = false; // ✅ Disable collider when equipped
+                hitbox.enabled = false;
             }
             Debug.Log($"[MeleeWeapon] Picked up, collider disabled on {gameObject.name}");
         }
@@ -160,11 +171,16 @@ namespace Weapons.Types
             if (hitbox != null)
             {
                 hitbox.enabled = true;
-                hitbox.isTrigger = false; // ✅ Enable pickup but prevent damage
+                hitbox.isTrigger = false;
             }
             Debug.Log(
                 $"[MeleeWeapon] Dropped, collider enabled but non-damaging on {gameObject.name}"
             );
+        }
+
+        private void OnDestroy()
+        {
+            damageableCache.Clear();
         }
     }
 }

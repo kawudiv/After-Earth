@@ -15064,6 +15064,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 7975279699686073930, guid: 7f127eefd83437d49a91d8586df2f291, type: 3}
+      propertyPath: damage
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 7975279699686073930, guid: 7f127eefd83437d49a91d8586df2f291, type: 3}
       propertyPath: aimPrefab
       value: 
       objectReference: {fileID: 84484197}
@@ -16716,6 +16720,10 @@ PrefabInstance:
       propertyPath: target
       value: 
       objectReference: {fileID: 154560182}
+    - target: {fileID: 8507877960011226385, guid: 8782160d6cee2704cb04d2db3cb33f84, type: 3}
+      propertyPath: canFlee
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

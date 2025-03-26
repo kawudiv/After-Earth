@@ -1,6 +1,7 @@
 using System;
 using EnemyAI.Base;
 using UnityEngine;
+using UnityEngine.UI; // Import UI namespace
 
 namespace EnemyAI.Components
 {
@@ -8,17 +9,19 @@ namespace EnemyAI.Components
     {
         [SerializeField]
         private float currentHealth;
-        public float MaxHealth { get; private set; } // ✅ Added MaxHealth property
+        public float MaxHealth { get; private set; }
 
         public bool isDead = false;
         public event Action<float, float> OnHealthChanged;
 
         [SerializeField]
         private GameObject damageEffectPrefab;
+        [SerializeField]
+        private Slider healthBar; // ✅ Reference to the UI Slider
 
         private EnemyBase enemyBase;
         private EnemyRagdoll ragdoll;
-        private float regen; // ✅ Regeneration variable
+        private float regen;
 
         public float CurrentHealth => currentHealth;
 
@@ -36,10 +39,16 @@ namespace EnemyAI.Components
 
         private void Start()
         {
-            MaxHealth = enemyBase.health; // ✅ Assign MaxHealth from EnemyBase
-            currentHealth = MaxHealth; // ✅ Start at full HP
+            MaxHealth = enemyBase.health; // ✅ Assign MaxHealth from EnemyBase (e.g., Krieg = 200)
+            currentHealth = MaxHealth;
             regen = enemyBase.regeneration;
-            InvokeRepeating(nameof(RegenerateHealth), 1f, 1f); // ✅ Start health regeneration every second
+
+            if (healthBar != null)
+            {
+                SetHealthBar(MaxHealth, currentHealth); // ✅ Initialize health bar values
+            }
+
+            InvokeRepeating(nameof(RegenerateHealth), 1f, 1f);
         }
 
         public void TakeDamage(float damage)
@@ -48,13 +57,16 @@ namespace EnemyAI.Components
                 return;
 
             currentHealth -= damage;
-            currentHealth = Mathf.Clamp(currentHealth, 0, MaxHealth); // ✅ Use MaxHealth
+            currentHealth = Mathf.Clamp(currentHealth, 0, MaxHealth);
 
-            Debug.Log(
-                $"🩸 {gameObject.name} took {damage} damage! Current HP: {currentHealth}/{MaxHealth}"
-            );
+            Debug.Log($"🩸 {gameObject.name} took {damage} damage! Current HP: {currentHealth}/{MaxHealth}");
 
-            OnHealthChanged?.Invoke(currentHealth, MaxHealth); // ✅ Send MaxHealth as reference
+            OnHealthChanged?.Invoke(currentHealth, MaxHealth);
+
+            if (healthBar != null)
+            {
+                healthBar.value = currentHealth; // ✅ Update slider value
+            }
 
             if (damageEffectPrefab != null)
             {
@@ -82,13 +94,16 @@ namespace EnemyAI.Components
                 return;
 
             currentHealth += regen;
-            currentHealth = Mathf.Clamp(currentHealth, 0, MaxHealth); // ✅ Use MaxHealth for clamping
+            currentHealth = Mathf.Clamp(currentHealth, 0, MaxHealth);
 
-            Debug.Log(
-                $"🟢 {gameObject.name} regenerates {regen} HP! Current HP: {currentHealth}/{MaxHealth}"
-            );
+            Debug.Log($"🟢 {gameObject.name} regenerates {regen} HP! Current HP: {currentHealth}/{MaxHealth}");
 
-            OnHealthChanged?.Invoke(currentHealth, MaxHealth); // ✅ Use MaxHealth
+            OnHealthChanged?.Invoke(currentHealth, MaxHealth);
+
+            if (healthBar != null)
+            {
+                healthBar.value = currentHealth; // ✅ Update UI slider
+            }
         }
 
         private void Die()
@@ -97,15 +112,25 @@ namespace EnemyAI.Components
                 return;
 
             isDead = true;
-            CancelInvoke(nameof(RegenerateHealth)); // ✅ Stop regeneration on death
+            CancelInvoke(nameof(RegenerateHealth));
 
-            enemyBase.agent.enabled = false; // Fully disable NavMeshAgent
-            // enemyBase.stateMachine.ChangeState(null); // Clear AI state
-
+            enemyBase.agent.enabled = false;
             ragdoll.TriggerRagdoll();
 
             Debug.Log($"💀 {gameObject.name} has died!");
             Destroy(gameObject, 5f);
+        }
+
+        /// <summary>
+        /// ✅ Function to dynamically adjust the health bar based on max health.
+        /// </summary>
+        private void SetHealthBar(float maxHealth, float current)
+        {
+            if (healthBar != null)
+            {
+                healthBar.maxValue = maxHealth; // ✅ Set correct max HP (e.g., 200 for Krieg)
+                healthBar.value = current;
+            }
         }
     }
 }

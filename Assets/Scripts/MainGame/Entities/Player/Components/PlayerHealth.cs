@@ -2,13 +2,13 @@ using System;
 using Core;
 using Player.Base;
 using UnityEngine;
+using UnityEngine.UI;  // Import UI namespace
 
 namespace Player.Components
 {
     public class PlayerHealth : MonoBehaviour, IDamageable
     {
-        [SerializeField]
-        private float currentHealth;
+        [SerializeField] private float currentHealth;
         public bool IsDead = false;
         public float MaxHealth { get; private set; }
         public bool IsInvulnerable { get; set; }
@@ -18,12 +18,16 @@ namespace Player.Components
 
         private PlayerBase playerBase;
         private PlayerRagdoll playerRagdoll;
-        private float regenerationRate = 0f;
-        private float invulnerabilityDuration = 0f;
-        private float regenerationDelay = 5f;
+
         private float lastDamageTime;
+        private float regenDelay = 5f;
+        private float regenSpeed = 20f;
+        private bool isRegenerating = false;
 
         public float CurrentHealth => currentHealth;
+
+        [Header("UI References")]
+        [SerializeField] private Slider healthBar; // Reference to the health bar UI
 
         private void Awake()
         {
@@ -43,7 +47,27 @@ namespace Player.Components
         {
             currentHealth = MaxHealth;
             lastDamageTime = Time.time;
-            InvokeRepeating(nameof(CheckRegeneration), 1f, 1f);
+
+            if (healthBar != null)
+            {
+                healthBar.maxValue = MaxHealth;
+                healthBar.value = currentHealth;
+            }
+
+            OnHealthChanged += UpdateHealthBar; // Subscribe to event
+        }
+
+        private void UpdateHealthBar(float current, float max)
+        {
+            if (healthBar != null)
+            {
+                healthBar.value = current;
+            }
+        }
+
+        private void Update()
+        {
+            HandleRegeneration();
         }
 
         public void TakeDamage(float damage)
@@ -61,42 +85,48 @@ namespace Player.Components
 
             if (currentHealth <= 0)
             {
-                Debug.Log("Player Died heeh");
                 Die();
+            }
+            else
+            {
+                isRegenerating = false;
             }
         }
 
-        private void CheckRegeneration()
+        private void HandleRegeneration()
         {
-            if (IsDead || currentHealth <= 0 || Time.time - lastDamageTime < regenerationDelay)
+            if (IsDead || currentHealth >= MaxHealth)
                 return;
 
-            RegenerateHealth();
+            if (Time.time - lastDamageTime >= regenDelay)
+            {
+                if (!isRegenerating)
+                {
+                    isRegenerating = true;
+                    Debug.Log("🟢 Player started regenerating health!");
+                }
+
+                RegenerateHealth();
+            }
         }
 
         private void RegenerateHealth()
         {
-            if (currentHealth >= MaxHealth)
-                return;
-
-            currentHealth += regenerationRate;
+            currentHealth += regenSpeed * Time.deltaTime;
             currentHealth = Mathf.Clamp(currentHealth, 0, MaxHealth);
 
-            Debug.Log(
-                $"🟢 Player regenerates {regenerationRate} HP! Current HP: {currentHealth}/{MaxHealth}"
-            );
             OnHealthChanged?.Invoke(currentHealth, MaxHealth);
-        }
 
-        public void SetRegeneration(float rate)
-        {
-            regenerationRate = rate;
+            if (currentHealth >= MaxHealth)
+            {
+                isRegenerating = false;
+                Debug.Log("✅ Health fully regenerated!");
+            }
         }
 
         public void SetInvulnerability(float duration)
         {
             IsInvulnerable = true;
-            invulnerabilityDuration = duration;
             Invoke(nameof(EndInvulnerability), duration);
         }
 
@@ -108,28 +138,18 @@ namespace Player.Components
         private void Die()
         {
             if (IsDead)
-            {
-                Debug.LogWarning($"[PlayerHealth] Die() called, but player is already dead.");
                 return;
-            }
 
-            Debug.LogWarning("🔥 [PlayerHealth] Player is dying!");
             IsDead = true;
-            CancelInvoke(nameof(CheckRegeneration));
+            isRegenerating = false;
 
-            //playerBase.StateMachine.ChangeState(null);
+            Debug.Log("🔥 Player has died!");
 
             if (playerRagdoll != null)
             {
-                Debug.Log($"[PlayerHealth] 🏋️ Triggering Ragdoll for {gameObject.name}!");
                 playerRagdoll.TriggerRagdoll();
             }
-            else
-            {
-                Debug.LogError($"[PlayerHealth] ❌ Cannot trigger ragdoll, playerRagdoll is NULL!");
-            }
 
-            Debug.Log("💀 Player has died!");
             OnDeath?.Invoke();
         }
     }

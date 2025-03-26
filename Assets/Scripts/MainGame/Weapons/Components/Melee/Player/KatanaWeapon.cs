@@ -9,7 +9,7 @@ namespace Weapons.Components.Melee.Player
         {
             base.Awake();
             weaponName = "Katana";
-            damage = 12f;  // Moderate damage
+            damage = 80f;  // Moderate damage
             attackSpeed = 1.5f;  // Fast attack speed
             attackRange = 1.8f;  // Slightly longer range than a sword
             impactForce = 10f;  // Less force than an axe but still strong

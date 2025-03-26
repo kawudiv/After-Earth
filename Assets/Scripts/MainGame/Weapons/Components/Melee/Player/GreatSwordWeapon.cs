@@ -9,7 +9,7 @@ namespace Weapons.Components.Melee.Player
         {
             base.Awake();
             weaponName = "Great Sword";
-            damage = 25f;
+            damage = 40f;
             attackSpeed = 0.8f;
             attackRange = 2.0f;
             impactForce = 30f;

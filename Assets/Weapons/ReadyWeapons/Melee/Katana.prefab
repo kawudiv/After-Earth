@@ -177,8 +177,8 @@ MonoBehaviour:
   damage: 0
   attackSpeed: 0
   attackRange: 0
-  equipPositionOffset: {x: 0, y: 0, z: 0}
-  equipRotationOffset: {x: 0, y: 0, z: 0}
+  equipPositionOffset: {x: 0.0064, y: 0.0216, z: 0.0529}
+  equipRotationOffset: {x: -126.737, y: 64.007, z: 41.81799}
   attackPoint: {fileID: 4440362358065202262}
   entityLayers:
     serializedVersion: 2

@@ -1,9 +1,9 @@
+using System.Collections.Generic; // For List
 using Items.Base;
 using Player.Base;
 using UnityEngine;
 using Weapons.Base;
 using Weapons.Types;
-using System.Collections.Generic;  // For List
 
 namespace Player.Components
 {
@@ -16,15 +16,19 @@ namespace Player.Components
         public WeaponBase EquippedRangedWeapon => equippedRangedWeapon;
         public WeaponBase EquippedWeapon => equippedMeleeWeapon ?? equippedRangedWeapon;
 
-        [SerializeField] private Transform weaponHolder;
-        [SerializeField] private Transform dropPoint;
+        [SerializeField]
+        private Transform weaponHolder;
+
+        [SerializeField]
+        private Transform dropPoint;
         private PlayerAnimation playerAnimation;
         private PlayerBase player;
         public GameObject itemPrefab;
 
         // ✅ Updated: Support multiple ItemUI slots
-        [SerializeField] private List<ItemUI> itemSlots = new List<ItemUI>();
-        private ItemBase[] inventoryItems = new ItemBase[3];  // To track collected items
+        [SerializeField]
+        private List<ItemUI> itemSlots = new List<ItemUI>();
+        private ItemBase[] inventoryItems = new ItemBase[3]; // To track collected items
 
         private void Awake()
         {
@@ -39,7 +43,9 @@ namespace Player.Components
             // Safety check to avoid null exceptions
             if (itemSlots.Count != 3)
             {
-                Debug.LogError("[PlayerInventory] Please assign exactly 3 ItemUI slots in the inspector.");
+                Debug.LogError(
+                    "[PlayerInventory] Please assign exactly 3 ItemUI slots in the inspector."
+                );
             }
         }
 
@@ -70,7 +76,9 @@ namespace Player.Components
                     if (weaponPrefab != null)
                     {
                         FindAnyObjectByType<PlayerSlotInventory>()?.AddWeapon(weaponPrefab);
-                        Debug.Log($"✅ [PlayerInventory] Picked up weapon: {weaponPrefab.WeaponName}");
+                        Debug.Log(
+                            $"✅ [PlayerInventory] Picked up weapon: {weaponPrefab.WeaponName}"
+                        );
 
                         weaponPickup.gameObject.SetActive(false);
                         return;
@@ -95,7 +103,9 @@ namespace Player.Components
                         }
                         else
                         {
-                            Debug.LogWarning("[PlayerInventory] Inventory full. Can't pick up item.");
+                            Debug.LogWarning(
+                                "[PlayerInventory] Inventory full. Can't pick up item."
+                            );
                         }
                         return;
                     }
@@ -157,20 +167,28 @@ namespace Player.Components
 
                     if (i < itemSlots.Count)
                     {
-                        Debug.Log($"[PlayerInventory] 🔄 Updating Item UI Slot {i} with item: {newItem.ItemName}");
+                        Debug.Log(
+                            $"[PlayerInventory] 🔄 Updating Item UI Slot {i} with item: {newItem.ItemName}"
+                        );
                         itemSlots[i].UpdateItemUI(newItem.ItemSprite);
-                        Debug.Log($"✅ [PlayerInventory] Added item to slot {i}: {newItem.ItemName} (ID: {newItem.ItemID})");
+                        Debug.Log(
+                            $"✅ [PlayerInventory] Added item to slot {i}: {newItem.ItemName} (ID: {newItem.ItemID})"
+                        );
                     }
                     else
                     {
-                        Debug.LogError($"[PlayerInventory] ❌ No UI slot found for item {newItem.ItemName} at index {i}.");
+                        Debug.LogError(
+                            $"[PlayerInventory] ❌ No UI slot found for item {newItem.ItemName} at index {i}."
+                        );
                     }
 
                     return true;
                 }
                 else
                 {
-                    Debug.Log($"[PlayerInventory] Slot {i} is already occupied by: {inventoryItems[i].ItemName}");
+                    Debug.Log(
+                        $"[PlayerInventory] Slot {i} is already occupied by: {inventoryItems[i].ItemName}"
+                    );
                 }
             }
 
@@ -180,7 +198,8 @@ namespace Player.Components
 
         public void EquipWeapon(WeaponBase newWeapon)
         {
-            if (newWeapon == null) return;
+            if (newWeapon == null)
+                return;
 
             UnequipWeapon();
 
@@ -207,7 +226,13 @@ namespace Player.Components
 
         public void DropWeapon(WeaponBase weaponToDrop)
         {
-            if (weaponToDrop == null) return;
+            if (weaponToDrop == null)
+                return;
+
+            if (weaponToDrop is MeleeWeapon meleeWeapon)
+            {
+                meleeWeapon.OnDrop();
+            }
 
             weaponToDrop.transform.SetParent(null);
             weaponToDrop.transform.position = transform.position + transform.forward * 1f;

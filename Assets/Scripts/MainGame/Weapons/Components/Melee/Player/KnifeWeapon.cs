@@ -9,14 +9,14 @@ namespace Weapons.Components.Melee.Player
         {
             base.Awake();
             weaponName = "Knife";
-            damage = 5f;
+            damage = 30f;
             attackSpeed = 2.5f;
             attackRange = 0.8f;
             impactForce = 5f;
 
             entityLayers = LayerMask.GetMask("Enemy");
 
-            meleeID = 2;
+            meleeID = 3;
 
             if (attackPoint == null)
             {
